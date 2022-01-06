@@ -1,0 +1,68 @@
+{
+  "lights": [
+    {
+      "context": {
+        "type": "home-assistant",
+        "props": {
+          "entityId": "light.living_room"
+        }
+      },
+      "selectors": ["#example", ".something", ".nah"],
+      "layers": [{
+        "scene": "main-scene"
+      }]
+    },
+    {
+      "context": {
+        "type": "home-assistant",
+        "props": {
+          "entityId": "light.bedroom"
+        }
+      },
+      "selectors": ["#example", ".something", ".something"],
+      "layers": [{
+        "scene": "main-scene"
+      }]
+    }
+  ],
+  "variables": [
+    {
+      "namespace": "bri",
+      "context": {
+        "type": "home-assistant",
+        "props": {
+          "entityId": "input_number.brightness"
+        }
+      }
+    }
+  ],
+  "triggers": [],
+  "styles": [
+    {
+      "id": "777",
+      "props": {
+        "color": "white",
+        "brightness": "$bri"
+      }
+    }
+  ],
+  "scenes": [
+    {
+      "name": "main-scene",
+      "cascade": [
+        {
+          "selector": "#example",
+          "style": "777"
+        },
+        {
+          "selector": ".something",
+          "style": "777"
+        },
+        {
+          "selector": ".nah",
+          "style": "777"
+        }
+      ]
+    }
+  ]
+}
