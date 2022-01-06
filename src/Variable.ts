@@ -1,4 +1,4 @@
-import { InputNumberConfig } from './home-assistant/InputNumber'
+import { InputNumberConfig } from './types/home-assistant/InputNumber'
 
 
 const ID_PREFIX = 'fsfr'

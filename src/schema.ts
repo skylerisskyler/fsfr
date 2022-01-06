@@ -1,27 +1,13 @@
-import { IVariable } from './types/Variable'
-import { StyleConf, StyleProps } from './types/Style'
-import { LayerConf } from './types/Layer'
+import { IVariable } from './Variable'
+import { StyleConf, StyleProps } from './Style'
+import { LayerConf } from './Layer'
 import { LightConf } from './Lights'
-
-// interface StyleProps {
-//   brightness?: string | number
-//   color?: string
-//   temperature?: string
-// }
-
-
-
-
-// interface Styles {
-//   [styleProp: string]: StyleProps | string
-// }
-
 
 
 export interface Schema {
   lights: LightConf[]
   styles?: StyleConf
-  layers?: LayerConf[]
+  layers?: LayerConf
   variables?: IVariable[]
 }
 
@@ -37,15 +23,8 @@ export const config: Schema = {
             brightness: '$theater-bri'
           }
         },
-        {
-          ref: "circadian",
-          style: 'circadian-lighting'
-        }
+        "primaryCircadian"
       ]
-    },
-    {
-      entityId: 'light.dining_room',
-      layers: ['circadian']
     }
   ],
   styles: {
@@ -54,12 +33,12 @@ export const config: Schema = {
       temperature: "$circadian-temp"
     }
   },
-  layers: [
-    {
+  layers: {
+    primaryCircadian: {
       ref: 'circadian',
       style: "circadian-lighting"
     }
-  ],
+  },
   variables: [
     {
       namespace: "circadian-bri",
