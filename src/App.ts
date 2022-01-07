@@ -1,19 +1,17 @@
 import fs from 'fs'
-import { Light } from './Lights'
+import { Light } from './Light'
 import { Schema, config } from './schema'
 import { Layer } from './Layer'
 import { Style, StyleConf } from './Style'
 import { variablesFromConfig, Variable } from './Variable'
+import { build } from './Build'
+
+export const ID_PREFIX = 'fsfr'
+export const ALIAS_PREFIX = 'FSFR::'
 
 
-// const styleFromConfig = (styleConf: IStyle[]) => {
 
-//   return styleConf.map((variableProps: IVariable) => {
-//     return new Variable(variableProps)
-//   })
-// }
-
-async function main() {
+function main() {
 
   const variables: Variable[] = config.variables
     .map((variableConf) => new Variable(variableConf))
@@ -27,6 +25,7 @@ async function main() {
   const lights: Light[] = config.lights
     .map((lightConf) => new Light(lightConf, variables, styles, layers))
 
+  // build(variables, styles, layers, lights)
 
 }
 

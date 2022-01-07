@@ -3,28 +3,33 @@ import { Action } from './Action'
 import { Mode } from './Misc'
 
 
-export interface ScriptConfig {
+export interface ScriptProps {
+  id: string
   alias: string;
-  sequence: Action[];
+  sequence?: Action[];
   icon?: string;
   mode?: Mode
   max?: number;
 }
 
-class Script implements ScriptConfig {
 
+
+export class Script implements ScriptProps {
+
+  id: string
   alias: string;
   sequence: Action[];
   icon?: string;
   mode?: Mode;
   max?: number;
 
-  constructor(config: ScriptConfig) {
-    this.alias = config.alias
+  constructor(props: ScriptProps) {
+    this.alias = props.alias
+    this.icon = props.icon
+    this.mode = props.mode
+    this.max = props.max
+
     this.sequence = []
-    this.icon = config.icon
-    this.mode = config.mode
-    this.max = config.max
   }
 
   addSequence(action: Action) {

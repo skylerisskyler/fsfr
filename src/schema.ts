@@ -1,7 +1,7 @@
 import { IVariable } from './Variable'
 import { StyleConf, StyleProps } from './Style'
 import { LayerConf } from './Layer'
-import { LightConf } from './Lights'
+import { LightConf } from './Light'
 
 
 export interface Schema {
@@ -17,7 +17,7 @@ export const config: Schema = {
       entityId: 'light.living_room',
       layers: [
         {
-          ref: "theater",
+          scene: "theater",
           style: {
             temperature: '2700k',
             brightness: '$theater-bri'

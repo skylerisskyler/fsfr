@@ -1,4 +1,4 @@
-import { InputNumberConfig } from './types/home-assistant/InputNumber'
+import { InputNumberConf } from './types/home-assistant/InputNumber'
 
 
 const ID_PREFIX = 'fsfr'
@@ -25,7 +25,7 @@ export interface IVariable {
 }
 
 interface ConfigForm {
-  [id: string]: InputNumberConfig
+  [id: string]: InputNumberConf
 }
 
 export const variablesFromConfig = (variablesConf: IVariable[]) => {
@@ -61,22 +61,22 @@ export class Variable implements IVariable {
 
 
 
-  compile() {
+  // compile() {
 
-    const inputNumber: InputNumberConfig = {
-      name: `[${ALIAS_PREFIX}] var ${this.namespace} ${this.type} ${this.unit}`,
-      min: this.min,
-      max: this.max,
-      step: 1,
-      mode: 'slider',
-      //TODO: HANDLE UNIT OF MEASUREMENT ABRIVIATIONS
-      unit_of_measurement: 'UNIT'
-    }
+  //   const inputNumber: InputNumberConf = {
+  //     name: `[${ALIAS_PREFIX}] var ${this.namespace} ${this.type} ${this.unit}`,
+  //     min: this.min,
+  //     max: this.max,
+  //     step: 1,
+  //     mode: 'slider',
+  //     //TODO: HANDLE UNIT OF MEASUREMENT ABRIVIATIONS
+  //     unit_of_measurement: 'UNIT'
+  //   }
 
-    return {
-      ['input_number']: {
-        [`${ID_PREFIX}_var_${this.namespace.replace('-', '_')}`]: inputNumber
-      }
-    }
-  }
+  //   return {
+  //     ['input_number']: {
+  //       [`${ID_PREFIX}_var_${this.namespace.replace('-', '_')}`]: inputNumber
+  //     }
+  //   }
+  // }
 }

@@ -15,6 +15,8 @@ export interface StateTrigger extends BaseTrigger {
   for?: string | number | ForDict;
 }
 
+
+
 export type Trigger =
   | StateTrigger
 // | MqttTrigger

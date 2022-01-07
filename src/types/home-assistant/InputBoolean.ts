@@ -1,29 +1,28 @@
-export interface InputBooleanConfig {
-  id: string;
+interface InputBooleanProps {
+  id?: string
   name: string;
-  icon?: string;
+  icon: string;
   initial?: boolean;
 }
 
-class InputBoolean implements InputBooleanConfig {
+export interface InputBooleanInput extends InputBooleanProps {
+  id: string
+  name: string;
+  icon: string;
+  initial?: boolean;
+}
 
-  id
-  name
-  icon
-  initial
+export interface InputBooleanConf {
+  [id: string]: InputBooleanProps
+}
 
-  constructor(config: InputBooleanConfig) {
-    this.id = config.id
-    this.name = config.name
-    this.initial = config.initial
-  }
 
-  get compile() {
-    return {
-      [this.id]: {
-        name: this.name,
-        initial: this.initial
-      }
-    }
+
+export const createInputBoolean = (props: InputBooleanInput): InputBooleanConf => {
+  const id = props.id
+  delete props.id
+
+  return {
+    [id]: props
   }
 }

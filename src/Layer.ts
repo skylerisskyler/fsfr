@@ -1,3 +1,4 @@
+import { Light } from "./Light"
 import { Style, StyleProps } from "./Style"
 import { Variable } from "./Variable"
 
@@ -17,6 +18,7 @@ export class Layer {
   id: string | null
   ref: string
   style: Style
+  lights: Light[]
 
   constructor(id: string | null, layerProps: LayerProps, variables: Variable[], styles: Style[]) {
     this.id = id
