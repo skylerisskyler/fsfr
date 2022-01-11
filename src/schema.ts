@@ -35,7 +35,7 @@ export const config: Schema = {
   },
   layers: {
     primaryCircadian: {
-      ref: 'circadian',
+      scene: 'circadian',
       style: "circadian-lighting"
     }
   },

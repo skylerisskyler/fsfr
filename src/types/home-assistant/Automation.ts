@@ -27,6 +27,7 @@ export interface AutomationProps {
 }
 
 
+
 export class Automation implements AutomationProps {
   id?: string;
   alias?: string;
@@ -48,13 +49,24 @@ export class Automation implements AutomationProps {
     | "notset";
   variables?: Record<string, unknown>;
 
-  constructor(props: AutomationProps) {
+  constructor(props: any) {
     this.id = props.id
     this.alias = this.alias
     this.description = this.description
 
     this.trigger = []
+    this.condition = []
     this.action = []
+  }
+
+  addTrigger(trigger: Trigger) {
+    this.trigger.push(trigger)
+    return this
+  }
+
+  addAction(action: Action) {
+    this.action.push(action)
+    return this
   }
 
   addCondition(condition: Condition) {
@@ -62,9 +74,5 @@ export class Automation implements AutomationProps {
     return this
   }
 
-  addTrigger(trigger: Trigger) {
-    this.trigger.push(trigger)
-    return this
-  }
 
 }

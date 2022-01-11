@@ -1,10 +1,11 @@
 import { Light } from "./Light"
+import { Scene } from "./Scene"
 import { Style, StyleProps } from "./Style"
 import { Variable } from "./Variable"
 
 
 export interface LayerProps {
-  ref: string
+  scene: Scene | string
   style: StyleProps | string
 }
 
@@ -16,23 +17,32 @@ export interface LayerConf {
 
 export class Layer {
   id: string | null
-  ref: string
   style: Style
+  scene: Scene
   lights: Light[]
 
-  constructor(id: string | null, layerProps: LayerProps, variables: Variable[], styles: Style[]) {
+  constructor(id: string | null, props: LayerProps, variables: Variable[], styles: Style[], scenes: Scene[]) {
     this.id = id
-    this.ref = layerProps.ref
 
-    if (typeof layerProps.style === 'string') {
-      const style: Style = styles.find((style) => layerProps.style === style.id)
+    //handle style
+    if (typeof props.style === 'string') {
+      const style: Style = styles.find((style) => props.style === style.id)
       if (!style) {
         throw new Error('Style is not defined')
       } else {
         this.style = style
       }
     } else {
-      this.style = new Style(null, layerProps.style, variables)
+      this.style = new Style(null, props.style, variables)
     }
+
+    //handle scene
+
+    let scene = scenes.find((scene: Scene) => scene.id === props.scene)
+    if (!scene) {
+      scene = new Scene(props.scene)
+    }
+    scene.addLayer(this)
+    scenes.push(scene)
   }
 }
