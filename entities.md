@@ -1,3 +1,5 @@
+# YAML Entities Configuration Example
+
 ### Expose Toggle
 
 ```yaml
@@ -47,7 +49,7 @@ automation:
             var_name: <VAR_NAMESPACE>
             expose_id: <EXPOSE_ID>
       # - service: script.turn_on
-      #   entity_id: script.check_current_scene
+      #   entity_id: script.check_current_expose
       #   data:
       #     variables:
       #       var_name: <VAR_NAMESPACE>
@@ -59,15 +61,50 @@ automation:
 
 ```yaml
 script:
-  fsfr_<VAR_NAME>_<EXPOSE_ID>_group_deactivation:
+  fsfr_remove_group_from_variable:
     alias: FSFR:: <light> <expose> deactivation
   sequence:
     - service: group.set
       data:
-        object_id: "{{'<VAR_NAME>' + '_' + <EXPOSE_ID>}}"
+        object_id: "{{'<VARIABLE_NAME>' + '_' + <EXPOSE_ID>}}"
         entities: []
   mode: parallel
 ```
+
+### Add light to group in variable
+```yaml
+script:
+  fsfr_add_light_to_variable:
+  - service: group.set
+    data:
+      object_id: "{{<VARIABLE_NAME> + "_" + <SCENE_ID>}}"
+      entities: "{{ state_attr("group.<GROUP_ID>", "entity_id") | list + ["<LIGHT_ID>"] }}"
+```
+
+### Segment of Light Check Flow
+```yaml
+script:
+  fsfr_check<EXPOSE>_<LIGHT_ID>:
+    sequence:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.fsfr_<EXPOSE_ID>
+                state: 'on'
+            sequence:
+              - service: input_select.select_option
+                data:
+                  option: <EXPOSE_ID>
+                  entity_id: input_select.phosphor_expose_light_skyler_room
+              - service: script.phosphor_set_expose_doorbell_light_skyler_room
+        default:
+          service: script.turn_on
+          target:
+            entity_id: script.<NEXT_EXPOSE_IN_LIGHT_SCRIPT>
+```
+
+--------------
+## Prospective
 
 ### Current Scene Check Script in array form
 ``` yaml
@@ -83,11 +120,13 @@ script:
           #state check for the 
   mode: single
 ```
-the benefit of this method is that you can avoid defining individual scripts for each check but on the other 
+the benefit of this method is that you can avoid defining individual scripts for each check but on the other but there isn't a good way to define what variable the light should subscribe to.
 
-```yaml
-  - service: group.set
-    data:
-      object_id: <GROUP_ID>
-      entities: "{{state_attr("group.<GROUP_ID>", "entity_id") | list + ["<LIGHT_ID>"]}}"
-```
+
+
+### Variable groups
+variable_group = [
+  ... scene_group [
+    ... light.entity_id
+  ]
+]
