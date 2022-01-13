@@ -4,8 +4,8 @@
 
 ```yaml
 input_boolean:
-  fsfr_expose_<EXPOSE_ID>:
-    name: "FSFR::<EXPOSE> status"
+  fsfr_expose_<SCENE_ID>:
+    name: "FSFR::<SCENE> status"
 ```
 ## Expose Activation
 
@@ -13,11 +13,11 @@ input_boolean:
 
 ```yaml
 automation:
-  - id: fsfr_expose_<EXPOSE_ID>_on
-    alias: "FSFR::<EXPOSE_ID> Activated"
+  - id: fsfr_expose_< _ID>_on
+    alias: "FSFR::<SCENE_ID> Activated"
     trigger:
       - platform: state
-        entity_id: input_boolean.fsfr_expose_<EXPOSE_ID>
+        entity_id: input_boolean.fsfr_expose_<SCENE_ID>
         to: "on"
     action:
       - service: script.turn_on
@@ -25,7 +25,7 @@ automation:
         data:
           variables:
             id_of_group: <ID_OF_GROUP>
-            id_to_remove: <EXPOSE_ID>
+            id_to_remove: <SCENE_ID>
     mode: single
 ```
 
@@ -35,11 +35,11 @@ automation:
 
 ```yaml
 automation:
-  - id: fsfr_expose_<EXPOSE_ID>_off
-    alias: "FSFR::<EXPOSE_ID> Deactivated"
+  - id: fsfr_expose_<SCENE_ID>_off
+    alias: "FSFR::<SCENE_ID> Deactivated"
     trigger:
       - platform: state
-        entity_id: input_boolean.fsfr_expose_<EXPOSE_ID>
+        entity_id: input_boolean.fsfr_expose_<SCENE_ID>
         to: "off"
     action:
       - service: script.turn_on
@@ -47,13 +47,13 @@ automation:
         data:
           variables:
             var_name: <VAR_NAMESPACE>
-            expose_id: <EXPOSE_ID>
+            expose_id: <SCENE_ID>
       # - service: script.turn_on
       #   entity_id: script.check_current_expose
       #   data:
       #     variables:
       #       var_name: <VAR_NAMESPACE>
-      #       expose_id: <EXPOSE_ID>
+      #       expose_id: <SCENE_ID>
     mode: single
 ```
 
@@ -66,7 +66,7 @@ script:
   sequence:
     - service: group.set
       data:
-        object_id: "{{'<VARIABLE_NAME>' + '_' + <EXPOSE_ID>}}"
+        object_id: "{{'<VARIABLE_NAME>' + '_' + <SCENE_ID>}}"
         entities: []
   mode: parallel
 ```
@@ -74,7 +74,7 @@ script:
 ### Add light to group in variable
 ```yaml
 script:
-  fsfr_add_light_to_variable:
+  fsfr_util_add_light_to_variable:
   - service: group.set
     data:
       object_id: "{{<VARIABLE_NAME> + "_" + <SCENE_ID>}}"
@@ -84,23 +84,23 @@ script:
 ### Segment of Light Check Flow
 ```yaml
 script:
-  fsfr_check<EXPOSE>_<LIGHT_ID>:
+  fsfr_check<SCENE>_<LIGHT_ID>:
     sequence:
       - choose:
           - conditions:
               - condition: state
-                entity_id: input_boolean.fsfr_<EXPOSE_ID>
+                entity_id: input_boolean.fsfr_<SCENE_ID>
                 state: 'on'
             sequence:
               - service: input_select.select_option
                 data:
-                  option: <EXPOSE_ID>
+                  option: <SCENE_ID>
                   entity_id: input_select.phosphor_expose_light_skyler_room
               - service: script.phosphor_set_expose_doorbell_light_skyler_room
         default:
           service: script.turn_on
           target:
-            entity_id: script.<NEXT_EXPOSE_IN_LIGHT_SCRIPT>
+            entity_id: script.<NEXT_SCENE_IN_LIGHT_SCRIPT>
 ```
 
 --------------
@@ -126,7 +126,7 @@ the benefit of this method is that you can avoid defining individual scripts for
 
 ### Variable groups
 variable_group = [
-  ... scene_group [
+  ... expose_group [
     ... light.entity_id
   ]
 ]

@@ -1,4 +1,5 @@
 import fs from 'fs'
+const yaml = require('yaml')
 import { Light } from './Light'
 import { Schema, config } from './schema'
 import { Layer } from './Layer'
@@ -11,7 +12,7 @@ export const ID_PREFIX = 'fsfr'
 export const ALIAS_PREFIX = 'FSFR::'
 
 
-
+ 
 function main() {
 
   const variables: Variable[] = config.variables
@@ -25,15 +26,21 @@ function main() {
   const layers: Layer[] = Object.entries(config.layers)
     .map(([id, layerProps]) => new Layer(id, layerProps, variables, styles, scenes))
 
-
   const lights: Light[] = config.lights
     .map((lightConf) => new Light(lightConf, variables, styles, scenes, layers))
   
-  lights.forEach(l => console.log(l.layers))
+  const configuration = build(variables, styles, scenes, layers, lights)
 
+  const output = {
+    // variables: variables.map((variable) => variable.get()),
+    styles,
+    scenes,
+    // layers,
+    // lights
+  }
+  fs.writeFileSync('./output.json', JSON.stringify(output))
 
-  // build(variables, styles, scenes, layers, lights)
-
+  // fs.writeFileSync('./configuration.yaml', yaml.stringify(configuration))
 }
 
 main()

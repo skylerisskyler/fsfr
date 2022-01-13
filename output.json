@@ -1,0 +1,17 @@
+{
+  "styles": [
+    {
+      "id": "circadian-lighting",
+      "props": {},
+      "variables": {
+        "brightness": {
+          "namespace": "circadian-bri",
+          "type": "brightness",
+          "unit": "percentage",
+          "min": 0,
+          "max": 100
+        }
+      }
+    }
+  ]
+}

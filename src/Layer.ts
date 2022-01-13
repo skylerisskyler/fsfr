@@ -23,6 +23,7 @@ export class Layer {
 
   constructor(id: string | null, props: LayerProps, variables: Variable[], styles: Style[], scenes: Scene[]) {
     this.id = id
+    this.lights = []
 
     //handle style
     if (typeof props.style === 'string') {
@@ -42,7 +43,15 @@ export class Layer {
     if (!scene) {
       scene = new Scene(props.scene)
     }
-    scene.addLayer(this)
+    this.scene = scene
+    scene.addLayer(this, scene)
     scenes.push(scene)
+  }
+
+  get() {
+    return {
+      id: this.id,
+      lights: this.lights.map(light => light.get())
+    }
   }
 }

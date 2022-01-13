@@ -1,4 +1,4 @@
-interface InputBooleanProps {
+export interface InputBooleanProps {
   id?: string
   name: string;
   icon: string;

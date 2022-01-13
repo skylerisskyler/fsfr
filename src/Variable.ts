@@ -59,24 +59,12 @@ export class Variable implements IVariable {
     this.max = max
   }
 
-
-
-  // compile() {
-
-  //   const inputNumber: InputNumberConf = {
-  //     name: `[${ALIAS_PREFIX}] var ${this.namespace} ${this.type} ${this.unit}`,
-  //     min: this.min,
-  //     max: this.max,
-  //     step: 1,
-  //     mode: 'slider',
-  //     //TODO: HANDLE UNIT OF MEASUREMENT ABRIVIATIONS
-  //     unit_of_measurement: 'UNIT'
-  //   }
-
-  //   return {
-  //     ['input_number']: {
-  //       [`${ID_PREFIX}_var_${this.namespace.replace('-', '_')}`]: inputNumber
-  //     }
-  //   }
-  // }
+  get() {
+    return {
+      namespace: this.namespace,
+      type: this.type,
+      min: this.min,
+      max: this.max
+    }
+  }
 }

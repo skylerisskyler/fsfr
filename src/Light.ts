@@ -16,17 +16,20 @@ export class Light {
   constructor(lightConf: LightConf, variables: Variable[], styles: Style[], scenes: Scene[], layers: Layer[]) {
 
     this.entityId = lightConf.entityId
+    this.layers = []
 
-    this.layers = lightConf.layers.map((layerProps) => {
+    lightConf.layers.forEach((layerProps) => {
       if (typeof layerProps === 'string') {
-        const layer = layers.find((layer) => layerProps === layer.id)
+        const layer: Layer = layers.find((layer) => layerProps === layer.id)
         if (!layer) {
           throw new Error('layer is not defined')
         } else {
-          return layer
+          this.layers.push(layer)
         }
       } else {
-        return new Layer(null, layerProps, variables, styles, scenes)
+        const layer = new Layer(null, layerProps, variables, styles, scenes)
+        layer.lights.push(this)
+        this.layers.push(layer)
       }
     })
 

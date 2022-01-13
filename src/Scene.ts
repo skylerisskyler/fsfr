@@ -2,11 +2,30 @@ import { ALIAS_PREFIX, ID_PREFIX } from "./App"
 import { Layer } from "./Layer"
 import { Light } from "./Light"
 import { Automation } from "./types/home-assistant/Automation"
-import { InputBooleanInput } from "./types/home-assistant/InputBoolean"
+import { InputBooleanInput, InputBooleanProps } from "./types/home-assistant/InputBoolean"
 import { Script } from "./types/home-assistant/Script"
+import { Variable } from "./Variable"
 
 export const createLayerToggleId = (scene: Scene): string => 
   `${ID_PREFIX}_scene_${scene.id}_status` 
+
+export const sceneToggleId = (scene: Scene) => {
+  return `fsfr_scene_${scene.id}`
+}
+
+export const createSceneToggles = (scenes: Scene[], inputBooleans) => {
+  scenes.forEach((scene: Scene) => {
+    inputBooleans.push(createSceneToggle(scene))
+  })
+}
+
+const createSceneToggle = (scene: Scene): InputBooleanProps => {
+  return {
+    id: sceneToggleId(scene),
+    icon: 'mdi:<some-icon>',
+    name: 'some name'
+  }
+}
 
 export class Scene {
   id: string
@@ -17,44 +36,29 @@ export class Scene {
     this.layers = []
   }
 
-  addLayer(layer: Layer) {
+  addLayer(layer: Layer, scene: Scene) {
     this.layers.push(layer)
   }
 
-  compile(inputBooleans: InputBooleanInput[], automations: Automation[], script: Script[]) {
-
-    const sceneToggleId = createLayerToggleId(this)
-
-    const input: InputBooleanInput = {
-      id: sceneToggleId,
-      name: ALIAS_PREFIX + ':' + ' ' + this.id,
-      icon: 'mdi:layers'
-    }
-    inputBooleans.push(input)
-
-    const deactivateAutomationInput = {
-      id: `automation_id ${this.id}`,
-      name: 'name of automation'
-    }
-
-    const deactivateAutomation = new Automation(deactivateAutomationInput)
-      .addTrigger({
-        platform: "state",
-        entity_id: sceneToggleId,
-        to: "off"
-      })
-    
-    console.log(this.layers)
-    
-    // this.layers.forEach((layer: Layer) => 
-    //   layer.lights.forEach((light: Light) => {
-    //     deactivateAutomation.addAction({
-    //       service: 'script.myscript'
-    //     })
-    //   })
-    // )
-
-    automations.push(deactivateAutomation)
-
+  getVariables(): Variable[] {
+    return this.layers.reduce((foundVariables, layer) => {
+      Object.entries(layer.style.variables)
+        .forEach(([_, variable]) => {
+          const existingVariable = foundVariables
+            .find((foundVariable) => foundVariable.namespace === variable.namespace)
+          if(!existingVariable) {
+            foundVariables.push(variable)
+          }
+        })
+      return foundVariables
+    }, [])
   }
+
+  get() {
+    return {
+      id: this.id,
+      layers: this.layers.map(layer => layer.get())
+    }
+  }
+
 }
