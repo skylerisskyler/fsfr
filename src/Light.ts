@@ -1,7 +1,7 @@
 import { Style } from "./Style"
-import { Layer, LayerConf, LayerProps } from "./Layer"
+import { Layer, LayerProps } from "./Layer"
 import { Variable } from "./Variable"
-import { Scene } from "./Scene"
+import { Scene } from "./scene/Scene"
 import _ from 'lodash'
 
 export interface LightConf {

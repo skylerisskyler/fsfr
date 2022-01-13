@@ -4,9 +4,9 @@ import { Light } from './Light'
 import { Schema, config } from './schema'
 import { Layer } from './Layer'
 import { Style, StyleConf } from './Style'
-import { variablesFromConfig, Variable } from './Variable'
+import { Variable } from './Variable'
 import { build } from './Build'
-import { Scene } from './Scene'
+import { Scene } from './scene/Scene'
 
 export const ID_PREFIX = 'fsfr'
 export const ALIAS_PREFIX = 'FSFR::'
@@ -31,16 +31,9 @@ function main() {
   
   const configuration = build(variables, styles, scenes, layers, lights)
 
-  const output = {
-    // variables: variables.map((variable) => variable.get()),
-    styles,
-    scenes,
-    // layers,
-    // lights
-  }
-  fs.writeFileSync('./output.json', JSON.stringify(output))
 
-  // fs.writeFileSync('./configuration.yaml', yaml.stringify(configuration))
+
+  fs.writeFileSync('./configuration.yaml', yaml.stringify(configuration))
 }
 
 main()

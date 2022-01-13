@@ -30,3 +30,9 @@ inputBooleans:
   - id: fsfr_scene_theater
     icon: mdi:<some-icon>
     name: some name
+inputNumbers:
+  - name: fsfr_var_circadian-bri
+    min: 0
+    max: 100
+    step: 1
+    mode: slider

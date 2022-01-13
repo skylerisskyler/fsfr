@@ -1,5 +1,5 @@
 import { Light } from "./Light"
-import { Scene } from "./Scene"
+import { Scene } from "./scene/Scene"
 import { Style, StyleProps } from "./Style"
 import { Variable } from "./Variable"
 
@@ -48,10 +48,4 @@ export class Layer {
     scenes.push(scene)
   }
 
-  get() {
-    return {
-      id: this.id,
-      lights: this.lights.map(light => light.get())
-    }
-  }
 }
