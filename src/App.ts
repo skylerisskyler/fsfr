@@ -43,7 +43,6 @@ async function main() {
     .map((lightConf) => new Light(lightConf, variables, styles, scenes, layers))
 
   const configuration = build(variables, styles, scenes, layers, lights)
-  console.log(JSON.stringify(configuration))
 
   await Deno.writeTextFile("./configuration.json", JSON.stringify(configuration));
 

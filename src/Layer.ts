@@ -38,7 +38,7 @@ export class Layer {
     } else {
       this.id = null
     }
-    
+
     this.lights = []
 
     //handle style
@@ -61,7 +61,7 @@ export class Layer {
     }
     this.scene = scene
 
-    scene.addLayer(this, scene)
+    scene.addLayer(this)
     scenes.push(scene)
   }
 
