@@ -1,14 +1,14 @@
-import { Layer } from "./Layer";
-import { Light } from "./Light";
-import { createSceneDeactivationAutomation } from "./scene/deactivation";
-import { Scene } from "./scene/Scene";
-import { createSceneToggles } from "./scene/toggle";
-import { Style } from "./Style";
-import { Automation } from "./types/home-assistant/Automation";
-import { InputBooleanInput } from "./types/home-assistant/InputBoolean";
-import { InputNumberProps } from "./types/home-assistant/InputNumber";
-import { Script } from "./types/home-assistant/Script";
-import { createVariableInput, Variable } from "./Variable";
+import { Layer } from "./Layer.ts";
+import { Light } from "./Light.ts";
+import { createSceneDeactivationAutomation } from "./scene/deactivation.ts";
+import { Scene } from "./scene/Scene.ts";
+import { createSceneToggles } from "./scene/toggle.ts";
+import { Style } from "./Style.ts";
+import { Automation } from "./types/home-assistant/Automation.ts";
+import { InputBooleanInput } from "./types/home-assistant/InputBoolean.ts";
+import { InputNumberProps } from "./types/home-assistant/InputNumber.ts";
+import { Script } from "./types/home-assistant/Script.ts";
+import { createVariableInput, Variable } from "./Variable.ts";
 
 const createSceneAutomations = (scenes: Scene[],automations: Automation[]) =>
   scenes.forEach(scene => 
@@ -36,7 +36,6 @@ export function build(
 {
   createSceneToggles(scenes, inputBooleans)
   createSceneAutomations(scenes, automations)
-  console.log(variables)
   createVariableInputs(variables, inputNumbers)
 
 

@@ -1,22 +1,67 @@
-import { ID_PREFIX } from "./App"
-import { InputNumberProps } from "./types/home-assistant/InputNumber"
+import { ID_PREFIX } from "./App.ts"
+import { InputNumberProps } from "./types/home-assistant/InputNumber.ts"
 
 
-const ranges = {
+const range = {
   temperature: {
-    mired: [0, 200],
-    kelvin: [1700, 8000]
+    mired: {
+      min: 0,
+      max: 200
+    },
+    kelvin: {
+      min: 1700,
+      max: 8000
+    }
   },
   brightness: {
-    percentage: [0, 100],
-    uint8: [0, 255]
+    percentage: {
+      min: 0,
+      max: 100
+    },
+    uint8: {
+      min: 0,
+      max: 255
+    }
   }
 }
 
-const getRange = (type: string, unit: string, min: number, max: number) => {
-  const [MIN, MAX] = ranges[type][unit]
-  //TODO FIX / CATCH ERRORS IN RANGE LIKE ABOVE OR BELOW RANGE
-  return [MIN, MAX]
+interface VariableParams {
+  type: string,
+  unit: string,
+  min?: string | number,
+  max?: string | number
+}
+
+const getRange = ({type, unit, min, max}: VariableParams) => {
+  switch (type) {
+    case 'brightness':
+      if(unit === 'kelvin') {
+        min = min || range.temperature.kelvin.min
+        max = max || range.temperature.kelvin.max
+      } else if (unit === 'mired') {
+        min = min || range.temperature.mired.min
+        max = max || range.temperature.mired.max
+      } else {
+        throw new Error(`Unit ${unit} is not supported for ${type}`)
+      }
+      break
+      
+    case 'temperature':
+      if(unit === 'percentage') {
+        min = min || range.brightness.percentage.min
+        max = max || range.brightness.percentage.max
+      } else if (unit === 'uint8') {
+        min = min || range.brightness.uint8.min
+        max = max || range.brightness.uint8.max
+    } else {
+      throw new Error(`Unit ${unit} is not supported for ${type}`)
+    }
+    break;
+      
+    default:
+      throw new Error(`Type ${type} is not supported for variable`)
+  }
+  return [min, max]
 }
 
 export interface IVariable {
@@ -45,16 +90,22 @@ export class Variable implements IVariable {
   namespace: string
   type: 'brightness' | 'temperature';
   unit: 'percentage' | 'uint8' | 'kelvin' | 'mired';
-  min: number
+  min: number 
   max: number
 
-  constructor(config: IVariable) {
-    this.namespace = config.namespace
-    this.type = config.type
-    this.unit = config.unit
+  constructor(conf: IVariable) {
+    const [min, max] = getRange({
+      type: conf.type,
+      unit: conf.unit,
+      min: conf.min,
+      max: conf.max
+    })
 
-    const [min, max] = getRange(config.type, this.unit, config.min, config.max)
-    this.min = min
-    this.max = max
+    this.namespace = conf.namespace
+    this.type = conf.type
+    this.unit = conf.unit
+
+    this.min = +min
+    this.max = +max
   }
 }

@@ -1,7 +1,7 @@
-import { Condition } from './Condition'
-import { Action } from './Action'
-import { Mode, ForDict } from './Misc'
-import { Trigger } from './Trigger'
+import { Condition } from './Condition.d.ts'
+import { Action } from './Action.d.ts'
+import { Mode, ForDict } from './Misc.ts'
+import { Trigger } from './Trigger.ts'
 
 
 export interface AutomationProps {
@@ -33,7 +33,7 @@ export class Automation implements AutomationProps {
   alias?: string;
   description?: string;
   trigger: Trigger[];
-  condition?: Condition[];
+  condition: Condition[];
   action: Action[];
   mode?: Mode;
   max?: number;

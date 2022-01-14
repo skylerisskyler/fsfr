@@ -1,12 +1,10 @@
-import fs from 'fs'
-const yaml = require('yaml')
-import { Light } from './Light'
-import { Schema, config } from './schema'
-import { Layer } from './Layer'
-import { Style, StyleConf } from './Style'
-import { Variable } from './Variable'
-import { build } from './Build'
-import { Scene } from './scene/Scene'
+import { Light } from './Light.ts'
+import { Schema, config } from './schema.ts'
+import { Layer } from './Layer.ts'
+import { Style, StyleConf } from './Style.ts'
+import { Variable } from './Variable.ts'
+import { build } from './Build.ts'
+import { Scene } from './scene/Scene.ts'
 
 export const ID_PREFIX = 'fsfr'
 export const ALIAS_PREFIX = 'FSFR::'
@@ -15,25 +13,40 @@ export const ALIAS_PREFIX = 'FSFR::'
  
 function main() {
 
-  const variables: Variable[] = config.variables
-    .map((variableConf) => new Variable(variableConf))
+  // let variables: Variable[] = []
+  // if(config.variables) {
+  //   variables.concat(
+  //     config.variables.map((variableConf) => new Variable(variableConf))
+  //   )
+  // }
+    
+  // let styles: Style[] = []
+  // if(config.styles) {
+  //   styles.concat(
+  //     Object.entries(config.styles)
+  //       .map(([id, styleProps]) => new Style(id, styleProps, variables))
+  //   )
+  // }
 
-  const styles: Style[] = Object.entries(config.styles)
-    .map(([id, styleProps]) => new Style(id, styleProps, variables))
-
-  const scenes: Scene[] = []
-
-  const layers: Layer[] = Object.entries(config.layers)
-    .map(([id, layerProps]) => new Layer(id, layerProps, variables, styles, scenes))
-
-  const lights: Light[] = config.lights
-    .map((lightConf) => new Light(lightConf, variables, styles, scenes, layers))
+  // console.log(variables)
   
-  const configuration = build(variables, styles, scenes, layers, lights)
+  // const scenes: Scene[] = []
+    
+  // const layers: Layer[] = Object.entries(config.layers)
+  //   .map(([id, layerProps]) => new Layer(id, layerProps, variables, styles, scenes))
+
+    
+  // const lights: Light[] = config.lights
+  //   .map((lightConf) => new Light(lightConf, variables, styles, scenes, layers))
+  
+  // console.log(lights)
+  
+  // const configuration = build(variables, styles, scenes, layers, lights)
 
 
 
-  fs.writeFileSync('./configuration.yaml', yaml.stringify(configuration))
+  // fs.writeFileSync('./configuration.yaml', yaml.stringify(config))
+  // fs.writeFileSync('./configuration.yaml', yaml.stringify(configuration))
 }
 
 main()

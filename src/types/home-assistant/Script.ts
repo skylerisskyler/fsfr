@@ -1,6 +1,6 @@
-import { Condition } from './Condition'
-import { Action } from './Action'
-import { Mode } from './Misc'
+import { Condition } from './Condition.d.ts'
+import { Action } from './Action.d.ts'
+import { Mode } from './Misc.ts'
 
 
 export interface ScriptProps {
@@ -24,6 +24,7 @@ export class Script implements ScriptProps {
   max?: number;
 
   constructor(props: ScriptProps) {
+    this.id = props.id
     this.alias = props.alias
     this.icon = props.icon
     this.mode = props.mode

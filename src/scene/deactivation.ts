@@ -1,12 +1,12 @@
-import { Automation } from "../types/home-assistant/Automation"
-import { Scene } from "./Scene"
-import { getSceneToggleId } from "./toggle"
+import { Automation } from "../types/home-assistant/Automation.ts"
+import { Scene } from "./Scene.ts"
+import { getSceneToggleId } from "./toggle.ts"
 
 export const getSceneDactAutoId = (scene: Scene): string => 
 `fsfr_${scene.id}_deactivation`
 
 
-export const createSceneDeactivationAutomation = (scene: Scene, automations) => {
+export const createSceneDeactivationAutomation = (scene: Scene, automations: Automation[]) => {
 
   const automation = new Automation({
     id: getSceneDactAutoId(scene)

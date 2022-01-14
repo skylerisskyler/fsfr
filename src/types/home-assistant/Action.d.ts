@@ -1,4 +1,4 @@
-import { Condition } from './Condition'
+import { Condition } from './Condition.d.ts'
 
 
 export interface ServiceAction {

@@ -1,5 +1,5 @@
-import { InputBooleanProps } from "../types/home-assistant/InputBoolean"
-import { Scene } from "./Scene"
+import { InputBooleanProps } from "../types/home-assistant/InputBoolean.ts"
+import { Scene } from "./Scene.ts"
 
 export const getSceneToggleId = (scene: Scene) => {
   return `fsfr_scene_${scene.id}`
@@ -13,7 +13,7 @@ const createSceneToggle = (scene: Scene): InputBooleanProps => {
   }
 }
 
-export const createSceneToggles = (scenes: Scene[], inputBooleans) => {
+export const createSceneToggles = (scenes: Scene[], inputBooleans: InputBooleanProps[]) => {
   scenes.forEach((scene: Scene) => {
     inputBooleans.push(createSceneToggle(scene))
   })

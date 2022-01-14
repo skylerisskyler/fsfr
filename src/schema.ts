@@ -1,17 +1,40 @@
-import { IVariable } from './Variable'
-import { StyleConf, StyleProps } from './Style'
-import { LayerConf } from './Layer'
-import { LightConf } from './Light'
+import { IVariable } from './Variable.ts'
+import { StyleConf, StyleProps } from './Style.ts'
+import { LayerConf } from './Layer.ts'
+import { LightConf } from './Light.ts'
 
 
 export interface Schema {
   lights: LightConf[]
   styles?: StyleConf
-  layers?: LayerConf
+  layers: LayerConf
   variables?: IVariable[]
 }
 
 export const config: Schema = {
+  variables: [
+    {
+      namespace: "circadian-bri",
+      type: "brightness",
+      unit: "percentage"
+    }
+  ],
+  styles: {
+    'circadian-lighting': {
+      brightness: "$circadian-bri",
+      temperature: {
+        namespace: 'circadian-temp',
+        type: 'temperature',
+        unit: 'kelvin'
+      }
+    }
+  },
+  layers: {
+    primaryCircadian: {
+      scene: 'circadian',
+      style: "circadian-lighting"
+    }
+  },
   lights: [
     {
       entityId: 'light.living_room',
@@ -27,23 +50,4 @@ export const config: Schema = {
       ]
     }
   ],
-  styles: {
-    'circadian-lighting': {
-      brightness: "$circadian-bri",
-      temperature: "$circadian-temp"
-    }
-  },
-  layers: {
-    primaryCircadian: {
-      scene: 'circadian',
-      style: "circadian-lighting"
-    }
-  },
-  variables: [
-    {
-      namespace: "circadian-bri",
-      type: "brightness",
-      unit: "percentage"
-    }
-  ]
 }

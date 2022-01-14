@@ -1,7 +1,7 @@
-import { Light } from "./Light"
-import { Scene } from "./scene/Scene"
-import { Style, StyleProps } from "./Style"
-import { Variable } from "./Variable"
+import { Light } from "./Light.ts"
+import { Scene } from "./scene/Scene.ts"
+import { Style, StyleProps } from "./Style.ts"
+import { Variable } from "./Variable.ts"
 
 
 export interface LayerProps {
@@ -27,7 +27,7 @@ export class Layer {
 
     //handle style
     if (typeof props.style === 'string') {
-      const style: Style = styles.find((style) => props.style === style.id)
+      const style: Style | undefined = styles.find((style) => props.style === style.id)
       if (!style) {
         throw new Error('Style is not defined')
       } else {

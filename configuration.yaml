@@ -1,38 +1,23 @@
-automations:
-  - id: fsfr_circadian_deactivation
-    alias: null
-    description: null
-    trigger:
-      - platform: state
-        entity_id: automation.fsfr_scene_circadian
-        to: off
-    condition: []
-    action:
-      - service: script.turn_on
-        entity_id: script.fsfr_circadian_var_circadian-bri_deactivation
-        data:
-          variables:
-            namespace: circadian-bri
-            scene: circadian
-  - id: fsfr_theater_deactivation
-    alias: null
-    description: null
-    trigger:
-      - platform: state
-        entity_id: automation.fsfr_scene_theater
-        to: off
-    condition: []
-    action: []
-inputBooleans:
-  - id: fsfr_scene_circadian
-    icon: mdi:<some-icon>
-    name: some name
-  - id: fsfr_scene_theater
-    icon: mdi:<some-icon>
-    name: some name
-inputNumbers:
-  - name: fsfr_var_circadian-bri
-    min: 0
-    max: 100
-    step: 1
-    mode: slider
+variables:
+  - namespace: circadian-bri
+    type: brightness
+    unit: percentage
+styles:
+  circadian-lighting:
+    brightness: $circadian-bri
+    temperature:
+      namespace: circadian-temp
+      type: temperature
+      unit: kelvin
+layers:
+  primaryCircadian:
+    scene: circadian
+    style: circadian-lighting
+lights:
+  - entityId: light.living_room
+    layers:
+      - scene: theater
+        style:
+          temperature: 2700k
+          brightness: $theater-bri
+      - primaryCircadian

@@ -1,4 +1,4 @@
-import { ForDict } from './Misc'
+import { ForDict } from './Misc.ts'
 
 
 export interface BaseTrigger {

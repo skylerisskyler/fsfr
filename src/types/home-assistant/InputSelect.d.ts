@@ -5,13 +5,3 @@ export interface InputSelectConfig {
   icon?: string;
   initial?: string;
 }
-
-
-class InputSelect implements InputSelectConfig {
-
-  name: string
-  options: string[]
-  constructor(parameters) {
-
-  }
-}

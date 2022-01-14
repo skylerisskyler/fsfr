@@ -14,17 +14,6 @@ export interface InputNumberConf {
   [id: string]: InputNumberProps
 }
 
-export const createInputNumber = (props: InputNumberInput): InputNumberConf => {
-  const id = props.id
-  delete props.id
-
-  return {
-    [id]: props
-  }
-}
-
-
-
 export interface InputNumberInput extends InputNumberProps {
   id: string
   name: string
