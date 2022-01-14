@@ -142,15 +142,32 @@ sequence:
           - condition: state
             entity_id: input_boolean.scene
             state: 'on'
+          - condition: state
+            entity_id: input_s
+            state: <scene_id>
         sequence:
           - service: script.turn_on
             target:
-              entity_id: script.<variable subscription>
+              entity_id: script.two
+          - service: light.turn_on
+            target:
+              entity_id: light.living_room
             data:
-              scene_id: scene_id
-              var_id: my_var
-
+              brightness_pct: 49
     default:
-      - service: script.<next_script>
+      - service: script.next_script_in_check
 mode: single
+```
+
+For every check js version
+```javascript
+if (scene.state === on && scene.id != light.currentSceneId) {
+    addVariableScript(light, variable, scene)
+    addVariableScript(light, variable, scene)
+    addVariableScript(light, variable, scene)
+    lights.update({style, ...variables})
+} else {
+  call next script
+}
+
 ```
