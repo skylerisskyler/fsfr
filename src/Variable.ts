@@ -34,7 +34,7 @@ interface VariableParams {
 
 const getRange = ({type, unit, min, max}: VariableParams) => {
   switch (type) {
-    case 'brightness':
+    case 'temperature':
       if(unit === 'kelvin') {
         min = min || range.temperature.kelvin.min
         max = max || range.temperature.kelvin.max
@@ -46,7 +46,7 @@ const getRange = ({type, unit, min, max}: VariableParams) => {
       }
       break
       
-    case 'temperature':
+    case 'brightness':
       if(unit === 'percentage') {
         min = min || range.brightness.percentage.min
         max = max || range.brightness.percentage.max

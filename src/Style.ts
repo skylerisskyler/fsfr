@@ -36,11 +36,12 @@ export class Style {
       const isVariableRef = value[0] === '$'
       if (isVariableRef) {
         const namespace = (value as string).slice(1)
-        const variable: Variable | undefined = variables.find((variable: Variable) => variable.namespace === namespace)
+        const variable: Variable | undefined = variables
+          .find((variable: Variable) => variable.namespace === namespace)
         if(variable) {
           this.variables.push(variable)
         } else {
-          throw new Error('variable is not defined in config')
+          throw new Error(`variable namespace ${namespace} is not defined in config`)
         }
       } else if(typeof value === 'object') {
         const variable = new Variable(value)

@@ -9,44 +9,45 @@ import { Scene } from './scene/Scene.ts'
 export const ID_PREFIX = 'fsfr'
 export const ALIAS_PREFIX = 'FSFR::'
 
+import {
+  parse as yamlParse,
+  parseAll as yamlParseAll,
+  stringify as yamlStringify,
+} from 'https://deno.land/std@0.82.0/encoding/yaml.ts';
+
 
  
 function main() {
 
-  // let variables: Variable[] = []
-  // if(config.variables) {
-  //   variables.concat(
-  //     config.variables.map((variableConf) => new Variable(variableConf))
-  //   )
-  // }
+  let variables: Variable[] = []
+  if(config.variables) {
+    variables = variables.concat(
+      config.variables.map((variableConf) => new Variable(variableConf))
+    )
+  }
     
-  // let styles: Style[] = []
-  // if(config.styles) {
-  //   styles.concat(
-  //     Object.entries(config.styles)
-  //       .map(([id, styleProps]) => new Style(id, styleProps, variables))
-  //   )
-  // }
+  let styles: Style[] = []
+  if(config.styles) {
+    styles = styles.concat(
+      Object.entries(config.styles)
+        .map(([id, styleProps]) => new Style(id, styleProps, variables))
+    )
+  }
 
-  // console.log(variables)
-  
-  // const scenes: Scene[] = []
+  const scenes: Scene[] = []
     
-  // const layers: Layer[] = Object.entries(config.layers)
-  //   .map(([id, layerProps]) => new Layer(id, layerProps, variables, styles, scenes))
+  const layers: Layer[] = Object.entries(config.layers)
+    .map(([id, layerProps]) => new Layer(id, layerProps, variables, styles, scenes))
 
     
-  // const lights: Light[] = config.lights
-  //   .map((lightConf) => new Light(lightConf, variables, styles, scenes, layers))
+  const lights: Light[] = config.lights
+    .map((lightConf) => new Light(lightConf, variables, styles, scenes, layers))
   
-  // console.log(lights)
-  
-  // const configuration = build(variables, styles, scenes, layers, lights)
-
-
-
-  // fs.writeFileSync('./configuration.yaml', yaml.stringify(config))
-  // fs.writeFileSync('./configuration.yaml', yaml.stringify(configuration))
+  const configuration = build(variables, styles, scenes, layers, lights)
+  // console.log(configuration)
+  // const output = yamlStringify(configuration)
+  // console.log(output)
+  // // Deno.writeTextFile("../configuration.yaml", output);
 }
 
 main()

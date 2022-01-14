@@ -10,6 +10,8 @@ import { InputNumberProps } from "./types/home-assistant/InputNumber.ts";
 import { Script } from "./types/home-assistant/Script.ts";
 import { createVariableInput, Variable } from "./Variable.ts";
 
+import * as YAML from 'https://deno.land/std@0.82.0/encoding/yaml.ts';
+
 const createSceneAutomations = (scenes: Scene[],automations: Automation[]) =>
   scenes.forEach(scene => 
     createSceneDeactivationAutomation(scene, automations)
@@ -39,6 +41,13 @@ export function build(
   createVariableInputs(variables, inputNumbers)
 
 
+  const output = YAML.stringify({
+    input_boolean: inputBooleans,
+    script: scripts,
+    automations
+  })
+  console.log(output)
+  // Deno.writeTextFile("../configuration.yaml", output);
   return {
     automations,
     inputBooleans,

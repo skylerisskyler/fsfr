@@ -43,7 +43,11 @@ export const config: Schema = {
           scene: "theater",
           style: {
             temperature: '2700k',
-            brightness: '$theater-bri'
+            brightness: {
+              namespace: 'theater-bri',
+              type: 'brightness',
+              unit: 'percentage'
+            }
           }
         },
         "primaryCircadian"
