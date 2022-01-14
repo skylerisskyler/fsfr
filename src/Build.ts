@@ -36,18 +36,21 @@ export function build(
     lights: Light[]
 ) 
 {
+
   createSceneToggles(scenes, inputBooleans)
   createSceneAutomations(scenes, automations)
   createVariableInputs(variables, inputNumbers)
 
+  // console.log(scenes)
+  // console.log(Deno.inspect(automations))
 
-  const output = YAML.stringify({
-    input_boolean: inputBooleans,
-    script: scripts,
-    automations
-  })
-  console.log(output)
-  // Deno.writeTextFile("../configuration.yaml", output);
+  // const output = YAML.stringify({
+  //   input_boolean: inputBooleans,
+  //   script: scripts,
+  //   automations
+  // })
+  // console.log(output)
+  // // Deno.writeTextFile("../configuration.yaml", output);
   return {
     automations,
     inputBooleans,

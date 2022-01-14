@@ -7,7 +7,7 @@ import { LightConf } from './Light.ts'
 export interface Schema {
   lights: LightConf[]
   styles?: StyleConf
-  layers: LayerConf
+  layers: LayerConf[]
   variables?: IVariable[]
 }
 
@@ -29,12 +29,13 @@ export const config: Schema = {
       }
     }
   },
-  layers: {
-    primaryCircadian: {
+  layers: [
+    {
+      id: "primaryCircadian",
       scene: 'circadian',
       style: "circadian-lighting"
     }
-  },
+  ],
   lights: [
     {
       entityId: 'light.living_room',

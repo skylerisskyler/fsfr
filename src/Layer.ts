@@ -4,15 +4,20 @@ import { Style, StyleProps } from "./Style.ts"
 import { Variable } from "./Variable.ts"
 
 
+export interface LayerConf {
+  id?: string | null
+  scene: string
+  style: StyleProps | string
+}
+
 export interface LayerProps {
   scene: Scene | string
   style: StyleProps | string
 }
 
-export interface LayerConf {
+export interface LayerFormat {
   [id: string]: LayerProps
 }
-
 
 
 export class Layer {
@@ -21,29 +26,41 @@ export class Layer {
   scene: Scene
   lights: Light[]
 
-  constructor(id: string | null, props: LayerProps, variables: Variable[], styles: Style[], scenes: Scene[]) {
-    this.id = id
+  constructor(
+    conf: LayerConf,
+    variables: Variable[],
+    styles: Style[],
+    scenes: Scene[]
+  )
+  {
+    if(conf.id) {
+      this.id = conf.id
+    } else {
+      this.id = null
+    }
+    
     this.lights = []
 
     //handle style
-    if (typeof props.style === 'string') {
-      const style: Style | undefined = styles.find((style) => props.style === style.id)
+    if (typeof conf.style === 'string') {
+      const style: Style | undefined = styles.find((style) => conf.style === style.id)
       if (!style) {
         throw new Error('Style is not defined')
       } else {
         this.style = style
       }
     } else {
-      this.style = new Style(null, props.style, variables)
+      this.style = new Style(null, conf.style, variables)
     }
 
     //handle scene
 
-    let scene = scenes.find((scene: Scene) => scene.id === props.scene)
+    let scene = scenes.find((scene: Scene) => scene.id === conf.scene)
     if (!scene) {
-      scene = new Scene(props.scene)
+      scene = new Scene({id: conf.scene})
     }
     this.scene = scene
+
     scene.addLayer(this, scene)
     scenes.push(scene)
   }

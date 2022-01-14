@@ -14,8 +14,8 @@ export class Scene {
   id: string
   layers: Layer[]
 
-  constructor(conf: any) {
-    this.id = conf.id
+  constructor({id}: SceneConf) {
+    this.id = id
     this.layers = []
   }
 

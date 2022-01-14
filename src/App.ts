@@ -17,7 +17,7 @@ import {
 
 
  
-function main() {
+async function main() {
 
   let variables: Variable[] = []
   if(config.variables) {
@@ -35,19 +35,21 @@ function main() {
   }
 
   const scenes: Scene[] = []
-    
-  const layers: Layer[] = Object.entries(config.layers)
-    .map(([id, layerProps]) => new Layer(id, layerProps, variables, styles, scenes))
 
-    
+  const layers: Layer[] = config.layers
+    .map(layerConf => new Layer(layerConf, variables, styles, scenes))
+
   const lights: Light[] = config.lights
     .map((lightConf) => new Light(lightConf, variables, styles, scenes, layers))
-  
+
   const configuration = build(variables, styles, scenes, layers, lights)
+  console.log(JSON.stringify(configuration))
+
+  await Deno.writeTextFile("./configuration.json", JSON.stringify(configuration));
+
   // console.log(configuration)
   // const output = yamlStringify(configuration)
   // console.log(output)
-  // // Deno.writeTextFile("../configuration.yaml", output);
 }
 
 main()
