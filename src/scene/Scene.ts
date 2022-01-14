@@ -13,8 +13,14 @@ interface SceneConf {
 export const getSceneToggleId = (scene: Scene) => {
   return `fsfr_scene_${scene.id}`
 }
-export const getSceneDactAutoId = (scene: Scene): string => 
-`fsfr_${scene.id}_deactivation`
+export const getSceneOffAutomationId = (scene: Scene): string => 
+`fsfr_${scene.id}_off`
+
+export const getSceneOnAutomationId= (scene: Scene): string => 
+`fsfr_${scene.id}_on`
+
+export const getSceneCheckScriptId= (light: Light, scene: Scene): string => 
+`fsfr_${light.entityId}_check_${scene.id}`
 
 
 export class Scene {
@@ -38,59 +44,80 @@ export class Scene {
     }
   }
 
-  createOffAutomation(): Automation {
-    
-  const automation: Automation = new Automation({
-    id: getSceneDactAutoId(this)
-  })
+  get lights() {
+    return this.layers.reduce((allLights, layer) => {
+      return [...allLights, ...layer.lights]
+    }, [] as Light[])
+  }
 
-  automation.addTrigger({
-    platform: 'state',
-    entity_id: `automation.${getSceneToggleId(this)}`,
-    to: 'off'
-  })
-
-  const variablesInScene = this.getVariables()
-
-  variablesInScene.forEach((variable) => {
-    automation.addAction({
-      service: 'script.turn_on',
-      entity_id: `script.fsfr_variable_group_deactivation`,
-      data: {
-        variables: {
-          var_namespace: variable.namespace,
-          scene_id: this.id
-        }
-      }
+  createOnAutomation(): Automation {
+    const automation: Automation = new Automation({
+      id: getSceneOnAutomationId(this)
     })
-  })
 
-  this.layers.forEach((sceneLayer) => {
-    sceneLayer.lights.forEach((sceneLight) => {
-      // console.log(sceneLight)
-    const idx = sceneLight.layers.findIndex(sceneLight => sceneLight.scene.id === this.id)
-    const nextScene: Scene = sceneLight.layers[idx + 1].scene
-    if(!nextScene) {
-      automation.addAction({
-        service: 'light.turn_off',
-        entity_id: sceneLight.entityId[0]  //todo fix array issue  
-      })
-    } else {
-      automation.addAction({
-        service: `script.${sceneLight.entityId}_${nextScene}_check`
-      })
-    }
+    automation.addTrigger({
+      platform: 'state',
+      entity_id: `input_boolean.${getSceneToggleId(this)}`,
+      to: 'on'
     })
-  })
 
+    this.lights.forEach(light => {
+      const firstScene = light.layers[0].scene
+      automation.addAction({
+        service: `script.${getSceneCheckScriptId(light, firstScene)}`
+      })
+    })
 
     return automation
   }
 
-  getVariables(): Variable[] {
+  createOffAutomation(): Automation {
+    
+    const automation: Automation = new Automation({
+      id: getSceneOffAutomationId(this)
+    })
+
+    automation.addTrigger({
+      platform: 'state',
+      entity_id: `input_boolean.${getSceneToggleId(this)}`,
+      to: 'off'
+    })
+
+    this.variables.forEach((variable) => {
+      automation.addAction({
+        service: 'script.turn_on',
+        entity_id: `script.fsfr_variable_group_deactivation`,
+        data: {
+          variables: {
+            var_namespace: variable.namespace,
+            scene_id: this.id
+          }
+        }
+      })
+    })
+
+    this.lights.forEach(light => {
+      const nextScene = light.getNextScene(this)
+      console.log(light.entityId)
+      if(nextScene) {
+        automation.addAction({
+          service: `script.check_next_${light.entityId}_${nextScene.id}`
+        })
+      } else {
+        automation.addAction({
+          service: 'light.turn_off',
+          entity_id: light.entityId[0]
+        })
+      }
+    })
+
+    return automation
+  }
+
+  get variables(): Variable[] {
     return this.layers.reduce((foundVariables: Variable[], layer: Layer) => {
-      Object.entries(layer.style.variables)
-        .forEach(([_, variable]) => {
+      layer.style.variables
+        .forEach((variable) => {
           const existingVariable = foundVariables
             .find((foundVariable) => foundVariable.namespace === variable.namespace)
           if(!existingVariable) {

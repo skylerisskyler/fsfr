@@ -33,7 +33,7 @@ export class Script implements ScriptProps {
     this.sequence = []
   }
 
-  addSequence(action: Action) {
+  addAction(action: Action) {
     this.sequence.push(action)
   }
 }

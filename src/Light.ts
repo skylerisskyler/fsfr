@@ -24,8 +24,6 @@ export class Light {
     this.entityId = conf.entityId
     this.layers = []
 
-
-
     conf.layers.forEach((layerConf) => {
       if (typeof layerConf === 'string') {
         const layer: Layer | undefined = layers.find((layer) => layerConf === layer.id)
@@ -46,5 +44,10 @@ export class Light {
       }
     })
 
+  }
+
+  getNextScene(currentScene: Scene): Scene | undefined {
+    const layerIdx = this.layers.findIndex(layer => currentScene.id === layer.scene.id)
+    return this.layers[layerIdx + 1].scene
   }
 }

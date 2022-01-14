@@ -132,3 +132,25 @@ variable_group = [
     ... light.entity_id
   ]
 ]
+
+### Config flow
+```yaml
+alias: New Script
+sequence:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_boolean.scene
+            state: 'on'
+        sequence:
+          - service: script.turn_on
+            target:
+              entity_id: script.<variable subscription>
+            data:
+              scene_id: scene_id
+              var_id: my_var
+
+    default:
+      - service: script.<next_script>
+mode: single
+```
