@@ -48,7 +48,7 @@ const getSceneCheckScripts = (lights: Light[]) => {
           data: {
             variables: {
               var_name: variable.namespace,
-              light_id: light.entityId,
+              light_id: light.id,
               scene_id: layer.scene.id
             }
           }
@@ -76,12 +76,12 @@ const getSceneCheckScripts = (lights: Light[]) => {
       } else {
         chooseAction.addDefault({
           service: 'light.turn_off',
-          entity_id: light.entityId[0]
+          entity_id: light.entityId
         })
       }
 
       const checkScript: Script = new Script({
-        id: `${light.entityId} ${layer.scene.id} check script`,
+        id: `${light.id} ${layer.scene.id} check script`,
         alias: 'some alias'
       })
 
@@ -90,8 +90,6 @@ const getSceneCheckScripts = (lights: Light[]) => {
       scripts.push(checkScript)
 
     })
-
-    
   })
   return scripts
 }
@@ -123,18 +121,23 @@ export function build(
 
 
   const configuration = {
-    input_boolean: yamlize(sceneToggles),
-    automation: yamlize(sceneOffAutomations.map((s) => s.compile())),
-    script: yamlize(sceneCheckScripts.map((s) => s.compile()))
+    input_boolean: toDict(sceneToggles),
+    automation: sceneOffAutomations.map((s) => s.compile()),
+    script: toDict(sceneCheckScripts.map((s) => s.compile()))
   }
 
   console.log(configuration)
   const yamlForm = yamlStringify(configuration)
+    .replaceAll("'{{", '"{{')
+    .replaceAll("}}'", '}}"')
+    .replaceAll("''", "'")
+
+
   Deno.writeTextFile('./configuration.yaml', yamlForm)
 }
 
 
-const yamlize = (list: (InputBooleanInput | Automation  | any)[]) => {
+const toDict = (list: (InputBooleanInput | Automation  | any)[]) => {
   return list.reduce((prev, curr) => {
     let newObj: any = curr
     const id = newObj.id

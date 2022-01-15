@@ -20,10 +20,10 @@ export const getSceneOnAutomationId = (scene: Scene): string =>
 `fsfr_${scene.id}_on`
 
 export const getSceneCheckScriptId = (light: Light, scene: Scene): string => 
-`fsfr_${light.entityId}_check_${scene.id}`
+`fsfr_${light.id}_check_${scene.id}`
 
 export const getLightSceneSelectorId = (light: Light) =>
-  `fsfr_${light.entityId}_scenes`
+  `fsfr_${light.id}_scenes`
 
 export class Scene {
   id: string
@@ -102,12 +102,12 @@ export class Scene {
       const nextScene = light.getNextScene(this)
       if(nextScene) {
         automation.addAction({
-          service: `script.check_next_${light.entityId}_${nextScene.id}`
+          service: `script.check_next_${light.id}_${nextScene.id}`
         })
       } else {
         automation.addAction({
           service: 'light.turn_off',
-          entity_id: light.entityId[0]
+          entity_id: light.entityId
         })
       }
     })

@@ -1,6 +1,9 @@
 # FSFR
 
-# YAML Entities Configuration Example
+# FSFR 
+
+
+## YAML Entities Configuration Example
 
 ### Expose Toggle
 
@@ -12,7 +15,7 @@ input_boolean:
 ## Expose Activation
 
 ### Expose Activated Automation
-
+- [x] expose deactivated
 ```yaml
 automation:
   - id: fsfr_expose_< _ID>_on
@@ -116,7 +119,7 @@ sequence:
             entity_id: input_boolean.scene
             state: 'on'
           - condition: state
-            entity_id: input_s
+            entity_id: input_select.<light>
             state: <scene_id>
         sequence:
           - service: script.turn_on
@@ -132,15 +135,15 @@ sequence:
 mode: single
 ```
 
-JS logic for reference
+### WIP
+- [ ] variable group defaults
+- [ ] variable state change handlers
+- [ ] some good way to handle style props from config to HA data format
+- [ ] startup initialization automations
 
-```javascript
-if (scene.state === on && scene.id != light.currentSceneId) {
-    addVariableScript(light, variable, scene)
-    addVariableScript(light, variable, scene)
-    addVariableScript(light, variable, scene)
-    lights.update({style, ...variables})
-} else {
-  call next script
-}
-```
+
+
+{{
+  state_attr("group.parent_group", "entity_id") | list
+  + ["D"]
+}}

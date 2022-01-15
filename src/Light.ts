@@ -4,12 +4,12 @@ import { Variable } from "./Variable.ts"
 import { Scene } from "./scene/Scene.ts"
 
 export interface LightConf {
-  entityId: string | string[]
+  id: string | string[]
   layers: (LayerConf | string)[]
 }
 
 export class Light {
-  entityId: string | string[]
+  id: string | string[]
   layers: Layer[]
 
   constructor(
@@ -21,7 +21,18 @@ export class Light {
   )
   {
 
-    this.entityId = conf.entityId
+    const entityIdToId = (id: string) => id.replace('light.', '')
+
+    if(Array.isArray(conf.id)) {
+      if(conf.id.length > 1) {
+        this.id = conf.id.map((id) => entityIdToId(id))
+      } else {
+        this.id = entityIdToId(conf.id[0])
+      }
+    } else {
+      this.id = entityIdToId(conf.id)
+    }
+
     this.layers = []
 
     conf.layers.forEach((layerConf) => {
@@ -45,6 +56,15 @@ export class Light {
     })
 
   }
+
+  get entityId() {
+    if(Array.isArray(this.id)) {
+      return this.id.map((id) => 'light.' + id)
+    } else {
+      return 'light.' +  this.id
+    }
+  }
+
 
   getNextScene(currentScene: Scene): Scene | undefined {
     const layerIdx = this.layers.findIndex(layer => currentScene.id === layer.scene.id)

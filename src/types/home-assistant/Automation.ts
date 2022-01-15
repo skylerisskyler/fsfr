@@ -77,6 +77,7 @@ export class Automation implements AutomationProps {
   compile() {
     const compilation: any = {}
     compilation.id = this.id
+    compilation.trigger = this.trigger
     compilation.action = this.action
     if(this.condition.length) {
       compilation.condition = this.condition

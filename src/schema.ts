@@ -38,7 +38,7 @@ export const config: Schema = {
   ],
   lights: [
     {
-      entityId: 'light.living_room',
+      id: 'light.living_room',
       layers: [
         {
           scene: "theater",

@@ -5,7 +5,7 @@ export interface ServiceAction {
   alias?: string;
   service?: string;
   service_template?: string;
-  entity_id?: string;
+  entity_id?: string | string[];
   target?: HassServiceTarget;
   data?: Record<string, any>;
 }

@@ -75,7 +75,9 @@ export class Style {
         default:
           throw new Error('key is not valid')
       }
-      return {...prev, [key]: `"{{ states('input_number.fsfr${variable.namespace}') | int}}"`}
+      return {...prev, 
+        [key]: `{{ states(\'input_number.fsfr_${variable.namespace}') | int }}`
+      }
     }, {})
 
     return {...this.props, ...variableProps}
