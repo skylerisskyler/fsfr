@@ -73,7 +73,7 @@ script:
   mode: parallel
 ```
 
-### Add light to group in variable
+### Util generic Add light to group in variable
 ```yaml
 script:
   fsfr_util_add_light_to_variable:
@@ -105,35 +105,8 @@ script:
             entity_id: script.<NEXT_SCENE_IN_LIGHT_SCRIPT>
 ```
 
---------------
-## Prospective
 
-### Current Scene Check Script in array form
-``` yaml
-script:
-  alias: check layers/exposes
-  sequence:
-    - repeat:
-        count: '{{ exposes | count }}'
-        sequence:
-        - variables:
-            person: '{{ exposes[repeat.index - 1] }}'
-        - service: 
-          #state check for the 
-  mode: single
-```
-the benefit of this method is that you can avoid defining individual scripts for each check but on the other but there isn't a good way to define what variable the light should subscribe to.
-
-
-
-### Variable groups
-variable_group = [
-  ... expose_group [
-    ... light.entity_id
-  ]
-]
-
-### Config flow
+### Scene in light check flow
 ```yaml
 alias: New Script
 sequence:
@@ -159,7 +132,8 @@ sequence:
 mode: single
 ```
 
-For every check js version
+JS logic for reference
+
 ```javascript
 if (scene.state === on && scene.id != light.currentSceneId) {
     addVariableScript(light, variable, scene)
@@ -169,5 +143,4 @@ if (scene.state === on && scene.id != light.currentSceneId) {
 } else {
   call next script
 }
-
 ```

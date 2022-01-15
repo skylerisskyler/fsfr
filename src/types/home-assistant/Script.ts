@@ -1,5 +1,5 @@
 import { Condition } from './Condition.d.ts'
-import { Action } from './Action.d.ts'
+import { Action } from './Action.ts'
 import { Mode } from './Misc.ts'
 
 

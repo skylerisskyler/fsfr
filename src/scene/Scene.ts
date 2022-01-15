@@ -16,12 +16,14 @@ export const getSceneToggleId = (scene: Scene) => {
 export const getSceneOffAutomationId = (scene: Scene): string => 
 `fsfr_${scene.id}_off`
 
-export const getSceneOnAutomationId= (scene: Scene): string => 
+export const getSceneOnAutomationId = (scene: Scene): string => 
 `fsfr_${scene.id}_on`
 
-export const getSceneCheckScriptId= (light: Light, scene: Scene): string => 
+export const getSceneCheckScriptId = (light: Light, scene: Scene): string => 
 `fsfr_${light.entityId}_check_${scene.id}`
 
+export const getLightSceneSelectorId = (light: Light) =>
+  `fsfr_${light.entityId}_scenes`
 
 export class Scene {
   id: string
