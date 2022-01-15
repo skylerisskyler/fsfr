@@ -52,5 +52,32 @@ export class Style {
         
       }
     })
+
+    
+  }
+  get data() {
+    const variableProps = this.variables.reduce((prev, variable) => {
+      let key: string
+      switch (variable.unit) {
+        case 'percentage':
+          key = 'brightness_pct'
+          break;
+        case 'uint8':
+          key = 'brightness'
+          break;
+        case 'kelvin':
+          key = 'kelvin'
+          break;
+        case 'mired':
+          key = 'color_temp'
+          break;
+
+        default:
+          throw new Error('key is not valid')
+      }
+      return {...prev, [key]: `"{{ states('input_number.fsfr${variable.namespace}') | int}}"`}
+    }, {})
+
+    return {...this.props, ...variableProps}
   }
 }

@@ -100,7 +100,6 @@ export class Scene {
 
     this.lights.forEach(light => {
       const nextScene = light.getNextScene(this)
-      console.log(light.entityId)
       if(nextScene) {
         automation.addAction({
           service: `script.check_next_${light.entityId}_${nextScene.id}`

@@ -36,4 +36,11 @@ export class Script implements ScriptProps {
   addAction(action: Action) {
     this.sequence.push(action)
   }
+
+  compile() {
+    const compilation: any = {}
+    compilation.id = this.id
+    compilation.sequence = this.sequence
+    return compilation
+  }
 }

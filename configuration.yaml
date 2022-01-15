@@ -1,1 +1,65 @@
-{"sceneToggles":[{"id":"fsfr_scene_circadian","icon":"mdi:<some-icon>","name":"some name"},{"id":"fsfr_scene_theater","icon":"mdi:<some-icon>","name":"some name"}],"sceneOffAutomations":[{"id":"fsfr_circadian_deactivation","trigger":[{"platform":"state","entity_id":"automation.fsfr_scene_circadian","to":"off"}],"condition":[],"action":[{"service":"script.turn_on","entity_id":"script.fsfr_variable_group_deactivation","data":{"variables":{"var_namespace":"circadian-bri","scene_id":"circadian"}}},{"service":"script.turn_on","entity_id":"script.fsfr_variable_group_deactivation","data":{"variables":{"var_namespace":"circadian-temp","scene_id":"circadian"}}}]},{"id":"fsfr_theater_deactivation","trigger":[{"platform":"state","entity_id":"automation.fsfr_scene_theater","to":"off"}],"condition":[],"action":[{"service":"script.turn_on","entity_id":"script.fsfr_variable_group_deactivation","data":{"variables":{"var_namespace":"theater-bri","scene_id":"theater"}}},{"service":"script.check_next_circadian_l"}]}]}
+script:
+  light.living_room theater check script:
+    sequence:
+      - alias: my alias
+        choose:
+          - alias: my new choice
+            conditions:
+              - condition: state
+                entity_id: input_boolean.fsfr_scene_theater
+                state: 'on'
+              - condition: state
+                entity_id: input_select.fsfr_light.living_room_scenes
+                state: theater
+            sequence:
+              - service: script.turn_on
+                entity_id: util_script_for_var
+                data:
+                  variables:
+                    var_name: theater-bri
+                    light_id: light.living_room
+                    scene_id: theater
+              - service: light.turn_on
+                target:
+                  entity_id: light.living_room
+                data:
+                  temperature: 2700k
+                  brightness_pct: "{{ states('input_number.fsfr_theater_bri') | int}}"
+        default:
+          - service: script.check_primaryCircadian
+  light.living_room circadian check script:
+    sequence:
+      - alias: my alias
+        choose:
+          - alias: my new choice
+            conditions:
+              - condition: state
+                entity_id: input_boolean.fsfr_scene_circadian
+                state: 'on'
+              - condition: state
+                entity_id: input_select.fsfr_light.living_room_scenes
+                state: circadian
+            sequence:
+              - service: script.turn_on
+                entity_id: util_script_for_var
+                data:
+                  variables:
+                    var_name: circadian-bri
+                    light_id: light.living_room
+                    scene_id: circadian
+              - service: script.turn_on
+                entity_id: util_script_for_var
+                data:
+                  variables:
+                    var_name: circadian-temp
+                    light_id: light.living_room
+                    scene_id: circadian
+              - service: light.turn_on
+                target:
+                  entity_id: light.living_room
+                data:
+                  brightness_pct: '"{{ states(''input_number.fsfrcircadian-bri'') | int}}"'
+                  kelvin: '"{{ states(''input_number.fsfrcircadian-temp'') | int}}"'
+        default:
+          - service: light.turn_off
+            entity_id: l

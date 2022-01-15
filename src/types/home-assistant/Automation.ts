@@ -74,5 +74,14 @@ export class Automation implements AutomationProps {
     return this
   }
 
+  compile() {
+    const compilation: any = {}
+    compilation.id = this.id
+    compilation.action = this.action
+    if(this.condition.length) {
+      compilation.condition = this.condition
+    }
+    return compilation
+  }
 
 }

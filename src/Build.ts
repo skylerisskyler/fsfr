@@ -8,14 +8,20 @@ import { InputNumberProps } from "./types/home-assistant/InputNumber.ts";
 import { Script } from "./types/home-assistant/Script.ts";
 import { Variable } from "./Variable.ts";
 import {ChooseAction, ChooseActionChoice} from './types/home-assistant/Action.ts'
-
-import * as YAML from 'https://deno.land/std@0.82.0/encoding/yaml.ts';
-
+import {
+  parse as yamlParse,
+  parseAll as yamlParseAll,
+  stringify as yamlStringify,
+} from 'https://deno.land/std@0.82.0/encoding/yaml.ts';
 
 const getSceneCheckScripts = (lights: Light[]) => {
-  const scriptsForLight = lights.map(light => {
-    light.layers.map((layer, idx, layers) => {
-      console.log(layer.scene.id)
+
+  const scripts: Script[] = []
+
+  const scriptsForLight: any = lights.map(light => {
+
+    const checkScripts = light.layers.map((layer, idx, layers) => {
+
       const script: Script = new Script({
         id: `check script ${layer.scene.id}`,
         alias: 'my_alias',
@@ -27,11 +33,14 @@ const getSceneCheckScripts = (lights: Light[]) => {
         entity_id: 'input_boolean.' + getSceneToggleId(layer.scene),
         state: 'on'
       })
+      
+
       chooseActionChoice.addCondition({
         condition: 'state',
-        entity_id: 'input_boolean.' + getLightSceneSelectorId(light),
+        entity_id: 'input_select.' + getLightSceneSelectorId(light),
         state: layer.scene.id
       })
+
       layer.scene.variables.forEach(variable => {
         chooseActionChoice.addSequence({
           service: 'script.turn_on',
@@ -46,9 +55,18 @@ const getSceneCheckScripts = (lights: Light[]) => {
         })
       })
 
-      
+      chooseActionChoice.addSequence({
+        service: 'light.turn_on',
+        target: {
+          entity_id: light.entityId
+        },
+        data: layer.style.data
+      })
+
+
+
       const chooseAction: ChooseAction = new ChooseAction('my alias')
-      chooseAction.addDefault(chooseActionChoice)
+      chooseAction.addChoice(chooseActionChoice)
       
       const nextLayer: Layer | undefined = layers[idx + 1]
       if(nextLayer) {
@@ -63,19 +81,19 @@ const getSceneCheckScripts = (lights: Light[]) => {
       }
 
       const checkScript: Script = new Script({
-        id: 'id for the check script',
+        id: `${light.entityId} ${layer.scene.id} check script`,
         alias: 'some alias'
       })
 
       checkScript.addAction(chooseAction)
 
-      return checkScript
+      scripts.push(checkScript)
 
     })
 
-    return scriptsForLight
-
+    
   })
+  return scripts
 }
 
 const automations: Automation[] = []
@@ -92,30 +110,36 @@ export function build(
 ) 
 {
 
-  // const sceneToggles: InputBooleanInput[] = scenes
-  //   .map(scene => scene.createToggle())
+  const sceneToggles: InputBooleanInput[] = scenes
+    .map(scene => scene.createToggle())
 
-  // const sceneOffAutomations: Automation[] = scenes
-  //   .map(scene => scene.createOffAutomation())
+  const sceneOffAutomations: Automation[] = scenes
+    .map(scene => scene.createOffAutomation())
 
-  // const sceneOnAutomations: Automation[] = scenes
-  //   .map(scene => scene.createOnAutomation())
+  const sceneOnAutomations: Automation[] = scenes
+    .map(scene => scene.createOnAutomation())
 
-  const sceneCheckScripts = getSceneCheckScripts(lights)
+  const sceneCheckScripts: Script[] = getSceneCheckScripts(lights)
 
-  // createSceneToggles(scenes, inputBooleans)
-  // createSceneAutomations(scenes, automations)
-  // createVariableInputs(variables, inputNumbers)
 
-  // console.log(scenes)
-  // console.log(Deno.inspect(automations))
+  const configuration = {
+    input_boolean: yamlize(sceneToggles),
+    automation: yamlize(sceneOffAutomations.map((s) => s.compile())),
+    script: yamlize(sceneCheckScripts.map((s) => s.compile()))
+  }
 
-  // const output = YAML.stringify({
-  //   input_boolean: inputBooleans,
-  //   script: scripts,
-  //   automations
-  // })
-  // console.log(output)
-  // Deno.writeTextFile("./configuration.json", JSON.stringify({sceneToggles, sceneOffAutomations}));
+  console.log(configuration)
+  const yamlForm = yamlStringify(configuration)
+  Deno.writeTextFile('./configuration.yaml', yamlForm)
+}
+
+
+const yamlize = (list: (InputBooleanInput | Automation  | any)[]) => {
+  return list.reduce((prev, curr) => {
+    let newObj: any = curr
+    const id = newObj.id
+    delete newObj.id
+    return {...prev, [id]: newObj}
+  }, {})
 
 }

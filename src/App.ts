@@ -46,9 +46,6 @@ async function main() {
 
   await Deno.writeTextFile("./configuration.json", JSON.stringify(configuration));
 
-  // console.log(configuration)
-  // const output = yamlStringify(configuration)
-  // console.log(output)
 }
 
 main()
