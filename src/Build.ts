@@ -8,6 +8,8 @@ import { InputNumberProps } from "./types/home-assistant/InputNumber.ts";
 import { Script } from "./types/home-assistant/Script.ts";
 import { Variable } from "./Variable.ts";
 import {ChooseAction, ChooseActionChoice} from './types/home-assistant/Action.ts'
+import { Group } from './types/home-assistant/Group.ts'
+import { createVariableInput, getVariableInputId } from './Variable.ts'
 import {
   parse as yamlParse,
   parseAll as yamlParseAll,
@@ -18,22 +20,17 @@ const getSceneCheckScripts = (lights: Light[]) => {
 
   const scripts: Script[] = []
 
-  const scriptsForLight: any = lights.map(light => {
+  lights.forEach(light => {
 
-    const checkScripts = light.layers.map((layer, idx, layers) => {
-
-      const script: Script = new Script({
-        id: `check script ${layer.scene.id}`,
-        alias: 'my_alias',
-      })
+    light.layers.forEach((layer, idx, layers) => {
 
       const chooseActionChoice = new ChooseActionChoice('my new choice')
+      
       chooseActionChoice.addCondition({
         condition: 'state',
         entity_id: 'input_boolean.' + getSceneToggleId(layer.scene),
         state: 'on'
       })
-      
 
       chooseActionChoice.addCondition({
         condition: 'state',
@@ -62,8 +59,6 @@ const getSceneCheckScripts = (lights: Light[]) => {
         },
         data: layer.style.data
       })
-
-
 
       const chooseAction: ChooseAction = new ChooseAction('my alias')
       chooseAction.addChoice(chooseActionChoice)
@@ -94,6 +89,61 @@ const getSceneCheckScripts = (lights: Light[]) => {
   return scripts
 }
 
+const getVariableGroups = (variables: Variable[], scenes: Scene[]) => {
+
+  const getVariableParentGroupId = (variable: Variable) => `fsfr_var_${variable.namespace}`
+  const getVariableSceneGroupId = (variable: Variable, scene: Scene) => `fsfr_var_${variable.namespace}_scene_${scene.id}`
+
+  const groups: Group[] = []
+
+  variables.forEach((variable) => {
+
+    const childEntities: string[] = []
+
+    scenes.forEach(scene => {
+
+      let sceneHasVariable = false
+
+      scene.layers.forEach(layer => {
+        layer.lights.forEach(light => {
+          light.layers.forEach(lightLayer => {
+            lightLayer.style.variables.forEach(styleVariable => {
+              if(variable.namespace === styleVariable.namespace) {
+
+                if(sceneHasVariable === false) {
+                  childEntities.push('group.' + getVariableSceneGroupId(variable, scene))
+                  const variableSceneGroup: Group = {
+                    id: getVariableSceneGroupId(variable, scene),
+                    name: 'some name or something',
+                    entities: []
+                  }
+                  groups.push(variableSceneGroup)
+                }
+
+                sceneHasVariable = true
+
+              }
+            })
+          })
+        })
+      })
+
+    })
+
+    const variableGroup: Group =  {
+      id: getVariableParentGroupId(variable),
+      name: variable.namespace,
+      entities: childEntities
+    }
+
+    groups.push(variableGroup)
+
+  })
+
+  return groups
+
+}
+
 const automations: Automation[] = []
 const scripts: Script[] = []
 const inputNumbers: InputNumberProps[] = []
@@ -119,14 +169,43 @@ export function build(
 
   const sceneCheckScripts: Script[] = getSceneCheckScripts(lights)
 
+  const variableGroups: Group[] = getVariableGroups(variables, scenes)
+
+  const variablesInputs: InputNumberProps[] = variables.map((variable => createVariableInput(variable)))
+
+  const variableChangeAutomations: Automation[] = variables.map((variable) => {
+    const automation = new Automation({
+      id: `${variable.namespace}_handle_change`,
+      alias: `some alias`
+    })
+    automation.addTrigger({
+      platform: 'state',
+      entity_id: `input_number.${getVariableInputId(variable)}`
+    })
+
+    automation.addAction({
+      service: 'light.turn_on',
+      //todo: specify the data
+      data: {[variable.unit]: 'event_data'}
+    })
+
+    return automation
+
+  })
+
+
 
   const configuration = {
     input_boolean: toDict(sceneToggles),
-    automation: sceneOffAutomations.map((s) => s.compile()),
-    script: toDict(sceneCheckScripts.map((s) => s.compile()))
+    automation: [
+      ...sceneOffAutomations.map((a) => a.compile()),
+      ...variableChangeAutomations.map(a => a.compile())
+    ],
+    script: toDict(sceneCheckScripts.map((s) => s.compile())),
+    groups: toDict(variableGroups),
+    input_number: toDict(variablesInputs)
   }
 
-  console.log(configuration)
   const yamlForm = yamlStringify(configuration)
     .replaceAll("'{{", '"{{')
     .replaceAll("}}'", '}}"')
@@ -144,5 +223,4 @@ const toDict = (list: (InputBooleanInput | Automation  | any)[]) => {
     delete newObj.id
     return {...prev, [id]: newObj}
   }, {})
-
 }

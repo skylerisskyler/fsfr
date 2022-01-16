@@ -136,13 +136,14 @@ mode: single
 ```
 
 ### WIP
-- [ ] variable group defaults
 - [ ] variable state change handlers
 - [ ] some good way to handle style props from config to HA data format
 - [ ] startup initialization automations
+- [ ] utility scripts for adding and remove lights from variable groups
 
 
 
+some piece of scratch
 {{
   state_attr("group.parent_group", "entity_id") | list
   + ["D"]

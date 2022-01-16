@@ -35,7 +35,7 @@ export class Style {
 
       const isVariableRef = value[0] === '$'
       if (isVariableRef) {
-        const namespace = (value as string).slice(1)
+        const namespace = (value as string).slice(1).replaceAll('-', '_')
         const variable: Variable | undefined = variables
           .find((variable: Variable) => variable.namespace === namespace)
         if(variable) {
@@ -53,7 +53,6 @@ export class Style {
       }
     })
 
-    
   }
   get data() {
     const variableProps = this.variables.reduce((prev, variable) => {

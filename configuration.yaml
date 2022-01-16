@@ -16,13 +16,13 @@ automation:
         entity_id: script.fsfr_variable_group_deactivation
         data:
           variables:
-            var_namespace: circadian-bri
+            var_namespace: circadian_bri
             scene_id: circadian
       - service: script.turn_on
         entity_id: script.fsfr_variable_group_deactivation
         data:
           variables:
-            var_namespace: circadian-temp
+            var_namespace: circadian_temp
             scene_id: circadian
   - id: fsfr_theater_off
     trigger:
@@ -34,9 +34,33 @@ automation:
         entity_id: script.fsfr_variable_group_deactivation
         data:
           variables:
-            var_namespace: theater-bri
+            var_namespace: theater_bri
             scene_id: theater
       - service: script.check_next_living_room_circadian
+  - id: circadian_bri_handle_change
+    trigger:
+      - platform: state
+        entity_id: input_number.fsfr_var_circadian_bri
+    action:
+      - service: light.turn_on
+        data:
+          percentage: event_data
+  - id: circadian_temp_handle_change
+    trigger:
+      - platform: state
+        entity_id: input_number.fsfr_var_circadian_temp
+    action:
+      - service: light.turn_on
+        data:
+          kelvin: event_data
+  - id: theater_bri_handle_change
+    trigger:
+      - platform: state
+        entity_id: input_number.fsfr_var_theater_bri
+    action:
+      - service: light.turn_on
+        data:
+          percentage: event_data
 script:
   living_room theater check script:
     sequence:
@@ -55,7 +79,7 @@ script:
                 entity_id: util_script_for_var
                 data:
                   variables:
-                    var_name: theater-bri
+                    var_name: theater_bri
                     light_id: living_room
                     scene_id: theater
               - service: light.turn_on
@@ -63,7 +87,7 @@ script:
                   entity_id: light.living_room
                 data:
                   temperature: 2700k
-                  brightness_pct: "{{ states('input_number.fsfr_theater-bri') | int }}"
+                  brightness_pct: "{{ states('input_number.fsfr_theater_bri') | int }}"
         default:
           - service: script.check_primaryCircadian
   living_room circadian check script:
@@ -83,22 +107,63 @@ script:
                 entity_id: util_script_for_var
                 data:
                   variables:
-                    var_name: circadian-bri
+                    var_name: circadian_bri
                     light_id: living_room
                     scene_id: circadian
               - service: script.turn_on
                 entity_id: util_script_for_var
                 data:
                   variables:
-                    var_name: circadian-temp
+                    var_name: circadian_temp
                     light_id: living_room
                     scene_id: circadian
               - service: light.turn_on
                 target:
                   entity_id: light.living_room
                 data:
-                  brightness_pct: "{{ states('input_number.fsfr_circadian-bri') | int }}"
-                  kelvin: "{{ states('input_number.fsfr_circadian-temp') | int }}"
+                  brightness_pct: "{{ states('input_number.fsfr_circadian_bri') | int }}"
+                  kelvin: "{{ states('input_number.fsfr_circadian_temp') | int }}"
         default:
           - service: light.turn_off
             entity_id: light.living_room
+groups:
+  fsfr_var_circadian_bri_scene_theater:
+    name: some name or something
+    entities: []
+  fsfr_var_circadian_bri:
+    name: circadian_bri
+    entities:
+      - group.fsfr_var_circadian_bri_scene_theater
+  fsfr_var_circadian_temp_scene_theater:
+    name: some name or something
+    entities: []
+  fsfr_var_circadian_temp:
+    name: circadian_temp
+    entities:
+      - group.fsfr_var_circadian_temp_scene_theater
+  fsfr_var_theater_bri_scene_theater:
+    name: some name or something
+    entities: []
+  fsfr_var_theater_bri:
+    name: theater_bri
+    entities:
+      - group.fsfr_var_theater_bri_scene_theater
+input_number:
+  fsfr_var_circadian_bri:
+    name: somename
+    min: 0
+    max: 100
+    step: 1
+    mode: slider
+  fsfr_var_circadian_temp:
+    name: somename
+    min: 1700
+    max: 8000
+    step: 1
+    mode: slider
+  fsfr_var_theater_bri:
+    name: somename
+    min: 0
+    max: 100
+    step: 1
+    mode: slider

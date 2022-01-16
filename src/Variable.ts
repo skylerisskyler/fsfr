@@ -72,17 +72,19 @@ export interface IVariable {
   max?: number
 }
 
-export const createVariableInput = (variable: Variable, inputNumbers: InputNumberProps[]) => {
+export const getVariableInputId = (variable: Variable) => `${ID_PREFIX}_var_${variable.namespace}`
 
-  inputNumbers.push(
-    {
-      name: `${ID_PREFIX}_var_${variable.namespace}`,
-      min: variable.min,
-      max: variable.max,
-      step: 1,
-      mode: 'slider'
-    }
-  )
+export const createVariableInput = (variable: Variable): InputNumberProps => {
+
+  return {
+    id: getVariableInputId(variable),
+    name: 'somename',
+    min: variable.min,
+    max: variable.max,
+    step: 1,
+    mode: 'slider'
+  }
+  
 }
 
 export class Variable implements IVariable {
@@ -101,7 +103,7 @@ export class Variable implements IVariable {
       max: conf.max
     })
 
-    this.namespace = conf.namespace
+    this.namespace = conf.namespace.replaceAll('-', '_')
     this.type = conf.type
     this.unit = conf.unit
 
