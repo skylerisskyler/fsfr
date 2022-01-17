@@ -126,6 +126,28 @@ script:
         default:
           - service: light.turn_off
             entity_id: light.living_room
+  fsfr_remove_group:
+    sequence:
+      - service: group.set
+        data:
+          object_id: "{{ 'fsfr_var_' + scene_id + '_scene_' + var_namespace }}"
+          entities: []
+  fsfr_add_group:
+    sequence:
+      - service: group.set
+        data:
+          object_id: "{{ 'fsfr_var_' + scene_id + '_scene_' + var_namespace }}"
+          entities: >-
+            {{ state_attr('fsfr_var_' + scene_id + '_scene_' + var_namespace,
+            'entity_id') | list + [light_id] }}
+  fsfr_remove_specific_light:
+    sequence:
+      - service: group.set
+        data:
+          object_id: "{{ 'fsfr_var_' + scene_id + '_scene_' + var_namespace }}"
+          entities: >-
+            {{state_attr('group.var_' + var_name + 'scene' + scene_id,
+            'entity_id')|reject('equalto', light_id)| list}}
 groups:
   fsfr_var_circadian_bri_scene_theater:
     name: some name or something

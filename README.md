@@ -140,11 +140,14 @@ mode: single
 - [ ] some good way to handle style props from config to HA data format
 - [ ] startup initialization automations
 - [ ] utility scripts for adding and remove lights from variable groups
+- [ ] remove individual light group group when a new higher priority scene becomes active
 
-
-
-some piece of scratch
+<!-- some piece of scratch
 {{
   state_attr("group.parent_group", "entity_id") | list
   + ["D"]
-}}
+}} -->
+
+```python
+{{state_attr('group.var_' + var_name + 'scene' + scene_id, 'entity_id')|reject("equalto", light_id)| list}}
+```

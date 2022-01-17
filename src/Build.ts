@@ -193,7 +193,41 @@ export function build(
 
   })
 
+  const removeChildGroupScript: Script = new Script({
+    id: 'fsfr_remove_group',
+    alias: 'my alias',
+  })
+  .addAction({
+    service: 'group.set',
+    data: {
+      object_id: `{{ 'fsfr_var_' + scene_id + '_scene_' + var_namespace }}`,
+      entities: []
+    }
+  })
 
+  const addChildGroupScript: Script = new Script({
+    id: 'fsfr_add_group',
+    alias: 'my alias'
+  })
+  .addAction({
+    service: 'group.set',
+    data: {
+      object_id: "{{ 'fsfr_var_' + scene_id + '_scene_' + var_namespace }}",
+      entities: "{{ state_attr('fsfr_var_' + scene_id + '_scene_' + var_namespace, 'entity_id') | list + [light_id] }}"
+    }
+  })
+
+  const removeSpecificLight: Script = new Script({
+    id: 'fsfr_remove_specific_light',
+    alias: 'my alias'
+  })
+  .addAction({
+    service: 'group.set',
+    data: {
+      object_id: "{{ 'fsfr_var_' + scene_id + '_scene_' + var_namespace }}",
+      entities: "{{state_attr('group.var_' + var_name + 'scene' + scene_id, 'entity_id')|reject('equalto', light_id)| list}}"
+    }
+  })
 
   const configuration = {
     input_boolean: toDict(sceneToggles),
@@ -201,7 +235,12 @@ export function build(
       ...sceneOffAutomations.map((a) => a.compile()),
       ...variableChangeAutomations.map(a => a.compile())
     ],
-    script: toDict(sceneCheckScripts.map((s) => s.compile())),
+    script: {
+      ...toDict(sceneCheckScripts.map((s) => s.compile())),
+      ...toDict([removeChildGroupScript.compile()]),
+      ...toDict([addChildGroupScript.compile()]),
+      ...toDict([removeSpecificLight.compile()]),
+    },
     groups: toDict(variableGroups),
     input_number: toDict(variablesInputs)
   }

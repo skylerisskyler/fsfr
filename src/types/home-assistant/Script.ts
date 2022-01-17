@@ -35,6 +35,7 @@ export class Script implements ScriptProps {
 
   addAction(action: Action) {
     this.sequence.push(action)
+    return this
   }
 
   compile() {
