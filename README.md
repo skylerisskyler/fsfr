@@ -1,7 +1,5 @@
 # FSFR
 
-# FSFR 
-
 
 ## YAML Entities Configuration Example
 
@@ -15,7 +13,7 @@ input_boolean:
 ## Expose Activation
 
 ### Expose Activated Automation
-- [x] expose deactivated
+
 ```yaml
 automation:
   - id: fsfr_expose_< _ID>_on
@@ -82,8 +80,17 @@ script:
   fsfr_util_add_light_to_variable:
   - service: group.set
     data:
+      object_id: "{{ group_id }}"
+      entities: "{{ state_attr("group_id", "entity_id") | list + [light_id] }}"
+```
+### Util generic Remove light to group in variable
+```yaml
+script:
+  fsfr_util_add_light_to_variable:
+  - service: group.set
+    data:
       object_id: "{{<VARIABLE_NAME> + "_" + <SCENE_ID>}}"
-      entities: "{{ state_attr("group.<GROUP_ID>", "entity_id") | list + ["<LIGHT_ID>"] }}"
+      entities: "{{state_attr('group.test', 'entity_id')|reject("equalto", "script.two")| list}}"
 ```
 
 ### Segment of Light Check Flow
@@ -140,14 +147,24 @@ mode: single
 - [ ] some good way to handle style props from config to HA data format
 - [ ] startup initialization automations
 - [ ] utility scripts for adding and remove lights from variable groups
-- [ ] remove individual light group group when a new higher priority scene becomes active
+- [ ] remove individual light group when a new higher priority scene becomes active
 
-<!-- some piece of scratch
-{{
-  state_attr("group.parent_group", "entity_id") | list
-  + ["D"]
-}} -->
-
-```python
-{{state_attr('group.var_' + var_name + 'scene' + scene_id, 'entity_id')|reject("equalto", light_id)| list}}
+```yaml
+script:
+  alias: remove light from scene group for variable
+  sequence:
+    - wait_for_trigger:
+        - platform: state
+          entity_id: input_boolean.scene
+          to: 'on'
+    # remove light from scene variable group
+    - service: script.turn_on
+      entity_id: script.fsfr_REMOVE LIGHT FROM VAR SCENE GROUP
+      data:
+        variables:
+          group_id: group.<var><scene><>
+          light_to_remove: <LIGHT_ID>
+  - service: script.turn_off
+    entity_id: script.scene activation handler for light
+  mode: single
 ```

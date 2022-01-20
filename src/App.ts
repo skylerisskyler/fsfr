@@ -44,6 +44,7 @@ async function main() {
   const configuration = build(variables, styles, scenes, layers, lights)
 
   await Deno.writeTextFile("./configuration.json", JSON.stringify(configuration));
+  await Deno.writeTextFile("./schema.json", JSON.stringify(config));
 
 }
 

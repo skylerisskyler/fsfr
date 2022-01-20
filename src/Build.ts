@@ -20,8 +20,9 @@ const getSceneCheckScripts = (lights: Light[]) => {
 
   const scripts: Script[] = []
 
+  
   lights.forEach(light => {
-
+    
     light.layers.forEach((layer, idx, layers) => {
 
       const chooseActionChoice = new ChooseActionChoice('my new choice')
@@ -59,6 +60,8 @@ const getSceneCheckScripts = (lights: Light[]) => {
         },
         data: layer.style.data
       })
+
+
 
       const chooseAction: ChooseAction = new ChooseAction('my alias')
       chooseAction.addChoice(chooseActionChoice)
