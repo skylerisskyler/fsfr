@@ -142,12 +142,11 @@ sequence:
 mode: single
 ```
 
-### WIP
-- [ ] variable state change handlers
+<!-- - [ ] variable state change handlers
 - [ ] some good way to handle style props from config to HA data format
 - [ ] startup initialization automations
 - [ ] utility scripts for adding and remove lights from variable groups
-- [ ] remove individual light group when a new higher priority scene becomes active
+- [ ] remove individual light group when a new higher priority scene becomes active -->
 
 ```yaml
 script:
@@ -162,9 +161,88 @@ script:
       entity_id: script.fsfr_REMOVE LIGHT FROM VAR SCENE GROUP
       data:
         variables:
-          group_id: group.<var><scene><>
+          group_id: group.<var><scene>
           light_to_remove: <LIGHT_ID>
   - service: script.turn_off
     entity_id: script.scene activation handler for light
   mode: single
+```
+
+#### substitute for config check flow 
+
+activate light
+
+```yaml
+script:
+  sequence:
+    - wait_for_trigger:
+      - platform: state
+        entity_id: input_boolean.scene
+        to: 'on'
+```
+
+```javascript
+if currently 'on'
+wait 'on'
+```
+
+```yaml
+script:
+  fsfr_check<SCENE>_<LIGHT_ID>:
+    sequence:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: input_boolean.fsfr_<SCENE_ID>
+                state: 'on'
+            sequence:
+              - service: script.turn_on
+                data:
+                  entity_id: script.wait_current_scene_off
+                  variables:
+              - service: script.wait_this_scene_off
+                data:
+              - condition: state
+                entity_id: input_boolean.fsfr_<SCENE_ID>
+                state: 'off'
+                
+              - service: script.wait_this_scene_off
+                data:
+        default:
+          service: script.turn_on
+          target:
+            entity_id: script.<NEXT_SCENE_IN_LIGHT_SCRIPT>
+```
+### Example nested choose for check flow
+```yaml
+alias: New Script
+sequence:
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_boolean.scene_one
+            state: 'on'
+        sequence:
+          - service: script.turn_on
+            target:
+              entity_id: script.await_on
+      - conditions:
+          - condition: state
+            entity_id: input_boolean.scene_one
+            state: 'off'
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: state
+                    entity_id: input_boolean.scene_two
+                    state: 'on'
+                sequence: []
+              - conditions:
+                  - condition: state
+                    entity_id: input_boolean.scene_two
+                    state: 'off'
+                sequence: []
+            default: []
+    default: []
+mode: single
 ```

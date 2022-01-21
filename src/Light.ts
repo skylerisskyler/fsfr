@@ -70,4 +70,8 @@ export class Light {
     const layerIdx = this.layers.findIndex(layer => currentScene.id === layer.scene.id)
     return this.layers[layerIdx + 1].scene
   }
+
+  get scenes() {
+    return this.layers.map(layer =>  layer.scene)
+  }
 }
