@@ -56,10 +56,12 @@ export class ChooseActionChoice implements IChooseActionChoice {
 
   addCondition(condition: Condition) {
     this.conditions.push(condition)
+    return this
   }
 
   addSequence(action: Action) {
     this.sequence.push(action)
+    return this
   }
 }
 
@@ -77,9 +79,11 @@ export class ChooseAction implements IChooseAction{
 
   addChoice(choice: ChooseActionChoice) {
     this.choose.push(choice)
+    return this
   }
 
   addDefault(action: Action) {
     this.default.push(action)
+    return this
   }
 }

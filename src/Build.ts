@@ -232,6 +232,10 @@ export function build(
     }
   })
 
+  const t = getCheckScripts(lights[0])
+
+  console.log(t)
+
   const configuration = {
     input_boolean: toDict(sceneToggles),
     automation: [
@@ -264,5 +268,56 @@ const toDict = (list: (InputBooleanInput | Automation  | any)[]) => {
     const id = newObj.id
     delete newObj.id
     return {...prev, [id]: newObj}
+  }, {})
+}
+
+const getCheckScripts = (light: Light) => {
+  light.scenes.reverse().reduce((checker, scene, idx) => {
+
+    const offChoice = new ChooseActionChoice('scene is off')
+      .addCondition({
+        condition: 'state',
+        entity_id: `input_boolean.${scene.id}`,
+        state: 'off'
+      })
+      .addSequence({
+        service: 'script.turn_on',
+        data: {
+          target: 'script.scene generic recompile watcher',
+          variables: {
+            scene_id: scene.id
+          }
+        }
+      })
+
+    if(checker) {
+      offChoice.addSequence(checker)
+    }
+ 
+    if(idx === 0) {
+      offChoice.addSequence({
+        service: 'light.turn_off',
+        data: {
+          target: light.entityId
+        }
+      })
+    }
+
+    const onChoice = new ChooseActionChoice('scene is on')
+      .addCondition({
+        condition: 'state',
+        entity_id: `input_boolean.${scene.id}`,
+        state: 'on'
+      })
+      .addSequence({
+        condition: 'state',
+        entity_id: `input_boolean.{{ current_scene }}`
+      })
+
+    const chooseAction: ChooseAction = new ChooseAction(`scene ${scene.id} state`)
+      .addChoice(offChoice)
+      .addChoice(onChoice)
+
+    return chooseAction
   }, {})
 }

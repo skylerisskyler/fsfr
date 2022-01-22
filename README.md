@@ -221,7 +221,7 @@ sequence:
       - conditions:
           - condition: state
             entity_id: input_boolean.scene_one
-            state: 'on'
+            state: 'off'
         sequence:
           - service: script.turn_on
             target:
@@ -229,20 +229,15 @@ sequence:
       - conditions:
           - condition: state
             entity_id: input_boolean.scene_one
-            state: 'off'
-        sequence:
-          - choose:
-              - conditions:
-                  - condition: state
-                    entity_id: input_boolean.scene_two
-                    state: 'on'
-                sequence: []
-              - conditions:
-                  - condition: state
-                    entity_id: input_boolean.scene_two
-                    state: 'off'
-                sequence: []
-            default: []
+            state: 'on'
+          sequence:
+            # on this scene off script
+            
+            # on current scene off script // switch to this script
+            - service: script.turn_on
+              data:
+                variables: 
+                  current_scene: "{{ current_scene }}"
     default: []
 mode: single
 ```

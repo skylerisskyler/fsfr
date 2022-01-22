@@ -74,4 +74,5 @@ export class Light {
   get scenes() {
     return this.layers.map(layer =>  layer.scene)
   }
+
 }
