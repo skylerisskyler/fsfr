@@ -4,6 +4,7 @@ import { Mode, ForDict } from './Misc.ts'
 import { Trigger } from './Trigger.ts'
 
 
+
 export interface AutomationProps {
   id?: string;
   alias?: string;

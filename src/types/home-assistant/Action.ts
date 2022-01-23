@@ -1,5 +1,5 @@
 import { Condition } from './Condition.d.ts'
-
+import { Trigger } from './Trigger.ts'
 
 export interface ServiceAction {
   alias?: string;
@@ -28,17 +28,30 @@ export interface IChooseAction {
   default?: Action | Action[];
 }
 
+export interface WaitForTriggerAction {
+  alias?: string;
+  wait_for_trigger: Trigger | Trigger[];
+  timeout?: number;
+  continue_on_timeout?: boolean;
+}
+
+export interface WaitAction {
+  alias?: string;
+  wait_template: string;
+  timeout?: number;
+  continue_on_timeout?: boolean;
+}
 
 export type Action =
   | Condition
   | ServiceAction
   | IChooseAction
+  | WaitAction
+  | WaitForTriggerAction
 // | EventAction
 // | DeviceAction
 // | DelayAction
 // | SceneAction
-// | WaitAction
-// | WaitForTriggerAction
 // | RepeatAction
 // | VariablesAction
 // | UnknownAction;
@@ -59,7 +72,7 @@ export class ChooseActionChoice implements IChooseActionChoice {
     return this
   }
 
-  addSequence(action: Action) {
+  addAction(action: Action) {
     this.sequence.push(action)
     return this
   }

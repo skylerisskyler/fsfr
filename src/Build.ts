@@ -50,7 +50,7 @@ const getSceneCheckScripts = (lights: Light[]) => {
       })
 
       layer.scene.variables.forEach(variable => {
-        chooseActionChoice.addSequence({
+        chooseActionChoice.addAction({
           service: 'script.turn_on',
           entity_id: 'util_script_for_var',
           data: {
@@ -63,7 +63,7 @@ const getSceneCheckScripts = (lights: Light[]) => {
         })
       })
 
-      chooseActionChoice.addSequence({
+      chooseActionChoice.addAction({
         service: 'light.turn_on',
         target: {
           entity_id: light.entityId

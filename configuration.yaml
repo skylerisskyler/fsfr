@@ -1,5 +1,5 @@
 script:
-  check_living_room_circadian_check:
+  inf_living_room_circadian_check:
     sequence:
       - alias: some alias
         choose:
@@ -26,3 +26,26 @@ script:
                 data:
                   variables: {}
         default: []
+  sup_living_room_theater_check:
+    sequence:
+      - service: script.turn_on
+        target:
+          entity_id: script.watch this scene is on
+        data:
+          variables: {}
+  living_room_sup_scene_listener:
+    sequence:
+      - wait_template: "{{ is_state(scene_toggle_id, 'on') }}"
+      - service: script.turn_on
+        target:
+          entity_id: script.apply_scene_to_light
+        data:
+          variables: {}
+  living_room_inf_scene_listener:
+    sequence:
+      - wait_template: "{{ is_state(scene_toggle_id, 'on') }}"
+      - service: script.turn_on
+        target:
+          entity_id: script.update_inf_scenes
+        data:
+          variables: {}

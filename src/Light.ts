@@ -82,18 +82,78 @@ export class Light {
     const scripts: Script[] = []
 
     scripts.push(...createInferiorChecks(this))
+    scripts.push(...createSuperiorChecks(this))
+    scripts.push(...createUtilityScripts(this))
 
     return scripts
   }
 }
 
+function createUtilityScripts(light: Light) {
+
+  const superiorSceneListener: Script = new Script({
+    id: `${light.id}_sup_scene_listener`,
+    alias: 'some alias'
+  })
+  .addAction({
+    wait_template: "{{ is_state(scene_toggle_id, 'on') }}"
+  })
+  .addAction({
+    service: 'script.turn_on',
+    target: {entity_id: `script.apply_scene_to_light`},
+    data: {
+      variables: {}
+    }
+  })
+
+  const inferiorSceneListener: Script = new Script({
+    id: `${light.id}_inf_scene_listener`,
+    alias: 'some alias'
+  })
+  .addAction({
+    wait_template: "{{ is_state(scene_toggle_id, 'on') }}"
+  })
+  .addAction({
+    service: 'script.turn_on',
+    target: {entity_id: `script.update_inf_scenes`},
+    data: {
+      variables: {}
+    }
+  })
+
+
+  return [superiorSceneListener, inferiorSceneListener]
+}
+
+
+function createSuperiorChecks(light: Light) {
+
+  const scripts: Script[] =  light.layers
+    .reverse()
+    .slice(1)
+    .map((layer, idx, layers) => {
+
+      const { scene } = layer
+
+      const checkScript: Script = new Script({
+        id: `sup_${light.id}_${scene.id}_check`,
+        alias: 'some alias'
+      })
+      .addAction({
+        service: 'script.turn_on',
+        target: {entity_id: `script.watch this scene is on`},
+        data: {
+          variables: {}
+        }
+      })
+
+      return checkScript
+    })
+
+  return scripts
+}
 
 function createInferiorChecks(light: Light) {
-
-  const checkScripts: Script[] = []
-
-  const { layers } = light
-
 
   const scripts: Script[] =  light.layers
     .slice(1)
@@ -102,7 +162,7 @@ function createInferiorChecks(light: Light) {
       const { scene } = layer
 
       const checkScript: Script = new Script({
-        id: `check_${light.id}_${scene.id}_check`,
+        id: `inf_${light.id}_${scene.id}_check`,
         alias: 'some alias'
       })
 
@@ -112,7 +172,7 @@ function createInferiorChecks(light: Light) {
           entity_id: 'input_boolean.' + getSceneToggleId(layer.scene),
           state: 'off'
         })
-        .addSequence({
+        .addAction({
           service: 'script.turn_on',
           target: {entity_id: `script.watch this scene is on`},
           data: {
@@ -123,7 +183,7 @@ function createInferiorChecks(light: Light) {
       const nextLayer: Layer | undefined = layers[idx + 1]
 
       if(nextLayer) {
-        offChoice.addSequence({
+        offChoice.addAction({
           service: 'script.turn_on',
           target: {entity_id: `script.watch this scene is on`},
           data: {
@@ -138,7 +198,7 @@ function createInferiorChecks(light: Light) {
           entity_id: 'input_boolean.' + getSceneToggleId(layer.scene),
           state: 'on'
         })
-        .addSequence({
+        .addAction({
           service: 'script.turn_on',
           target: {entity_id: `script.watch current scene off`},
           data: {
