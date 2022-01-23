@@ -20,10 +20,14 @@ const getSceneCheckScripts = (lights: Light[]) => {
 
   const scripts: Script[] = []
 
-  
   lights.forEach(light => {
     
     light.layers.forEach((layer, idx, layers) => {
+
+      const checkScript: Script = new Script({
+        id: `${light.id} ${layer.scene.id} check script`,
+        alias: 'some alias'
+      })
 
       const chooseActionChoice = new ChooseActionChoice('my new choice')
       
@@ -31,6 +35,12 @@ const getSceneCheckScripts = (lights: Light[]) => {
         condition: 'state',
         entity_id: 'input_boolean.' + getSceneToggleId(layer.scene),
         state: 'on'
+      })
+
+      chooseActionChoice.addCondition({
+        condition: 'state',
+        entity_id: 'input_boolean.' + getSceneToggleId(layer.scene),
+        state: 'off'
       })
 
       chooseActionChoice.addCondition({
@@ -78,10 +88,7 @@ const getSceneCheckScripts = (lights: Light[]) => {
         })
       }
 
-      const checkScript: Script = new Script({
-        id: `${light.id} ${layer.scene.id} check script`,
-        alias: 'some alias'
-      })
+
 
       checkScript.addAction(chooseAction)
 
@@ -170,7 +177,10 @@ export function build(
   const sceneOnAutomations: Automation[] = scenes
     .map(scene => scene.createOnAutomation())
 
-  const sceneCheckScripts: Script[] = getSceneCheckScripts(lights)
+  const sceneCheckScripts: Script[] = lights
+    .reduce((scripts: Script[], light: Light) => {
+      return scripts.concat(light.createScripts())
+    }, [])
 
   const variableGroups: Group[] = getVariableGroups(variables, scenes)
 
@@ -232,24 +242,20 @@ export function build(
     }
   })
 
-  const t = getCheckScripts(lights[0])
-
-  console.log(t)
-
   const configuration = {
-    input_boolean: toDict(sceneToggles),
-    automation: [
-      ...sceneOffAutomations.map((a) => a.compile()),
-      ...variableChangeAutomations.map(a => a.compile())
-    ],
+    // input_boolean: toDict(sceneToggles),
+    // automation: [
+    //   ...sceneOffAutomations.map((a) => a.compile()),
+    //   ...variableChangeAutomations.map(a => a.compile())
+    // ],
     script: {
       ...toDict(sceneCheckScripts.map((s) => s.compile())),
-      ...toDict([removeChildGroupScript.compile()]),
-      ...toDict([addChildGroupScript.compile()]),
-      ...toDict([removeSpecificLight.compile()]),
+      // ...toDict([removeChildGroupScript.compile()]),
+      // ...toDict([addChildGroupScript.compile()]),
+      // ...toDict([removeSpecificLight.compile()]),
     },
-    groups: toDict(variableGroups),
-    input_number: toDict(variablesInputs)
+    // groups: toDict(variableGroups),
+    // input_number: toDict(variablesInputs)
   }
 
   const yamlForm = yamlStringify(configuration)
@@ -268,56 +274,5 @@ const toDict = (list: (InputBooleanInput | Automation  | any)[]) => {
     const id = newObj.id
     delete newObj.id
     return {...prev, [id]: newObj}
-  }, {})
-}
-
-const getCheckScripts = (light: Light) => {
-  light.scenes.reverse().reduce((checker, scene, idx) => {
-
-    const offChoice = new ChooseActionChoice('scene is off')
-      .addCondition({
-        condition: 'state',
-        entity_id: `input_boolean.${scene.id}`,
-        state: 'off'
-      })
-      .addSequence({
-        service: 'script.turn_on',
-        data: {
-          target: 'script.scene generic recompile watcher',
-          variables: {
-            scene_id: scene.id
-          }
-        }
-      })
-
-    if(checker) {
-      offChoice.addSequence(checker)
-    }
- 
-    if(idx === 0) {
-      offChoice.addSequence({
-        service: 'light.turn_off',
-        data: {
-          target: light.entityId
-        }
-      })
-    }
-
-    const onChoice = new ChooseActionChoice('scene is on')
-      .addCondition({
-        condition: 'state',
-        entity_id: `input_boolean.${scene.id}`,
-        state: 'on'
-      })
-      .addSequence({
-        condition: 'state',
-        entity_id: `input_boolean.{{ current_scene }}`
-      })
-
-    const chooseAction: ChooseAction = new ChooseAction(`scene ${scene.id} state`)
-      .addChoice(offChoice)
-      .addChoice(onChoice)
-
-    return chooseAction
   }, {})
 }
