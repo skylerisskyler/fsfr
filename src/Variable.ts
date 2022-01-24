@@ -96,16 +96,17 @@ export class Variable implements IVariable {
   max: number
 
   constructor(conf: IVariable) {
+
+    this.namespace = conf.namespace.replaceAll('-', '_')
+    this.type = conf.type
+    this.unit = conf.unit
+
     const [min, max] = getRange({
       type: conf.type,
       unit: conf.unit,
       min: conf.min,
       max: conf.max
     })
-
-    this.namespace = conf.namespace.replaceAll('-', '_')
-    this.type = conf.type
-    this.unit = conf.unit
 
     this.min = +min
     this.max = +max

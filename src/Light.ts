@@ -92,7 +92,7 @@ export class Light {
 function createUtilityScripts(light: Light) {
 
   const superiorSceneListener: Script = new Script({
-    id: `${light.id}_sup_scene_listener`,
+    id: ,
     alias: 'some alias'
   })
   .addAction({
@@ -107,7 +107,7 @@ function createUtilityScripts(light: Light) {
   })
 
   const inferiorSceneListener: Script = new Script({
-    id: `${light.id}_inf_scene_listener`,
+    id: getInferiorScriptId(light),
     alias: 'some alias'
   })
   .addAction({
@@ -123,6 +123,65 @@ function createUtilityScripts(light: Light) {
 
 
   return [superiorSceneListener, inferiorSceneListener]
+}
+
+const getInferiorScriptId = (light: Light) => `${light.id}_inf_scene_listener`
+const getSuperiorScriptId = (light: Light) => `${light.id}_sup_scene_listener`
+const getResetListenerScriptId = (light: Light) => `${light.id}_reset_listeners`
+
+function createResetListeners(light: Light): Script {
+
+  const script: Script = new Script({
+    id: getResetListenerScriptId(light),
+    alias: 'some alias'
+  })
+  .addAction({
+    service: "script.turn_off",
+    target: {
+      entity_id: 'script.' + getInferiorScriptId(light)
+    }
+  })
+  .addAction({
+    service: "script.turn_off",
+    target: {
+      entity_id: 'script.' + getSuperiorScriptId(light)
+    }
+  })
+
+  return script
+}
+
+function lightSceneApplyScripts(light: Light) {
+  light.layers.map((layer) => {
+
+    const script: Script = new Script({
+      id: `${layer.scene.id}_apply_${light.id}`,
+      alias: 'some alias'
+    })
+    .addAction({
+      service: 'script.' + getResetListenerScriptId(light)
+    })
+
+    layer.style.variables.forEach((variable: Variable) => {
+      script.addAction({
+        service: 'script.turn_on',
+        target: {entity_id: `script.util_rmv_light_scene`},
+        data: {
+          variables: {
+            var_namespace: variable.namespace,
+            scene_id: layer.scene.id
+          }
+        }
+      })
+    })
+
+    script.addAction({
+      service: "light.turn_on",
+      target: {entity_id: light.entityId},
+      data: layer.style.data
+    })
+
+  })
 }
 
 
