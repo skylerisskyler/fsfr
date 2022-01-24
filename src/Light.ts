@@ -81,111 +81,23 @@ export class Light {
 
     const scripts: Script[] = []
 
-    scripts.push(...createInferiorChecks(this))
-    scripts.push(...createSuperiorChecks(this))
-    scripts.push(...createUtilityScripts(this))
+    scripts.push(...createInferiorCheckScripts(this))
+    scripts.push(...createSuperiorChecksScripts(this))
+    scripts.push(createSuperiorSceneOnListener(this))
+    scripts.push(createInferiorSceneListener(this))
+    scripts.push(...lightSceneApplyScripts(this))
 
     return scripts
   }
 }
 
-function createUtilityScripts(light: Light) {
 
-  const superiorSceneListener: Script = new Script({
-    id: ,
-    alias: 'some alias'
-  })
-  .addAction({
-    wait_template: "{{ is_state(scene_toggle_id, 'on') }}"
-  })
-  .addAction({
-    service: 'script.turn_on',
-    target: {entity_id: `script.apply_scene_to_light`},
-    data: {
-      variables: {}
-    }
-  })
-
-  const inferiorSceneListener: Script = new Script({
-    id: getInferiorScriptId(light),
-    alias: 'some alias'
-  })
-  .addAction({
-    wait_template: "{{ is_state(scene_toggle_id, 'on') }}"
-  })
-  .addAction({
-    service: 'script.turn_on',
-    target: {entity_id: `script.update_inf_scenes`},
-    data: {
-      variables: {}
-    }
-  })
+const getInferiorScriptListenerId = (light: Light) => `${light.id}_inf_scene_listener`
+const getSuperiorScriptListenerId = (light: Light) => `${light.id}_sup_scene_listener`
+const getInferiorCheckScriptId = (light: Light, scene: Scene) => `check_inf_${light.id}_${scene.id}`
 
 
-  return [superiorSceneListener, inferiorSceneListener]
-}
-
-const getInferiorScriptId = (light: Light) => `${light.id}_inf_scene_listener`
-const getSuperiorScriptId = (light: Light) => `${light.id}_sup_scene_listener`
-const getResetListenerScriptId = (light: Light) => `${light.id}_reset_listeners`
-
-function createResetListeners(light: Light): Script {
-
-  const script: Script = new Script({
-    id: getResetListenerScriptId(light),
-    alias: 'some alias'
-  })
-  .addAction({
-    service: "script.turn_off",
-    target: {
-      entity_id: 'script.' + getInferiorScriptId(light)
-    }
-  })
-  .addAction({
-    service: "script.turn_off",
-    target: {
-      entity_id: 'script.' + getSuperiorScriptId(light)
-    }
-  })
-
-  return script
-}
-
-function lightSceneApplyScripts(light: Light) {
-  light.layers.map((layer) => {
-
-    const script: Script = new Script({
-      id: `${layer.scene.id}_apply_${light.id}`,
-      alias: 'some alias'
-    })
-    .addAction({
-      service: 'script.' + getResetListenerScriptId(light)
-    })
-
-    layer.style.variables.forEach((variable: Variable) => {
-      script.addAction({
-        service: 'script.turn_on',
-        target: {entity_id: `script.util_rmv_light_scene`},
-        data: {
-          variables: {
-            var_namespace: variable.namespace,
-            scene_id: layer.scene.id
-          }
-        }
-      })
-    })
-
-    script.addAction({
-      service: "light.turn_on",
-      target: {entity_id: light.entityId},
-      data: layer.style.data
-    })
-
-  })
-}
-
-
-function createSuperiorChecks(light: Light) {
+function createSuperiorChecksScripts(light: Light) {
 
   const scripts: Script[] =  light.layers
     .reverse()
@@ -212,7 +124,7 @@ function createSuperiorChecks(light: Light) {
   return scripts
 }
 
-function createInferiorChecks(light: Light) {
+function createInferiorCheckScripts(light: Light) {
 
   const scripts: Script[] =  light.layers
     .slice(1)
@@ -220,8 +132,8 @@ function createInferiorChecks(light: Light) {
 
       const { scene } = layer
 
-      const checkScript: Script = new Script({
-        id: `inf_${light.id}_${scene.id}_check`,
+      const inferiorCheckScript: Script = new Script({
+        id: getInferiorCheckScriptId(light, scene),
         alias: 'some alias'
       })
 
@@ -231,22 +143,25 @@ function createInferiorChecks(light: Light) {
           entity_id: 'input_boolean.' + getSceneToggleId(layer.scene),
           state: 'off'
         })
-        .addAction({
-          service: 'script.turn_on',
-          target: {entity_id: `script.watch this scene is on`},
-          data: {
-            variables: {}
-          }
-        })
 
       const nextLayer: Layer | undefined = layers[idx + 1]
 
       if(nextLayer) {
         offChoice.addAction({
           service: 'script.turn_on',
-          target: {entity_id: `script.watch this scene is on`},
+          target: {entity_id: 'script.' + getInferiorCheckScriptId(light, nextLayer.scene)},
           data: {
             variables: {}
+          }
+        })
+        offChoice.addAction({
+          service: 'script.turn_on',
+          target: {entity_id: getInferiorScriptListenerId(light) },
+          data: {
+            variables: {
+              scene_toggle_id: scene.id,
+              first_inf_scene: nextLayer.scene.id
+            }
           }
         })
       }
@@ -265,15 +180,100 @@ function createInferiorChecks(light: Light) {
           }
         })
   
-      checkScript
+      inferiorCheckScript
         .addAction(
           new ChooseAction('some alias')
           .addChoice(offChoice)
           .addChoice(onChoice)
         )
 
-      return checkScript
+      return inferiorCheckScript
     })
 
   return scripts
+}
+
+function createSuperiorSceneOnListener(light: Light) {
+
+  const superiorSceneListener: Script = new Script({
+    id: getSuperiorScriptListenerId(light),
+    alias: 'some alias'
+  })
+  .addAction({
+    wait_template: "{{ is_state(scene_toggle_id, 'on') }}"
+  })
+  .addAction({
+    service: 'script.turn_on',
+    target: {entity_id: `script.apply_scene_to_light`},
+    data: {
+      variables: {}
+    }
+  })
+
+  return superiorSceneListener
+}
+
+function createInferiorSceneListener(light: Light) {
+
+  const inferiorSceneListener: Script = new Script({
+    id: getInferiorScriptListenerId(light),
+    alias: 'some alias'
+  })
+  .addAction({
+    wait_template: "{{ is_state(scene_toggle_id, 'on') }}"
+  })
+  .addAction({
+    service: 'script.turn_on',
+    target: {entity_id: `"{{script.check_inf_${light.id}_ + next_scene_id}}"`},
+    data: {
+      variables: {
+        
+      }
+    }
+  })
+
+  return inferiorSceneListener
+}
+
+function lightSceneApplyScripts(light: Light) {
+  return light.layers.map((layer) => {
+
+    const script: Script = new Script({
+      id: `${layer.scene.id}_apply_${light.id}`,
+      alias: 'some alias'
+    })
+    .addAction({
+      service: "script.turn_off",
+      target: {
+        entity_id: 'script.' + getInferiorScriptListenerId(light)
+      }
+    })
+    .addAction({
+      service: "script.turn_off",
+      target: {
+        entity_id: 'script.' + getSuperiorScriptListenerId(light)
+      }
+    })
+
+    layer.style.variables.forEach((variable: Variable) => {
+      script.addAction({
+        service: 'script.turn_on',
+        target: {entity_id: `script.util_rmv_light_scene`},
+        data: {
+          variables: {
+            var_namespace: variable.namespace,
+            scene_id: layer.scene.id
+          }
+        }
+      })
+    })
+
+    script.addAction({
+      service: "light.turn_on",
+      target: {entity_id: light.entityId},
+      data: layer.style.data
+    })
+
+    return script
+  })
 }

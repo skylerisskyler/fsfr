@@ -1,5 +1,5 @@
 script:
-  inf_living_room_circadian_check:
+  check_inf_living_room_circadian:
     sequence:
       - alias: some alias
         choose:
@@ -8,12 +8,7 @@ script:
               - condition: state
                 entity_id: input_boolean.fsfr_scene_circadian
                 state: 'off'
-            sequence:
-              - service: script.turn_on
-                target:
-                  entity_id: script.watch this scene is on
-                data:
-                  variables: {}
+            sequence: []
           - alias: if circadian is on
             conditions:
               - condition: state
@@ -46,6 +41,55 @@ script:
       - wait_template: "{{ is_state(scene_toggle_id, 'on') }}"
       - service: script.turn_on
         target:
-          entity_id: script.update_inf_scenes
+          entity_id: '"{{script.check_inf_living_room_ + next_scene_id}}"'
         data:
           variables: {}
+  circadian_apply_living_room:
+    sequence:
+      - service: script.turn_off
+        target:
+          entity_id: script.living_room_inf_scene_listener
+      - service: script.turn_off
+        target:
+          entity_id: script.living_room_sup_scene_listener
+      - service: script.turn_on
+        target:
+          entity_id: script.util_rmv_light_scene
+        data:
+          variables:
+            var_namespace: circadian_bri
+            scene_id: circadian
+      - service: script.turn_on
+        target:
+          entity_id: script.util_rmv_light_scene
+        data:
+          variables:
+            var_namespace: circadian_temp
+            scene_id: circadian
+      - service: light.turn_on
+        target:
+          entity_id: light.living_room
+        data:
+          brightness_pct: "{{ states('input_number.fsfr_circadian_bri') | int }}"
+          kelvin: "{{ states('input_number.fsfr_circadian_temp') | int }}"
+  theater_apply_living_room:
+    sequence:
+      - service: script.turn_off
+        target:
+          entity_id: script.living_room_inf_scene_listener
+      - service: script.turn_off
+        target:
+          entity_id: script.living_room_sup_scene_listener
+      - service: script.turn_on
+        target:
+          entity_id: script.util_rmv_light_scene
+        data:
+          variables:
+            var_namespace: theater_bri
+            scene_id: theater
+      - service: light.turn_on
+        target:
+          entity_id: light.living_room
+        data:
+          temperature: 2700k
+          brightness_pct: "{{ states('input_number.fsfr_theater_bri') | int }}"
