@@ -1,6 +1,5 @@
 # FSFR
 
-
 ## YAML Entities Configuration Example
 
 ### Expose Toggle
@@ -10,6 +9,7 @@ input_boolean:
   fsfr_expose_<SCENE_ID>:
     name: "FSFR::<SCENE> status"
 ```
+
 ## Expose Activation
 
 ### Expose Activated Automation
@@ -232,7 +232,7 @@ sequence:
             state: 'on'
           sequence:
             # on this scene off script
-            
+
             # on current scene off script // switch to this script
             - service: script.turn_on
               data:
