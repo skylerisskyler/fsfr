@@ -1,20 +1,19 @@
-import { Layer } from "./Layer.ts";
-import { Light } from "./Light.ts";
-import { Scene, getSceneToggleId, getLightSceneSelectorId } from "./scene/Scene.ts";
-import { Style } from "./Style.ts";
-import { Automation } from "./types/home-assistant/Automation.ts";
-import { InputBooleanInput } from "./types/home-assistant/InputBoolean.ts";
-import { InputNumberProps } from "./types/home-assistant/InputNumber.ts";
-import { Script } from "./types/home-assistant/Script.ts";
-import { Variable } from "./Variable.ts";
-import {ChooseAction, ChooseActionChoice} from './types/home-assistant/Action.ts'
-import { Group } from './types/home-assistant/Group.ts'
-import { createVariableInput, getVariableInputId } from './Variable.ts'
-import {
-  parse as yamlParse,
-  parseAll as yamlParseAll,
-  stringify as yamlStringify,
-} from 'https://deno.land/std@0.82.0/encoding/yaml.ts';
+import fs from 'fs'
+import Yaml from 'yaml'
+
+import { Layer } from "./fsfr-types/Layer";
+import { Light } from "./fsfr-types/Light";
+import { Scene, getSceneToggleId, getLightSceneSelectorId } from "./fsfr-types/Scene";
+import { Style } from "./Style";
+import { Automation } from "./ha-config-types/Automation";
+import { InputBooleanInput } from "./ha-config-types/InputBoolean";
+import { InputNumberProps } from "./ha-config-types/InputNumber";
+import { Script } from "./ha-config-types/Script";
+import { Variable } from "./fsfr-types/Variable";
+import {ChooseAction, ChooseActionChoice} from './ha-config-types/Action'
+import { Group } from './ha-config-types/Group'
+import { createVariableInput, getVariableInputId } from './fsfr-types/Variable'
+
 
 const getSceneCheckScripts = (lights: Light[]) => {
 
@@ -206,42 +205,6 @@ export function build(
 
   })
 
-  const removeChildGroupScript: Script = new Script({
-    id: 'fsfr_remove_group',
-    alias: 'my alias',
-  })
-  .addAction({
-    service: 'group.set',
-    data: {
-      object_id: `{{ 'fsfr_var_' + scene_id + '_scene_' + var_namespace }}`,
-      entities: []
-    }
-  })
-
-  const addChildGroupScript: Script = new Script({
-    id: 'fsfr_add_group',
-    alias: 'my alias'
-  })
-  .addAction({
-    service: 'group.set',
-    data: {
-      object_id: "{{ 'fsfr_var_' + scene_id + '_scene_' + var_namespace }}",
-      entities: "{{ state_attr('fsfr_var_' + scene_id + '_scene_' + var_namespace, 'entity_id') | list + [light_id] }}"
-    }
-  })
-
-  const removeSpecificLight: Script = new Script({
-    id: 'fsfr_remove_specific_light',
-    alias: 'my alias'
-  })
-  .addAction({
-    service: 'group.set',
-    data: {
-      object_id: "{{ 'fsfr_var_' + scene_id + '_scene_' + var_namespace }}",
-      entities: "{{state_attr('group.var_' + var_name + 'scene' + scene_id, 'entity_id')|reject('equalto', light_id)| list}}"
-    }
-  })
-
   const configuration = {
     // input_boolean: toDict(sceneToggles),
     // automation: [
@@ -258,13 +221,10 @@ export function build(
     // input_number: toDict(variablesInputs)
   }
 
-  const yamlForm = yamlStringify(configuration)
-    .replaceAll("'{{", '"{{')
-    .replaceAll("}}'", '}}"')
-    .replaceAll("''", "'")
+  const yamlForm = Yaml.stringify(configuration)
 
 
-  Deno.writeTextFile('./configuration.yaml', yamlForm)
+  fs.writeFileSync('./configuration.yaml', yamlForm)
 }
 
 

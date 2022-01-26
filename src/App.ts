@@ -1,19 +1,13 @@
-import { Light } from './Light.ts'
-import { Schema, config } from './schema.ts'
-import { Layer } from './Layer.ts'
-import { Style, StyleConf } from './Style.ts'
-import { Variable } from './Variable.ts'
-import { build } from './Build.ts'
-import { Scene } from './scene/Scene.ts'
+import { Light } from './fsfr-types/Light'
+import { Schema, config } from './schema'
+import { Layer } from './fsfr-types/Layer'
+import { Style, StyleConf } from './Style'
+import { Variable } from './fsfr-types/Variable'
+import { build } from './Build'
+import { Scene } from './fsfr-types/Scene'
 
 export const ID_PREFIX = 'fsfr'
 export const ALIAS_PREFIX = 'FSFR::'
-
-import {
-  parse as yamlParse,
-  parseAll as yamlParseAll,
-  stringify as yamlStringify,
-} from 'https://deno.land/std@0.82.0/encoding/yaml.ts';
 
  
 async function main() {
@@ -42,9 +36,6 @@ async function main() {
     .map((lightConf) => new Light(lightConf, variables, styles, scenes, layers))
 
   const configuration = build(variables, styles, scenes, layers, lights)
-
-  await Deno.writeTextFile("./configuration.json", JSON.stringify(configuration));
-  await Deno.writeTextFile("./schema.json", JSON.stringify(config));
 
 }
 

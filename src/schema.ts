@@ -1,7 +1,7 @@
-import { IVariable } from './Variable.ts'
-import { StyleConf, StyleProps } from './Style.ts'
-import { LayerConf } from './Layer.ts'
-import { LightConf } from './Light.ts'
+import { IVariable } from './fsfr-types/Variable'
+import { StyleConf, StyleProps } from './Style'
+import { LayerConf } from './fsfr-types/Layer'
+import { LightConf } from './fsfr-types/Light'
 
 
 export interface Schema {

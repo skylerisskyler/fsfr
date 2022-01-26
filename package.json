@@ -1,0 +1,23 @@
+{
+  "name": "fsfr",
+  "version": "1.0.0",
+  "description": "## YAML Entities Configuration Example",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skylerisskyler/fsfr.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/skylerisskyler/fsfr/issues"
+  },
+  "homepage": "https://github.com/skylerisskyler/fsfr#readme",
+  "dependencies": {
+    "yaml": "^1.10.2"
+  }
+}

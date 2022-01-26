@@ -1,4 +1,4 @@
-import { IVariable, Variable } from "./Variable.ts"
+import { IVariable, Variable } from "./fsfr-types/Variable"
 
 
 export interface StyleConf {
