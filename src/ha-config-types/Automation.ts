@@ -1,7 +1,7 @@
-import { Condition } from './Condition.d.ts'
-import { Action } from './Action.ts'
-import { Mode, ForDict } from './Misc.ts'
-import { Trigger } from './Trigger.ts'
+import { Condition } from './Condition'
+import { Action } from './Action'
+import { Mode, ForDict } from './Misc'
+import { Trigger } from './Trigger'
 
 
 
@@ -23,7 +23,7 @@ export interface AutomationProps {
   | "warn"
   | "info"
   | "debug"
-  | "notset";
+  | "noet";
   variables?: Record<string, unknown>;
 }
 
@@ -47,7 +47,7 @@ export class Automation implements AutomationProps {
     | "warn"
     | "info"
     | "debug"
-    | "notset";
+    | "noet";
   variables?: Record<string, unknown>;
 
   constructor(props: any) {

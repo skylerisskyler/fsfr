@@ -40,13 +40,13 @@ export function lightSceneApplyScripts(light: Light) {
 
     if(firstSuperiorLayer) {
       script.addAction({
-        alias: "ACTION: Turn on the first inferior scene handler",
+        alias: "ACTION: Turn on the first superior scene handler",
         service: "script.turn_on",
         target: {entity_id: toScriptEntityId(getSupSceneHandlerScriptId(light, firstSuperiorLayer.scene))},
         data: {
           variables: {
             [CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE]: toInputBooleanEntityId(getSceneToggleId(scene)),
-            [FIRST_INF_SCENE_SCRIPT]: getInfSceneHandlerScriptId(light, scene)
+            [FIRST_INF_SCENE_SCRIPT]: toScriptEntityId(getInfSceneHandlerScriptId(light, scene))
           }
         }
       })
@@ -61,8 +61,8 @@ export function lightSceneApplyScripts(light: Light) {
         target: {entity_id: toScriptEntityId(getInfSceneHandlerScriptId(light, firstInferiorLayer.scene))},
         data: {
           variables: {
-            CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE,
-            next_inf_scene_script: getInfSceneHandlerScriptId
+            [CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE]: toInputBooleanEntityId(getSceneToggleId(scene)),
+            [FIRST_INF_SCENE_SCRIPT]: toScriptEntityId(getInfSceneHandlerScriptId(light, scene))
           }
         }
       })

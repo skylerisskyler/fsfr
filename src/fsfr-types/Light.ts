@@ -1,12 +1,9 @@
 import { Style } from "../Style"
 import { Layer, LayerConf } from "./Layer"
 import { Variable } from "./Variable"
-import { Scene, getSceneToggleId, getLightSceneSelectorId } from "./Scene"
+import { Scene } from "./Scene"
 import { Script } from '../ha-config-types/Script'
-import {ChooseAction, ChooseActionChoice} from '../ha-config-types/Action'
-import { getApplySceneToLightScriptId, getInfCurrSceneOffListenerId, getInfSceneHandlerScriptId, getInfSceneOffListenerId, getInfSceneOnListenerId, getSupSceneHandlerScriptId, getSupSceneOnListenerScript, getTurnOffInfListenersPassthroughId, getVarAttachScriptId, getVarDetachScriptId, toScriptEntityId } from "../script-builders/IdGenerators"
-import { ATTACH_VARS_IN_SCENE_ID, CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE, DETACH_VARS_IN_SCENE_ID, FIRST_INF_SCENE_SCRIPT } from "../script-builders/VariableConstants"
-import { createInfHandlerScripts, createSuperiorSceneHandlerScripts } from "../script-builders/HandlerScripts"
+import { createInfHandlerScripts, createSuperiorSceneHandlerScripts } from "../script-builders/SceneHandlerScripts"
 import { createListenInfSceneOnScript, createSuperiorSceneOnListener } from "../script-builders/ListenerScripts"
 import { lightSceneApplyScripts } from "../script-builders/ApplySceneScript"
 
