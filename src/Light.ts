@@ -101,13 +101,6 @@ export class Light {
 //////////////////////////////
 
 
-const getInfSceneOnListenerId = (light: Light) => `${light.id}_inf_scene_on_listener`
-const getInfSceneOffListenerId = (light: Light) => `${light.id}_inf_scene__off_listener`
-const getInfCurrSceneOffListenerId = (light: Light) => `${light.id}_curr_scene__off_listener`
-
-const getRemoveLightFromVarsScriptId = (light: Light, Variable: Variable) => ``
-const getAddLightToVarsScriptId = (light: Light, Variable: Variable) => `add_light_to`
-
 
 const FIRST_INF_SCENE_SCRIPT = "first_inf_scene_script"
 const CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE = "current_scene_toggle_id"
@@ -121,18 +114,30 @@ const infSceneLoopVariables = {
   [FIRST_INF_SCENE_SCRIPT]: `{{ ${FIRST_INF_SCENE_SCRIPT} }}`
 }
 
-const getSuperiorScriptListenerId = (light: Light) => `${light.id}_sup_scene_listener`
-const getInferiorHandlerScriptId = (light: Light, scene: Scene) => `handle_inf_${light.id}_${scene.id}`
-const getSuperiorHandlerScriptId = (light: Light, scene: Scene) => `handle_sup_${light.id}_${scene.id}`
+
+// Scene handler ids
+const getInfSceneHandlerScriptId = (light: Light, scene: Scene) => `handle_inf_${light.id}_${scene.id}`
+const getSupSceneHandlerScriptId = (light: Light, scene: Scene) => `handle_sup_${light.id}_${scene.id}`
+
+// scene listener ids
+const getSupSceneOnListenerScript = (light: Light) => `${light.id}_sup_scene_listener`
+const getInfSceneOnListenerId = (light: Light) => `${light.id}_inf_scene_on_listener`
+const getInfSceneOffListenerId = (light: Light) => `${light.id}_inf_scene__off_listener`
+const getInfCurrSceneOffListenerId = (light: Light) => `${light.id}_curr_scene__off_listener`
+
 const getApplySceneToLightScriptId = (scene: Scene, light: Light) => `apply_scene_${scene.id}_to_light_${light.id}`
-const getInitInfSceneHandlerId = (light: Light) => `init_inf_scene_handles_${light.id}`
-const getInfSceneHandlerId = (light: Light) => `init_inf_scene_handles_${light.id}`
+
 const getDefaultId = (light: Light) => `default_layer_${light.id}`
-const getTurnOffInfListenersPassthrough = (light: Light)  => `passthrough_${light.id}`
+
+const getTurnOffInfListenersPassthroughId = (light: Light)  => `passthrough_${light.id}`
+
 const getVarAttachScriptId = (light: Light, scene: Scene) => `ATTACH LIGHT TO VARIABLES IN layer`
 const getVarDetachScriptId = (light: Light, scene: Scene) => `DETACH LIGHT FROM VARIABLES IN Layer`
 
+
 const toScriptEntityId = (id: string) => `script.${id}`
+
+
 
 function createInfHandlerScripts(light: Light) {
 
@@ -143,7 +148,7 @@ function createInfHandlerScripts(light: Light) {
       const { scene } = layer
 
       const script: Script = new Script({
-        id: getInferiorHandlerScriptId(light, scene),
+        id: getInfSceneHandlerScriptId(light, scene),
         alias: 'some alias'
       })
 
@@ -179,12 +184,13 @@ function createInfHandlerScripts(light: Light) {
 
       const offChoice = new ChooseActionChoice(`if ${scene.id} is off`)
       .addCondition({
+        alias: `CONDITION: check ${scene.id} is off`,
         condition: 'state',
         entity_id: 'input_boolean.' + getSceneToggleId(scene),
         state: 'off'
       })
       .addAction({
-        alias: "Initialize this scene on listener",
+        alias: "ACTION: Initialize this scene on listener",
         service: 'script.turn_on',
         target: {entity_id: getInfSceneOnListenerId(light) }, //add to script
         data: {
@@ -201,8 +207,9 @@ function createInfHandlerScripts(light: Light) {
     if(nextLayer) {
 
       offChoice.addAction({
+        alias: `ACTION: turn on next scene ${nextLayer.scene.id} handler`,
         service: 'script.turn_on',
-        target: {entity_id: toScriptEntityId(getInferiorHandlerScriptId(light, nextLayer.scene))},
+        target: {entity_id: toScriptEntityId(getInfSceneHandlerScriptId(light, nextLayer.scene))},
         data: {
           variables: {
             ...infSceneLoopVariables,
@@ -211,6 +218,7 @@ function createInfHandlerScripts(light: Light) {
       })
     } else {
       offChoice.addAction({
+        alias: `ACTION: Turn on default layer of none other exists`,
         service: 'script.turn_on',
         target: {entity_id: toScriptEntityId(getDefaultId(light))},
       })
@@ -227,12 +235,13 @@ function createInfHandlerScripts(light: Light) {
   })
 
   const defaultScript: Script = new Script({
+    alias: `SCRIPT: default`,
     id: getDefaultId(light),
-    alias: 'Default layer'
   })
 
   if(!light.default) {
     defaultScript.addAction({
+      alias: `ACTION: turn off ${light.id}`,
       service: 'light.turn_off',
       target: {entity_id: light.entityId}
     })
@@ -257,7 +266,7 @@ function createListenInfSceneOnScript(light: Light) {
   })
   .addAction({
     service: 'script.turn_on',
-    target: {entity_id: getInitInfSceneHandlerId(light)},
+    target: {entity_id: getTurnOffInfListenersPassthroughId(light)},
     data: {
       variables: {
         [FIRST_INF_SCENE_SCRIPT]: FIRST_INF_SCENE_SCRIPT,
@@ -281,7 +290,7 @@ function createListenInfSceneOffScript(light: Light) {
   })
   .addAction({
     service: 'script.turn_on',
-    target: {entity_id: getInitInfSceneHandlerId(light)},
+    target: {entity_id: getTurnOffInfListenersPassthroughId(light)},
     data: {
       variables: {
         [FIRST_INF_SCENE_SCRIPT]: FIRST_INF_SCENE_SCRIPT,
@@ -298,7 +307,7 @@ function createListenInfSceneOffScript(light: Light) {
 function createTurnOffInfListenersPassthrough(light: Light) {
 
   const script: Script = new Script({
-    id: getTurnOffInfListenersPassthrough(light),
+    id: getTurnOffInfListenersPassthroughId(light),
     alias: 'some alias'
   })
   .addAction({
@@ -353,7 +362,7 @@ function lightSceneApplyScripts(light: Light) {
       alias: "ACTION: Turn off superior scene on listener",
       service: "script.turn_off",
       target: {
-        entity_id: toScriptEntityId(getSuperiorScriptListenerId(light))
+        entity_id: toScriptEntityId(getSupSceneOnListenerScript(light))
       }
     })
     .addAction({
@@ -377,11 +386,11 @@ function lightSceneApplyScripts(light: Light) {
       script.addAction({
         alias: "ACTION: Turn on the first inferior scene handler",
         service: "script.turn_on",
-        target: {entity_id: toScriptEntityId(getSuperiorHandlerScriptId(light, firstSuperiorLayer.scene))},
+        target: {entity_id: toScriptEntityId(getSupSceneHandlerScriptId(light, firstSuperiorLayer.scene))},
         data: {
           variables: {
             [CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE]: getSceneToggleId(scene),
-            [FIRST_INF_SCENE_SCRIPT]: getInferiorHandlerScriptId(light, scene)
+            [FIRST_INF_SCENE_SCRIPT]: getInfSceneHandlerScriptId(light, scene)
           }
         }
       })
@@ -393,11 +402,11 @@ function lightSceneApplyScripts(light: Light) {
       script.addAction({
         alias: `ACTION: Turn on the first inferior scene handler`,
         service: "script.turn_on",
-        target: {entity_id: toScriptEntityId(getInferiorHandlerScriptId(light, firstInferiorLayer.scene))},
+        target: {entity_id: toScriptEntityId(getInfSceneHandlerScriptId(light, firstInferiorLayer.scene))},
         data: {
           variables: {
             CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE, //this is prob not it
-            next_inf_scene_script: getInferiorHandlerScriptId
+            next_inf_scene_script: getInfSceneHandlerScriptId
           }
         }
       })
@@ -515,7 +524,7 @@ function createSuperiorHandlerScripts(light: Light) {
 function createSuperiorSceneOnListener(light: Light) {
 
   const superiorSceneListener: Script = new Script({
-    id: getSuperiorScriptListenerId(light),
+    id: getSupSceneOnListenerScript(light),
     alias: 'some alias'
   })
   .addAction({
