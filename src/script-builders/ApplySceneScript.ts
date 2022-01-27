@@ -2,10 +2,10 @@ import { Layer } from "../fsfr-types/Layer"
 import { Light } from "../fsfr-types/Light"
 import { getSceneToggleId } from "../fsfr-types/Scene"
 import { Script } from "../ha-config-types/Script"
-import { getApplySceneToLightScriptId, getInfSceneHandlerScriptId, getSupSceneHandlerScriptId, getSupSceneOnListenerScript, toInputBooleanEntityId, toScriptEntityId } from "./IdGenerators"
-import { ATTACH_VARS_IN_SCENE_ID, CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE, DETACH_VARS_IN_SCENE_ID, FIRST_INF_SCENE_SCRIPT } from "./VariableConstants"
+import { getApplySceneToLightScriptId, getInfSceneHandlerScriptId, getSupSceneHandlerScriptId, getSupSceneOnListenerScript, getVarAttachScriptId, getVarDetachScriptId, toInputBooleanEntityId, toScriptEntityId } from "./IdGenerators"
+import {  APPLY_SCENE_SCRIPT_ID, ATTACH_VARS_SCRIPT_ID, CURR_SCENE_TOGGLE_ID, DETACH_VARS_SCRIPT_ID,  FIRST_INF_SCENE_SCRIPT, globalScriptVariables } from "./VariableConstants"
 
-export function lightSceneApplyScripts(light: Light) {
+export function applySceneToLightScripts(light: Light) {
   return light.layers.map((layer, idx, layers) => {
 
     const { scene } = layer
@@ -22,15 +22,15 @@ export function lightSceneApplyScripts(light: Light) {
       }
     })
     .addAction({
-      alias: `ACTION: Detach variables of ${light} in ${scene}`,
-      service: `{{ ${DETACH_VARS_IN_SCENE_ID} }}`,
+      alias: `ACTION: Detach variables of ${light.id} in ${scene.id}`,
+      service: `{{ ${DETACH_VARS_SCRIPT_ID} }}`,
     })
     .addAction({
-      alias: `ACTION: Attach variables of ${light} in ${scene}`,
-      service: `{{ ${ATTACH_VARS_IN_SCENE_ID} }}`,
+      alias: `ACTION: Attach variables of ${light.id} in ${scene.id}`,
+      service: `{{ ${ATTACH_VARS_SCRIPT_ID} }}`,
     })
     .addAction({
-      alias: `ACTION: turn on light ${light.id} with data of ${scene}`,
+      alias: `ACTION: turn on light ${light.id} with data of ${scene.id}`,
       service: "light.turn_on",
       target: {entity_id: light.entityId},
       data: layer.style.data
@@ -45,8 +45,12 @@ export function lightSceneApplyScripts(light: Light) {
         target: {entity_id: toScriptEntityId(getSupSceneHandlerScriptId(light, firstSuperiorLayer.scene))},
         data: {
           variables: {
-            [CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE]: toInputBooleanEntityId(getSceneToggleId(scene)),
-            [FIRST_INF_SCENE_SCRIPT]: toScriptEntityId(getInfSceneHandlerScriptId(light, scene))
+            ...globalScriptVariables,
+            [CURR_SCENE_TOGGLE_ID]: toInputBooleanEntityId(getSceneToggleId(scene)),
+            [FIRST_INF_SCENE_SCRIPT]: toScriptEntityId(getInfSceneHandlerScriptId(light, scene)),
+            [ATTACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarAttachScriptId(light, scene)),
+            [DETACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarDetachScriptId(light, scene)),
+            [APPLY_SCENE_SCRIPT_ID]: null,
           }
         }
       })
@@ -61,8 +65,12 @@ export function lightSceneApplyScripts(light: Light) {
         target: {entity_id: toScriptEntityId(getInfSceneHandlerScriptId(light, firstInferiorLayer.scene))},
         data: {
           variables: {
-            [CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE]: toInputBooleanEntityId(getSceneToggleId(scene)),
-            [FIRST_INF_SCENE_SCRIPT]: toScriptEntityId(getInfSceneHandlerScriptId(light, scene))
+            ...globalScriptVariables,
+            [CURR_SCENE_TOGGLE_ID]: toInputBooleanEntityId(getSceneToggleId(scene)),
+            [FIRST_INF_SCENE_SCRIPT]: toScriptEntityId(getInfSceneHandlerScriptId(light, scene)),
+            [ATTACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarAttachScriptId(light, scene)),
+            [DETACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarDetachScriptId(light, scene)),
+            [APPLY_SCENE_SCRIPT_ID]: null,
           }
         }
       })

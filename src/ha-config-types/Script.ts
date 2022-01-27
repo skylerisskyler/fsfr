@@ -1,6 +1,6 @@
-import { Condition } from './Condition.d.ts'
-import { Action } from './Action.ts'
-import { Mode } from './Misc.ts'
+import { Condition } from './Condition'
+import { Action } from './Action'
+import { Mode } from './Misc'
 
 
 export interface ScriptProps {
@@ -40,6 +40,7 @@ export class Script implements ScriptProps {
 
   compile() {
     const compilation: any = {}
+    compilation.alias = this.alias
     compilation.id = this.id
     compilation.sequence = this.sequence
     return compilation

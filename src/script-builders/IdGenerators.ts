@@ -9,12 +9,12 @@ export const getSupSceneHandlerScriptId = (light: Light, scene: Scene) => `handl
 // scene listener ids
 export const getSupSceneOnListenerScript = (light: Light) => `${light.id}_sup_scene_listener`
 export const getInfSceneOnListenerId = (light: Light) => `${light.id}_inf_scene_on_listener`
-export const getInfSceneOffListenerId = (light: Light) => `${light.id}_inf_scene__off_listener`
-export const getInfCurrSceneOffListenerId = (light: Light) => `${light.id}_curr_scene__off_listener`
+export const getInfSceneOffListenerId = (light: Light) => `${light.id}_inf_scene_off_listener`
+export const getInfCurrSceneOffListenerId = (light: Light) => `${light.id}_curr_scene_off_listener`
 
-export const getApplySceneToLightScriptId = (scene: Scene, light: Light) => `apply_scene_${scene.id}_to_light_${light.id}`
+export const getApplySceneToLightScriptId = (scene: Scene, light: Light) => `apply_${scene.id}_to_${light.id}`
 
-export const getDefaultId = (light: Light) => `default_layer_${light.id}`
+export const getDefaultId = (light: Light) => `apply_default_to_${light.id}`
 
 export const getTurnOffInfListenersPassthroughId = (light: Light)  => `passthrough_${light.id}`
 

@@ -1,7 +1,7 @@
 import { Script } from '../ha-config-types/Script'
 import { getApplySceneToLightScriptId, getInfCurrSceneOffListenerId, getInfSceneOffListenerId, getInfSceneOnListenerId, getSupSceneOnListenerScript, getTurnOffInfListenersPassthroughId, toScriptEntityId } from './IdGenerators'
 import {Light} from '../fsfr-types/Light'
-import { NAMESPACE_FOR_APPLY_SCENE_SCRIPT_VAR, CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE, FIRST_INF_SCENE_SCRIPT, INF_SCENE_TOGGLE_ID_VAR_NAMESPACE, , SUP_SCENE_TOGGLE_ID_VAR_NAMESPACE } from './VariableConstants'
+import { FIRST_INF_SCENE_SCRIPT, globalScriptVariables, APPLY_SCENE_SCRIPT_ID, SUP_SCENE_TOGGLE_ID, CURR_SCENE_TOGGLE_ID, INF_SCENE_TOGGLE_ID } from './VariableConstants'
 
 
 
@@ -13,7 +13,7 @@ export function createSuperiorSceneOnListener(light: Light) { //green
   })
   .addAction({
     alias: `ACTION: Wait for superior scene of ${light.id} to be on`,
-    wait_template: `{{ is_state(${NAMESPACE_FOR_APPLY_SCENE_SCRIPT_VAR}, 'on') }}`
+    wait_template: `{{ is_state(${SUP_SCENE_TOGGLE_ID}, 'on') }}`
   })
   .addAction({
     alias: `ACTION: apply scene to light script`,
@@ -21,12 +21,8 @@ export function createSuperiorSceneOnListener(light: Light) { //green
     target: {entity_id: toScriptEntityId(getTurnOffInfListenersPassthroughId(light))},
     data: {
       variables: {
-        //passthrough
-        [FIRST_INF_SCENE_SCRIPT]: undefined,
-        [CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE]: undefined,
-        //important
-        callback: `{{ ${NAMESPACE_FOR_APPLY_SCENE_SCRIPT_VAR} }}`,
-        [NAMESPACE_FOR_APPLY_SCENE_SCRIPT_VAR]: `{{ ${NAMESPACE_FOR_APPLY_SCENE_SCRIPT_VAR} }}`,
+        ...globalScriptVariables,
+        callback: `{{ ${APPLY_SCENE_SCRIPT_ID} }}`,
       }
     }
   })
@@ -41,14 +37,15 @@ export function createListenCurrSceneOffScript(light: Light) { //yellow
   })
   .addAction({
     alias: `ACTION: Wait for current scene to be off`,
-    wait_template: `{{ is_state(${CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE}, 'off') }}`
+    wait_template: `{{ is_state(${CURR_SCENE_TOGGLE_ID}, 'off') }}`
   })
   .addAction({
     service: 'script.turn_on',
     target: { entity_id: toScriptEntityId(getTurnOffInfListenersPassthroughId(light)) },
     data: {
       variables: {
-        
+        ...globalScriptVariables,
+        callback: `{{ callback }}`,
       }
     }
   })
@@ -60,17 +57,20 @@ export function createListenInfSceneOffScript(light: Light) { // purple
 
   const script: Script = new Script({
     id: getInfSceneOffListenerId(light),
-    alias: 'some alias',
+    alias: 'SCRIPT: Listen inferior scene off',
     mode: 'parallel'
   })
   .addAction({
+    alias: 'ACTION: Wait for inferior scene to be off',
     wait_template: "{{ is_state(scene_toggle_id, 'off') }}"
   })
   .addAction({
+    alias: 'ACTION: Call passthrough script',
     service: 'script.turn_on',
     target: {entity_id: toScriptEntityId(getTurnOffInfListenersPassthroughId(light))},
     data: {
       variables: {
+        ...globalScriptVariables,
         callback: `{{ ${FIRST_INF_SCENE_SCRIPT} }}`
       }
     }
@@ -87,16 +87,17 @@ export function createListenInfSceneOnScript(light: Light) { // blue
     alias: 'SCRIPT: Listen for inf scene on'
   })
   .addAction({
-    wait_template: `{{ is_state(${INF_SCENE_TOGGLE_ID_VAR_NAMESPACE}, 'on') }}`
+    alias: 'ACTION: Wait for inf scene to be on',
+    wait_template: `{{ is_state(${INF_SCENE_TOGGLE_ID}, 'on') }}`
   })
   .addAction({
+    alias: 'ACTION: Call passthrough script',
     service: 'script.turn_on',
     target: {entity_id: toScriptEntityId(getTurnOffInfListenersPassthroughId(light))},
     data: {
       variables: {
-        [FIRST_INF_SCENE_SCRIPT]: FIRST_INF_SCENE_SCRIPT,
-        [CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE]: `{{ ${CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE} }}`,
-        callback: `{{ ${NAMESPACE_FOR_APPLY_SCENE_VAR} }}`
+        ...globalScriptVariables,
+        callback: `{{ ${FIRST_INF_SCENE_SCRIPT} }}`
       }
     }
   })

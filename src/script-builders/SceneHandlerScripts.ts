@@ -4,7 +4,7 @@ import { getSceneToggleId } from '../fsfr-types/Scene'
 import { ChooseAction, ChooseActionChoice } from '../ha-config-types/Action'
 import { Script } from '../ha-config-types/Script'
 import { getApplySceneToLightScriptId, getDefaultId, getInfCurrSceneOffListenerId, getInfSceneHandlerScriptId, getInfSceneOffListenerId, getInfSceneOnListenerId, getSupSceneHandlerScriptId, getSupSceneOnListenerScript, toInputBooleanEntityId, toScriptEntityId } from './IdGenerators'
-import { CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE, FIRST_INF_SCENE_SCRIPT, infSceneLoopVariables, NAMESPACE_FOR_APPLY_SCENE_SCRIPT_VAR } from './VariableConstants'
+import { APPLY_SCENE_SCRIPT_ID, globalScriptVariables, INF_SCENE_TOGGLE_ID, SUP_SCENE_TOGGLE_ID } from './VariableConstants'
 
 export function createInfHandlerScripts(light: Light) {
 
@@ -32,7 +32,7 @@ export function createInfHandlerScripts(light: Light) {
           target: {entity_id: toScriptEntityId(getInfCurrSceneOffListenerId(light))}, //yellow
           data: {
             variables: {
-              CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE: `{{ ${CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE} }}`,
+              ...globalScriptVariables,
               callback: toScriptEntityId(getApplySceneToLightScriptId(scene, light))
             }
           }
@@ -43,7 +43,7 @@ export function createInfHandlerScripts(light: Light) {
           target: {entity_id: toScriptEntityId(getInfSceneOffListenerId(light))}, //purple
           data: {
             variables: {
-              ...infSceneLoopVariables
+              ...globalScriptVariables
             }
           }
         })
@@ -56,14 +56,13 @@ export function createInfHandlerScripts(light: Light) {
         state: 'off'
       })
       .addAction({
-        alias: "ACTION: Initialize this scene on listener",
+        alias: `ACTION: Initialize ${scene.id} scene on listener`,
         service: 'script.turn_on',
         target: {entity_id: toScriptEntityId(getInfSceneOnListenerId(light)) }, //blue
         data: {
           variables: {
-            ...infSceneLoopVariables,
-            [FIRST_INF_SCENE_SCRIPT]: FIRST_INF_SCENE_SCRIPT,
-            [CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE]: CURRENT_SCENE_TOGGLE_ID_VAR_NAMESPACE,
+            ...globalScriptVariables,
+            [INF_SCENE_TOGGLE_ID]: toInputBooleanEntityId(getSceneToggleId(scene))
           }
         }
       })
@@ -78,7 +77,7 @@ export function createInfHandlerScripts(light: Light) {
         target: {entity_id: toScriptEntityId(getInfSceneHandlerScriptId(light, nextLayer.scene))},
         data: {
           variables: {
-            ...infSceneLoopVariables,
+            ...globalScriptVariables
           }
         }
       })
@@ -93,8 +92,8 @@ export function createInfHandlerScripts(light: Light) {
     script
       .addAction(
         new ChooseAction('Is inferior scene on or off?')
-        .addChoice(offChoice)
         .addChoice(onChoice)
+        .addChoice(offChoice)
       )
 
     return script
@@ -118,7 +117,7 @@ export function createInfHandlerScripts(light: Light) {
   return scripts
 }
 
-export function createSuperiorSceneHandlerScripts(light: Light) {
+export function createSupHandlerScripts(light: Light) {
 
   const scripts: Script[] =  light.layers
     .reverse()
@@ -128,15 +127,17 @@ export function createSuperiorSceneHandlerScripts(light: Light) {
       const { scene } = layer
 
       const script: Script = new Script({
-        id: toScriptEntityId(getSupSceneHandlerScriptId(light, scene)),
-        alias: 'SCRIPT: Superior scene handler'
+        id: getSupSceneHandlerScriptId(light, scene),
+        alias: `SCRIPT: Superior scene handler ${scene.id}`
       })
       .addAction({
+        alias: `ACTION: turn on ${scene.id} on listener`,
         service: 'script.turn_on',
         target: {entity_id: toScriptEntityId(getSupSceneOnListenerScript(light))},
         data: {
           variables: {
-            [NAMESPACE_FOR_APPLY_SCENE_SCRIPT_VAR]: toScriptEntityId(getApplySceneToLightScriptId(scene, light)),
+            ...globalScriptVariables,
+            [SUP_SCENE_TOGGLE_ID]: toInputBooleanEntityId(getSceneToggleId(scene)),
           }
         }
       })

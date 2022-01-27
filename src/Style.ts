@@ -48,6 +48,10 @@ export class Style {
         variables.push(variable)
         this.variables.push(variable)
       } else {
+        if(prop === 'temperature') {
+          //TODO: This is a quick fix, needs better unit handling for all units
+          value = +value.toLowerCase().replace('k', '')
+        }
         this.props[prop] = value
         
       }

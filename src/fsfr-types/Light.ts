@@ -3,9 +3,10 @@ import { Layer, LayerConf } from "./Layer"
 import { Variable } from "./Variable"
 import { Scene } from "./Scene"
 import { Script } from '../ha-config-types/Script'
-import { createInfHandlerScripts, createSuperiorSceneHandlerScripts } from "../script-builders/SceneHandlerScripts"
-import { createListenInfSceneOnScript, createSuperiorSceneOnListener } from "../script-builders/ListenerScripts"
-import { lightSceneApplyScripts } from "../script-builders/ApplySceneScript"
+import { createInfHandlerScripts, createSupHandlerScripts } from "../script-builders/SceneHandlerScripts"
+import { createListenCurrSceneOffScript, createListenInfSceneOffScript, createListenInfSceneOnScript, createSuperiorSceneOnListener } from "../script-builders/ListenerScripts"
+import { applySceneToLightScripts } from "../script-builders/ApplySceneScript"
+import { getApplySceneToLightScriptId } from "../script-builders/IdGenerators"
 
 
 export interface LightConf {
@@ -87,11 +88,16 @@ export class Light {
 
     const scripts: Script[] = []
 
-    scripts.push(createSuperiorSceneOnListener(this))
-    scripts.push(createListenInfSceneOnScript(this))
+    scripts.push(...applySceneToLightScripts(this))
+    scripts.push(...createSupHandlerScripts(this))
     scripts.push(...createInfHandlerScripts(this))
-    scripts.push(...createSuperiorSceneHandlerScripts(this))
-    scripts.push(...lightSceneApplyScripts(this))
+    scripts.push(createListenCurrSceneOffScript(this))
+    scripts.push(createListenInfSceneOffScript(this))
+    scripts.push(createListenInfSceneOnScript(this))
+
+
+    // scripts.push(createSuperiorSceneOnListener(this))
+    // scripts.push(...lightSceneApplyScripts(this))
 
     return scripts
   }

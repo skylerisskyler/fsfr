@@ -1,0 +1,183 @@
+script:
+  apply_theater_to_living_room:
+    alias: "SCRIPT: Apply scene theater to light"
+    sequence:
+      - alias: "ACTION: Turn off superior scene on listener"
+        service: script.turn_off
+        target:
+          entity_id: script.living_room_sup_scene_listener
+      - alias: "ACTION: Detach variables of living_room in theater"
+        service: "{{ detach_vars_curr_scene_script_id }}"
+      - alias: "ACTION: Attach variables of living_room in theater"
+        service: "{{ attach_vars_curr_scene_script_id }}"
+      - alias: "ACTION: turn on light living_room with data of theater"
+        service: light.turn_on
+        target:
+          entity_id: light.living_room
+        data:
+          temperature: 2700
+          brightness_pct: "{{ states('input_number.fsfr_theater_bri') | int }}"
+      - alias: "ACTION: Turn on the first superior scene handler"
+        service: script.turn_on
+        target:
+          entity_id: script.handle_sup_living_room_circadian
+        data:
+          variables:
+            curr_scene_toggle_id: input_boolean.fsfr_scene_theater
+            first_inf_scene_script: script.handle_inf_living_room_theater
+            detach_vars_curr_scene_script_id: script.DETACH LIGHT FROM VARIABLES IN Layer
+            attach_vars_curr_scene_script_id: script.ATTACH LIGHT TO VARIABLES IN layer
+            apply_scene_script_id: null
+  apply_circadian_to_living_room:
+    alias: "SCRIPT: Apply scene circadian to light"
+    sequence:
+      - alias: "ACTION: Turn off superior scene on listener"
+        service: script.turn_off
+        target:
+          entity_id: script.living_room_sup_scene_listener
+      - alias: "ACTION: Detach variables of living_room in circadian"
+        service: "{{ detach_vars_curr_scene_script_id }}"
+      - alias: "ACTION: Attach variables of living_room in circadian"
+        service: "{{ attach_vars_curr_scene_script_id }}"
+      - alias: "ACTION: turn on light living_room with data of circadian"
+        service: light.turn_on
+        target:
+          entity_id: light.living_room
+        data:
+          brightness_pct: "{{ states('input_number.fsfr_circadian_bri') | int }}"
+          kelvin: "{{ states('input_number.fsfr_circadian_temp') | int }}"
+      - alias: "ACTION: Turn on the first inferior scene handler"
+        service: script.turn_on
+        target:
+          entity_id: script.handle_inf_living_room_theater
+        data:
+          variables:
+            curr_scene_toggle_id: input_boolean.fsfr_scene_circadian
+            first_inf_scene_script: script.handle_inf_living_room_circadian
+            detach_vars_curr_scene_script_id: script.DETACH LIGHT FROM VARIABLES IN Layer
+            attach_vars_curr_scene_script_id: script.ATTACH LIGHT TO VARIABLES IN layer
+            apply_scene_script_id: null
+  handle_sup_living_room_theater:
+    alias: "SCRIPT: Superior scene handler theater"
+    sequence:
+      - alias: "ACTION: turn on theater on listener"
+        service: script.turn_on
+        target:
+          entity_id: script.living_room_sup_scene_listener
+        data:
+          variables:
+            curr_scene_toggle_id: "{{ curr_scene_toggle_id }}"
+            first_inf_scene_script: "{{ first_inf_scene_script }}"
+            detach_vars_curr_scene_script_id: "{{ detach_vars_curr_scene_script_id }}"
+            attach_vars_curr_scene_script_id: "{{ attach_vars_curr_scene_script_id }}"
+            sup_scene_toggle_id: input_boolean.fsfr_scene_theater
+  handle_inf_living_room_theater:
+    alias: "SCRIPT: Handle inferior scene theater for living_room"
+    sequence:
+      - alias: Is inferior scene on or off?
+        choose:
+          - alias: if theater is on
+            conditions:
+              - alias: "CONDITION: check theater toggle is on"
+                condition: state
+                entity_id: input_boolean.fsfr_scene_theater
+                state: on
+            sequence:
+              - alias: "ACTION: initialize current scene off listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.living_room_curr_scene_off_listener
+                data:
+                  variables:
+                    curr_scene_toggle_id: "{{ curr_scene_toggle_id }}"
+                    first_inf_scene_script: "{{ first_inf_scene_script }}"
+                    detach_vars_curr_scene_script_id: "{{ detach_vars_curr_scene_script_id }}"
+                    attach_vars_curr_scene_script_id: "{{ attach_vars_curr_scene_script_id }}"
+                    callback: script.apply_theater_to_living_room
+              - alias: "ACTION: initialize theater scene off listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.living_room_inf_scene_off_listener
+                data:
+                  variables:
+                    curr_scene_toggle_id: "{{ curr_scene_toggle_id }}"
+                    first_inf_scene_script: "{{ first_inf_scene_script }}"
+                    detach_vars_curr_scene_script_id: "{{ detach_vars_curr_scene_script_id }}"
+                    attach_vars_curr_scene_script_id: "{{ attach_vars_curr_scene_script_id }}"
+          - alias: if theater is off
+            conditions:
+              - alias: "CONDITION: check theater is off"
+                condition: state
+                entity_id: input_boolean.fsfr_scene_theater
+                state: off
+            sequence:
+              - alias: "ACTION: Initialize theater scene on listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.living_room_inf_scene_on_listener
+                data:
+                  variables:
+                    curr_scene_toggle_id: "{{ curr_scene_toggle_id }}"
+                    first_inf_scene_script: "{{ first_inf_scene_script }}"
+                    detach_vars_curr_scene_script_id: "{{ detach_vars_curr_scene_script_id }}"
+                    attach_vars_curr_scene_script_id: "{{ attach_vars_curr_scene_script_id }}"
+                    inf_scene_toggle_id: input_boolean.fsfr_scene_theater
+              - alias: "ACTION: Turn on default layer of none other exists"
+                service: script.turn_on
+                target:
+                  entity_id: script.apply_default_to_living_room
+        default: []
+  apply_default_to_living_room:
+    alias: "SCRIPT: default"
+    sequence:
+      - alias: "ACTION: turn off living_room"
+        service: light.turn_off
+        target:
+          entity_id: light.living_room
+  living_room_curr_scene_off_listener:
+    alias: some alias
+    sequence:
+      - alias: "ACTION: Wait for current scene to be off"
+        wait_template: "{{ is_state(curr_scene_toggle_id, 'off') }}"
+      - service: script.turn_on
+        target:
+          entity_id: script.passthrough_living_room
+        data:
+          variables:
+            curr_scene_toggle_id: "{{ curr_scene_toggle_id }}"
+            first_inf_scene_script: "{{ first_inf_scene_script }}"
+            detach_vars_curr_scene_script_id: "{{ detach_vars_curr_scene_script_id }}"
+            attach_vars_curr_scene_script_id: "{{ attach_vars_curr_scene_script_id }}"
+            callback: "{{ callback }}"
+  living_room_inf_scene_off_listener:
+    alias: "SCRIPT: Listen inferior scene off"
+    sequence:
+      - alias: "ACTION: Wait for inferior scene to be off"
+        wait_template: "{{ is_state(scene_toggle_id, 'off') }}"
+      - alias: "ACTION: Call passthrough script"
+        service: script.turn_on
+        target:
+          entity_id: script.passthrough_living_room
+        data:
+          variables:
+            curr_scene_toggle_id: "{{ curr_scene_toggle_id }}"
+            first_inf_scene_script: "{{ first_inf_scene_script }}"
+            detach_vars_curr_scene_script_id: "{{ detach_vars_curr_scene_script_id }}"
+            attach_vars_curr_scene_script_id: "{{ attach_vars_curr_scene_script_id }}"
+            callback: "{{ first_inf_scene_script }}"
+  living_room_inf_scene_on_listener:
+    alias: "SCRIPT: Listen for inf scene on"
+    sequence:
+      - alias: "ACTION: Wait for inf scene to be on"
+        wait_template: "{{ is_state(inf_scene_toggle_id, 'on') }}"
+      - alias: "ACTION: Call passthrough script"
+        service: script.turn_on
+        target:
+          entity_id: script.passthrough_living_room
+        data:
+          variables:
+            curr_scene_toggle_id: "{{ curr_scene_toggle_id }}"
+            first_inf_scene_script: "{{ first_inf_scene_script }}"
+            detach_vars_curr_scene_script_id: "{{ detach_vars_curr_scene_script_id }}"
+            attach_vars_curr_scene_script_id: "{{ attach_vars_curr_scene_script_id }}"
+            callback: "{{ first_inf_scene_script }}"
