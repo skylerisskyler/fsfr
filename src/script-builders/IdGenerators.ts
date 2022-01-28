@@ -1,5 +1,6 @@
 import { Light } from '../fsfr-types/Light'
 import { Scene } from '../fsfr-types/Scene'
+import { Variable } from '../fsfr-types/Variable'
 
 
 // Scene handler ids
@@ -13,16 +14,24 @@ export const getSupSceneOnListenerScript = (light: Light) => `${light.id}_sup_sc
 export const getInfSceneOnListenerId = (light: Light) => `${light.id}_inf_scene_on_listener`
 export const getInfSceneOffListenerId = (light: Light) => `${light.id}_inf_scene_off_listener`
 export const getInfCurrSceneOffListenerId = (light: Light) => `${light.id}_curr_scene_off_listener`
+export const getDefaultId = (light: Light) => `apply_default_to_${light.id}`
 
 export const getApplySceneToLightScriptId = (scene: Scene, light: Light) => `apply_${scene.id}_to_${light.id}`
 
-export const getDefaultId = (light: Light) => `apply_default_to_${light.id}`
-
 export const getTurnOffInfListenersPassthroughId = (light: Light)  => `passthrough_${light.id}`
+
+export const getVariableInputId = (variable: Variable) => `var_${variable.namespace}_${variable.type}`
+
+export const addVariableToGroupId = `add_variable_to_group`
+export const removeVariableFromGroupId = `remove_variable_from_group`
 
 export const getVarAttachScriptId = (light: Light, scene: Scene) => `ATTACH LIGHT TO VARIABLES IN layer`
 export const getVarDetachScriptId = (light: Light, scene: Scene) => `DETACH LIGHT FROM VARIABLES IN Layer`
 
+export const getVariableGroupId = (variable: Variable) => `var_${variable.namespace}_group`
 
+
+export const toInputNumberEntityId = (id: string) => `input_number.${id}`
+export const toGroupEntityId = (id: string) => `group.${id}`
 export const toScriptEntityId = (id: string) => `script.${id}`
 export const toInputBooleanEntityId = (id: string) => `input_boolean.${id}`

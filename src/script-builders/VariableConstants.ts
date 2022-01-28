@@ -12,3 +12,6 @@ export const globalScriptVariables = {
   [DETACH_VARS_SCRIPT_ID]: `{{ ${DETACH_VARS_SCRIPT_ID} }}`,
   [ATTACH_VARS_SCRIPT_ID]: `{{ ${ATTACH_VARS_SCRIPT_ID} }}`
 }
+
+export const GROUP_ID = 'group_id'
+export const LIGHT_ID = 'light_id'

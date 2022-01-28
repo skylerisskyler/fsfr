@@ -3,6 +3,7 @@ import { Script } from "../ha-config-types/Script"
 import { Variable } from "../fsfr-types/Variable"
 import { getVarAttachScriptId, getVarDetachScriptId } from "./IdGenerators"
 
+
 export function createVarAttachScripts(light: Light): Script[] {
 
   return light.layers.map(layer => {
