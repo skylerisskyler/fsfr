@@ -22,7 +22,7 @@ export function createSuperiorSceneOnListener(light: Light) { //green
     data: {
       variables: {
         ...globalScriptVariables,
-        callback: `{{ ${APPLY_SCENE_SCRIPT_ID} }}`,
+        callback: `{{ callback }}`,
       }
     }
   })
@@ -62,7 +62,7 @@ export function createListenInfSceneOffScript(light: Light) { // purple
   })
   .addAction({
     alias: 'ACTION: Wait for inferior scene to be off',
-    wait_template: "{{ is_state(scene_toggle_id, 'off') }}"
+    wait_template: `{{ is_state(${INF_SCENE_TOGGLE_ID}, 'off') }}`
   })
   .addAction({
     alias: 'ACTION: Call passthrough script',

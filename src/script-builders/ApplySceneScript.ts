@@ -50,7 +50,6 @@ export function applySceneToLightScripts(light: Light) {
             [FIRST_INF_SCENE_SCRIPT]: toScriptEntityId(getInfSceneHandlerScriptId(light, scene)),
             [ATTACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarAttachScriptId(light, scene)),
             [DETACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarDetachScriptId(light, scene)),
-            [APPLY_SCENE_SCRIPT_ID]: null,
           }
         }
       })
@@ -69,8 +68,7 @@ export function applySceneToLightScripts(light: Light) {
             [CURR_SCENE_TOGGLE_ID]: toInputBooleanEntityId(getSceneToggleId(scene)),
             [FIRST_INF_SCENE_SCRIPT]: toScriptEntityId(getInfSceneHandlerScriptId(light, scene)),
             [ATTACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarAttachScriptId(light, scene)),
-            [DETACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarDetachScriptId(light, scene)),
-            [APPLY_SCENE_SCRIPT_ID]: null,
+            [DETACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarDetachScriptId(light, scene))
           }
         }
       })

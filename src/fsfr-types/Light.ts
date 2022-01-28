@@ -7,6 +7,8 @@ import { createInfHandlerScripts, createSupHandlerScripts } from "../script-buil
 import { createListenCurrSceneOffScript, createListenInfSceneOffScript, createListenInfSceneOnScript, createSuperiorSceneOnListener } from "../script-builders/ListenerScripts"
 import { applySceneToLightScripts } from "../script-builders/ApplySceneScript"
 import { getApplySceneToLightScriptId } from "../script-builders/IdGenerators"
+import { createPassthroughScript } from "../script-builders/PassthroughScript"
+import { createInitializerScript } from "../script-builders/InitializerScript"
 
 
 export interface LightConf {
@@ -88,15 +90,18 @@ export class Light {
 
     const scripts: Script[] = []
 
-    scripts.push(...applySceneToLightScripts(this))
-    scripts.push(...createSupHandlerScripts(this))
-    scripts.push(...createInfHandlerScripts(this))
-    scripts.push(createListenCurrSceneOffScript(this))
-    scripts.push(createListenInfSceneOffScript(this))
-    scripts.push(createListenInfSceneOnScript(this))
+    // scripts.push(...applySceneToLightScripts(this))
+    // scripts.push(...createSupHandlerScripts(this))
+    // scripts.push(createSuperiorSceneOnListener(this)) //green
+    // scripts.push(...createInfHandlerScripts(this))
 
+    // scripts.push(createListenCurrSceneOffScript(this)) //yellow
+    // scripts.push(createListenInfSceneOffScript(this))
+    // scripts.push(createListenInfSceneOnScript(this))
+    // scripts.push(createPassthroughScript(this))
 
-    // scripts.push(createSuperiorSceneOnListener(this))
+    scripts.push(createInitializerScript(this))
+
     // scripts.push(...lightSceneApplyScripts(this))
 
     return scripts

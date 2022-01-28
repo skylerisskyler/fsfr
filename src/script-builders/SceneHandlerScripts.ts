@@ -1,10 +1,11 @@
+import { callbackify } from 'util'
 import { Layer } from '../fsfr-types/Layer'
 import { Light } from '../fsfr-types/Light'
 import { getSceneToggleId } from '../fsfr-types/Scene'
 import { ChooseAction, ChooseActionChoice } from '../ha-config-types/Action'
 import { Script } from '../ha-config-types/Script'
 import { getApplySceneToLightScriptId, getDefaultId, getInfCurrSceneOffListenerId, getInfSceneHandlerScriptId, getInfSceneOffListenerId, getInfSceneOnListenerId, getSupSceneHandlerScriptId, getSupSceneOnListenerScript, toInputBooleanEntityId, toScriptEntityId } from './IdGenerators'
-import { APPLY_SCENE_SCRIPT_ID, globalScriptVariables, INF_SCENE_TOGGLE_ID, SUP_SCENE_TOGGLE_ID } from './VariableConstants'
+import { APPLY_SCENE_SCRIPT_ID, FIRST_INF_SCENE_SCRIPT, globalScriptVariables, INF_SCENE_TOGGLE_ID, SUP_SCENE_TOGGLE_ID } from './VariableConstants'
 
 export function createInfHandlerScripts(light: Light) {
 
@@ -43,7 +44,8 @@ export function createInfHandlerScripts(light: Light) {
           target: {entity_id: toScriptEntityId(getInfSceneOffListenerId(light))}, //purple
           data: {
             variables: {
-              ...globalScriptVariables
+              ...globalScriptVariables,
+              [INF_SCENE_TOGGLE_ID]: toScriptEntityId(getSceneToggleId(scene))
             }
           }
         })
@@ -138,6 +140,7 @@ export function createSupHandlerScripts(light: Light) {
           variables: {
             ...globalScriptVariables,
             [SUP_SCENE_TOGGLE_ID]: toInputBooleanEntityId(getSceneToggleId(scene)),
+            callback: toScriptEntityId(getApplySceneToLightScriptId(scene, light))
           }
         }
       })

@@ -6,6 +6,8 @@ import { Scene } from '../fsfr-types/Scene'
 export const getInfSceneHandlerScriptId = (light: Light, scene: Scene) => `handle_inf_${light.id}_${scene.id}`
 export const getSupSceneHandlerScriptId = (light: Light, scene: Scene) => `handle_sup_${light.id}_${scene.id}`
 
+export const getInitializerScriptId = (light: Light) => `init_${light.id}`
+
 // scene listener ids
 export const getSupSceneOnListenerScript = (light: Light) => `${light.id}_sup_scene_listener`
 export const getInfSceneOnListenerId = (light: Light) => `${light.id}_inf_scene_on_listener`
