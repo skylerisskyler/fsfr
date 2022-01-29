@@ -3,7 +3,7 @@ import Yaml from 'yaml'
 
 import { Layer } from "./fsfr-types/Layer";
 import { Light } from "./fsfr-types/Light";
-import { Scene, getLightSceneSelectorId } from "./fsfr-types/Scene";
+import { Context, getLightContextSelectorId } from "./fsfr-types/Context";
 import { Style } from "./Style";
 import { Automation } from "./ha-config-types/Automation";
 import { InputBooleanInput } from "./ha-config-types/InputBoolean";
@@ -22,13 +22,13 @@ const inputBooleans: InputBooleanInput[] = []
 export function build(
   variables: Variable[],
   styles: Style[],
-  scenes: Scene[],
+  contexts: Context[],
   layers: Layer[],
   lights: Light[]
 ) {
 
-  const sceneToggles: InputBooleanInput[] = scenes
-    .map(scene => scene.createToggle())
+  const contextToggles: InputBooleanInput[] = contexts
+    .map(context => context.createToggle())
 
   const lightScripts: Script[] = lights
     .reduce((scripts: Script[], light: Light) => {
@@ -39,7 +39,7 @@ export function build(
 
   const configuration = {
     input_number: toDict(variablesInputs),
-    input_boolean: toDict(sceneToggles),
+    input_boolean: toDict(contextToggles),
     script: {
       ...toDict(lightScripts.map((s) => s.compile())),
     },

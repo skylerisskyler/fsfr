@@ -5,30 +5,30 @@ import { Automation } from "../ha-config-types/Automation"
 import { InputBooleanInput, InputBooleanProps } from "../ha-config-types/InputBoolean"
 import { Script } from "../ha-config-types/Script"
 import { Variable } from "./Variable"
-import { getSceneToggleId, toInputBooleanEntityId } from "../script-builders/IdGenerators"
+import { getContextToggleId, toInputBooleanEntityId } from "../script-builders/IdGenerators"
 
-interface SceneConf {
+interface ContextConf {
   id: string
 }
 
 
-export const getSceneOffAutomationId = (scene: Scene): string => 
-`fsfr_${scene.id}_off`
+export const getContextOffAutomationId = (context: Context): string => 
+`fsfr_${context.id}_off`
 
-export const getSceneOnAutomationId = (scene: Scene): string => 
-`fsfr_${scene.id}_on`
+export const getContextOnAutomationId = (context: Context): string => 
+`fsfr_${context.id}_on`
 
-export const getSceneCheckScriptId = (light: Light, scene: Scene): string => 
-`fsfr_${light.id}_check_${scene.id}`
+export const getContextCheckScriptId = (light: Light, context: Context): string => 
+`fsfr_${light.id}_check_${context.id}`
 
-export const getLightSceneSelectorId = (light: Light) =>
-  `fsfr_${light.id}_scenes`
+export const getLightContextSelectorId = (light: Light) =>
+  `fsfr_${light.id}_contexts`
 
-export class Scene {
+export class Context {
   id: string
   layers: Layer[]
 
-  constructor({id}: SceneConf) {
+  constructor({id}: ContextConf) {
     this.id = id
     this.layers = []
   }
@@ -39,9 +39,9 @@ export class Scene {
 
   createToggle(): InputBooleanInput {
     return {
-      id: getSceneToggleId(this),
+      id: getContextToggleId(this),
       icon: 'mdi: landscape',
-      name: 'Toggle scene: ' + this.id,
+      name: 'Toggle context: ' + this.id,
       initial: false
     }
   }
@@ -54,19 +54,19 @@ export class Scene {
 
   createOnAutomation(): Automation {
     const automation: Automation = new Automation({
-      id: getSceneOnAutomationId(this)
+      id: getContextOnAutomationId(this)
     })
 
     automation.addTrigger({
       platform: 'state',
-      entity_id: toInputBooleanEntityId(getSceneToggleId(this)),
+      entity_id: toInputBooleanEntityId(getContextToggleId(this)),
       to: 'on'
     })
 
     this.lights.forEach(light => {
-      const firstScene = light.layers[0].scene
+      const firstContext = light.layers[0].context
       automation.addAction({
-        service: `script.${getSceneCheckScriptId(light, firstScene)}`
+        service: `script.${getContextCheckScriptId(light, firstContext)}`
       })
     })
 
@@ -76,12 +76,12 @@ export class Scene {
   createOffAutomation(): Automation {
     
     const automation: Automation = new Automation({
-      id: getSceneOffAutomationId(this)
+      id: getContextOffAutomationId(this)
     })
 
     automation.addTrigger({
       platform: 'state',
-      entity_id: `input_boolean.${getSceneToggleId(this)}`,
+      entity_id: `input_boolean.${getContextToggleId(this)}`,
       to: 'off'
     })
 
@@ -92,17 +92,17 @@ export class Scene {
         data: {
           variables: {
             var_namespace: variable.namespace,
-            scene_id: this.id
+            context_id: this.id
           }
         }
       })
     })
 
     this.lights.forEach(light => {
-      const nextScene = light.getNextScene(this)
-      if(nextScene) {
+      const nextContext = light.getNextContext(this)
+      if(nextContext) {
         automation.addAction({
-          service: `script.check_next_${light.id}_${nextScene.id}`
+          service: `script.check_next_${light.id}_${nextContext.id}`
         })
       } else {
         automation.addAction({

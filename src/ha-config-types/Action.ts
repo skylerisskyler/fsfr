@@ -51,7 +51,7 @@ export type Action =
 // | EventAction
 // | DeviceAction
 // | DelayAction
-// | SceneAction
+// | ContextAction
 // | RepeatAction
 // | VariablesAction
 // | UnknownAction;

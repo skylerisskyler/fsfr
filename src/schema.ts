@@ -32,7 +32,7 @@ export const config: Schema = {
   layers: [
     {
       id: "primaryCircadian",
-      scene: 'circadian',
+      context: 'circadian',
       style: "circadian-lighting"
     }
   ],
@@ -41,7 +41,7 @@ export const config: Schema = {
       id: 'light.living_room',
       layers: [
         {
-          scene: "theater",
+          context: "theater",
           style: {
             temperature: '2700k',
             brightness: {

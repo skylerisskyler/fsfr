@@ -1,22 +1,22 @@
 import { Script } from '../ha-config-types/Script'
-import { getApplySceneToLightScriptId, getInfCurrSceneOffListenerId, getInfSceneOffListenerId, getInfSceneOnListenerId, getSupSceneOnListenerScript, getTurnOffInfListenersPassthroughId, toScriptEntityId } from './IdGenerators'
+import { getApplyContextToLightScriptId, getInfCurrContextOffListenerId, getInfContextOffListenerId, getInfContextOnListenerId, getSupContextOnListenerScript, getTurnOffInfListenersPassthroughId, toScriptEntityId } from './IdGenerators'
 import {Light} from '../fsfr-types/Light'
-import { FIRST_INF_SCENE_SCRIPT, globalScriptVariables, APPLY_SCENE_SCRIPT_ID, SUP_SCENE_TOGGLE_ID, CURR_SCENE_TOGGLE_ID, INF_SCENE_TOGGLE_ID } from './VariableConstants'
+import { FIRST_INF_CONTEXT_SCRIPT, globalScriptVariables, APPLY_CONTEXT_SCRIPT_ID, SUP_CONTEXT_TOGGLE_ID, CURR_CONTEXT_TOGGLE_ID, INF_CONTEXT_TOGGLE_ID } from './VariableConstants'
 
 
 
-export function createSuperiorSceneOnListener(light: Light) { //green
+export function createSuperiorContextOnListener(light: Light) { //green
 
-  const superiorSceneListener: Script = new Script({
-    id: getSupSceneOnListenerScript(light),
-    alias: `SCRIPT: Listen superior scene on for ${light.id}`,
+  const superiorContextListener: Script = new Script({
+    id: getSupContextOnListenerScript(light),
+    alias: `SCRIPT: Listen superior context on for ${light.id}`,
   })
   .addAction({
-    alias: `ACTION: Wait for superior scene of ${light.id} to be on`,
-    wait_template: `{{ is_state(${SUP_SCENE_TOGGLE_ID}, 'on') }}`
+    alias: `ACTION: Wait for superior context of ${light.id} to be on`,
+    wait_template: `{{ is_state(${SUP_CONTEXT_TOGGLE_ID}, 'on') }}`
   })
   .addAction({
-    alias: `ACTION: apply scene to light script`,
+    alias: `ACTION: apply context to light script`,
     service: 'script.turn_on',
     target: {entity_id: toScriptEntityId(getTurnOffInfListenersPassthroughId(light))},
     data: {
@@ -27,17 +27,17 @@ export function createSuperiorSceneOnListener(light: Light) { //green
     }
   })
 
-  return superiorSceneListener
+  return superiorContextListener
 }
 
-export function createListenCurrSceneOffScript(light: Light) { //yellow
-  const currSceneOffListener: Script = new Script({
-    id: getInfCurrSceneOffListenerId(light),
+export function createListenCurrContextOffScript(light: Light) { //yellow
+  const currContextOffListener: Script = new Script({
+    id: getInfCurrContextOffListenerId(light),
     alias: 'some alias'
   })
   .addAction({
-    alias: `ACTION: Wait for current scene to be off`,
-    wait_template: `{{ is_state(${CURR_SCENE_TOGGLE_ID}, 'off') }}`
+    alias: `ACTION: Wait for current context to be off`,
+    wait_template: `{{ is_state(${CURR_CONTEXT_TOGGLE_ID}, 'off') }}`
   })
   .addAction({
     service: 'script.turn_on',
@@ -50,19 +50,19 @@ export function createListenCurrSceneOffScript(light: Light) { //yellow
     }
   })
 
-  return currSceneOffListener
+  return currContextOffListener
 }
 
-export function createListenInfSceneOffScript(light: Light) { // purple
+export function createListenInfContextOffScript(light: Light) { // purple
 
   const script: Script = new Script({
-    id: getInfSceneOffListenerId(light),
-    alias: 'SCRIPT: Listen inferior scene off',
+    id: getInfContextOffListenerId(light),
+    alias: 'SCRIPT: Listen inferior context off',
     mode: 'parallel'
   })
   .addAction({
-    alias: 'ACTION: Wait for inferior scene to be off',
-    wait_template: `{{ is_state(${INF_SCENE_TOGGLE_ID}, 'off') }}`
+    alias: 'ACTION: Wait for inferior context to be off',
+    wait_template: `{{ is_state(${INF_CONTEXT_TOGGLE_ID}, 'off') }}`
   })
   .addAction({
     alias: 'ACTION: Call passthrough script',
@@ -71,7 +71,7 @@ export function createListenInfSceneOffScript(light: Light) { // purple
     data: {
       variables: {
         ...globalScriptVariables,
-        callback: `{{ ${FIRST_INF_SCENE_SCRIPT} }}`
+        callback: `{{ ${FIRST_INF_CONTEXT_SCRIPT} }}`
       }
     }
   })
@@ -80,15 +80,15 @@ export function createListenInfSceneOffScript(light: Light) { // purple
 }
 
 
-export function createListenInfSceneOnScript(light: Light) { // blue
+export function createListenInfContextOnScript(light: Light) { // blue
 
   const script: Script = new Script({
-    id: getInfSceneOnListenerId(light),
-    alias: 'SCRIPT: Listen for inf scene on'
+    id: getInfContextOnListenerId(light),
+    alias: 'SCRIPT: Listen for inf context on'
   })
   .addAction({
-    alias: 'ACTION: Wait for inf scene to be on',
-    wait_template: `{{ is_state(${INF_SCENE_TOGGLE_ID}, 'on') }}`
+    alias: 'ACTION: Wait for inf context to be on',
+    wait_template: `{{ is_state(${INF_CONTEXT_TOGGLE_ID}, 'on') }}`
   })
   .addAction({
     alias: 'ACTION: Call passthrough script',
@@ -97,7 +97,7 @@ export function createListenInfSceneOnScript(light: Light) { // blue
     data: {
       variables: {
         ...globalScriptVariables,
-        callback: `{{ ${FIRST_INF_SCENE_SCRIPT} }}`
+        callback: `{{ ${FIRST_INF_CONTEXT_SCRIPT} }}`
       }
     }
   })

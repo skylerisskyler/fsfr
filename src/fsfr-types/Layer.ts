@@ -1,17 +1,17 @@
 import { Light } from "./Light"
-import { Scene } from "./Scene"
+import { Context } from "./Context"
 import { Style, StyleProps } from "../Style"
 import { Variable } from "./Variable"
 
 
 export interface LayerConf {
   id?: string | null
-  scene: string
+  context: string
   style: StyleProps | string
 }
 
 export interface LayerProps {
-  scene: Scene | string
+  context: Context | string
   style: StyleProps | string
 }
 
@@ -23,14 +23,14 @@ export interface LayerFormat {
 export class Layer {
   id: string | null
   style: Style
-  scene: Scene
+  context: Context
   lights: Light[]
 
   constructor(
     conf: LayerConf,
     variables: Variable[],
     styles: Style[],
-    scenes: Scene[]
+    contexts: Context[]
   )
   {
     if(conf.id) {
@@ -53,16 +53,16 @@ export class Layer {
       this.style = new Style(null, conf.style, variables)
     }
 
-    //handle scene
+    //handle context
 
-    let scene = scenes.find((scene: Scene) => scene.id === conf.scene)
-    if (!scene) {
-      scene = new Scene({id: conf.scene})
+    let context = contexts.find((context: Context) => context.id === conf.context)
+    if (!context) {
+      context = new Context({id: conf.context})
     }
-    this.scene = scene
+    this.context = context
 
-    scene.addLayer(this)
-    scenes.push(scene)
+    context.addLayer(this)
+    contexts.push(context)
   }
 
   

@@ -8,10 +8,10 @@ export function createVarAttachScripts(light: Light): Script[] {
 
   return light.layers.map(layer => {
     
-    const { scene } = layer
+    const { context } = layer
 
     const script: Script = new Script({
-      id: getVarAttachScriptId(light, scene),
+      id: getVarAttachScriptId(light, context),
       alias: 'some alias'
     })
 
@@ -36,10 +36,10 @@ export function createVarDetachScripts(light: Light): Script[] {
 
   return light.layers.map(layer => {
     
-    const { scene } = layer
+    const { context } = layer
 
     const script: Script = new Script({
-      id: getVarDetachScriptId(light, scene),
+      id: getVarDetachScriptId(light, context),
       alias: 'some alias'
     })
 

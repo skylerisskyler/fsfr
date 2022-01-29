@@ -1,11 +1,11 @@
 import { Style } from "../Style"
 import { Layer, LayerConf } from "./Layer"
 import { Variable } from "./Variable"
-import { Scene } from "./Scene"
+import { Context } from "./Context"
 import { Script } from '../ha-config-types/Script'
-import { createInfHandlerScripts, createSupHandlerScripts } from "../script-builders/SceneHandlerScripts"
-import { createListenCurrSceneOffScript, createListenInfSceneOffScript, createListenInfSceneOnScript, createSuperiorSceneOnListener } from "../script-builders/ListenerScripts"
-import { applySceneToLightScripts } from "../script-builders/ApplySceneScript"
+import { createInfHandlerScripts, createSupHandlerScripts } from "../script-builders/ContextHandlerScripts"
+import { createListenCurrContextOffScript, createListenInfContextOffScript, createListenInfContextOnScript, createSuperiorContextOnListener } from "../script-builders/ListenerScripts"
+import { applyContextToLightScripts } from "../script-builders/ApplyContextScript"
 import { createPassthroughScript } from "../script-builders/PassthroughScript"
 import { createInitializerScript } from "../script-builders/InitializerScript"
 
@@ -23,7 +23,7 @@ export class Light {
     conf: LightConf,
     variables: Variable[],
     styles: Style[],
-    scenes: Scene[],
+    contexts: Context[],
     layers: Layer[],
   )
   {
@@ -55,7 +55,7 @@ export class Light {
           layerConf,
           variables,
           styles,
-          scenes
+          contexts
         )
         layer.lights.push(this)
         this.layers.push(layer)
@@ -76,27 +76,27 @@ export class Light {
     return false
   }
 
-  getNextScene(currentScene: Scene): Scene | undefined {
-    const layerIdx = this.layers.findIndex(layer => currentScene.id === layer.scene.id)
-    return this.layers[layerIdx + 1].scene
+  getNextContext(currentContext: Context): Context | undefined {
+    const layerIdx = this.layers.findIndex(layer => currentContext.id === layer.context.id)
+    return this.layers[layerIdx + 1].context
   }
 
-  get scenes() {
-    return this.layers.map(layer =>  layer.scene)
+  get contexts() {
+    return this.layers.map(layer =>  layer.context)
   }
 
   createScripts() {
 
     const scripts: Script[] = []
 
-    scripts.push(...applySceneToLightScripts(this))
+    scripts.push(...applyContextToLightScripts(this))
     scripts.push(...createSupHandlerScripts(this))
-    scripts.push(createSuperiorSceneOnListener(this)) //green
+    scripts.push(createSuperiorContextOnListener(this)) //green
     scripts.push(...createInfHandlerScripts(this))
 
-    scripts.push(createListenCurrSceneOffScript(this)) //yellow
-    scripts.push(createListenInfSceneOffScript(this))
-    scripts.push(createListenInfSceneOnScript(this))
+    scripts.push(createListenCurrContextOffScript(this)) //yellow
+    scripts.push(createListenInfContextOffScript(this))
+    scripts.push(createListenInfContextOnScript(this))
     scripts.push(createPassthroughScript(this))
 
     scripts.push(createInitializerScript(this))
