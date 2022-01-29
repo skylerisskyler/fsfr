@@ -1,8 +1,7 @@
 import { Layer } from "../fsfr-types/Layer"
 import { Light } from "../fsfr-types/Light"
-import { getSceneToggleId } from "../fsfr-types/Scene"
 import { Script } from "../ha-config-types/Script"
-import { getApplySceneToLightScriptId, getInfSceneHandlerScriptId, getSupSceneHandlerScriptId, getSupSceneOnListenerScript, getVarAttachScriptId, getVarDetachScriptId, toInputBooleanEntityId, toScriptEntityId } from "./IdGenerators"
+import { getApplySceneToLightScriptId, getInfSceneHandlerScriptId, getSceneToggleId, getSupSceneHandlerScriptId, getSupSceneOnListenerScript, getVarAttachScriptId, getVarDetachScriptId, toInputBooleanEntityId, toScriptEntityId } from "./IdGenerators"
 import {  APPLY_SCENE_SCRIPT_ID, ATTACH_VARS_SCRIPT_ID, CURR_SCENE_TOGGLE_ID, DETACH_VARS_SCRIPT_ID,  FIRST_INF_SCENE_SCRIPT, globalScriptVariables } from "./VariableConstants"
 
 export function applySceneToLightScripts(light: Light) {

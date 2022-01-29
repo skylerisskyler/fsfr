@@ -3,7 +3,7 @@ import Yaml from 'yaml'
 
 import { Layer } from "./fsfr-types/Layer";
 import { Light } from "./fsfr-types/Light";
-import { Scene, getSceneToggleId, getLightSceneSelectorId } from "./fsfr-types/Scene";
+import { Scene, getLightSceneSelectorId } from "./fsfr-types/Scene";
 import { Style } from "./Style";
 import { Automation } from "./ha-config-types/Automation";
 import { InputBooleanInput } from "./ha-config-types/InputBoolean";
@@ -20,13 +20,12 @@ const inputNumbers: InputNumberProps[] = []
 const inputBooleans: InputBooleanInput[] = []
 
 export function build(
-    variables: Variable[],
-    styles: Style[],
-    scenes: Scene[],
-    layers: Layer[],
-    lights: Light[]
-) 
-{
+  variables: Variable[],
+  styles: Style[],
+  scenes: Scene[],
+  layers: Layer[],
+  lights: Light[]
+) {
 
   const sceneToggles: InputBooleanInput[] = scenes
     .map(scene => scene.createToggle())
@@ -38,30 +37,18 @@ export function build(
 
   const variablesInputs: InputNumberProps[] = variables.map((variable => createVariableInput(variable)))
 
-
-
   const configuration = {
-    // input_boolean: toDict(sceneToggles),
-    // automation: [
-    //   ...sceneOffAutomations.map((a) => a.compile()),
-    //   ...variableChangeAutomations.map(a => a.compile())
-    // ],
+    input_number: toDict(variablesInputs),
+    input_boolean: toDict(sceneToggles),
     script: {
       ...toDict(lightScripts.map((s) => s.compile())),
-      // ...toDict([removeChildGroupScript.compile()]),
-      // ...toDict([addChildGroupScript.compile()]),
-      // ...toDict([removeSpecificLight.compile()]),
     },
-    // groups: toDict(variableGroups),
-    // input_number: toDict(variablesInputs)
   }
 
   const yamlForm = Yaml.stringify(configuration)
 
-
   fs.writeFileSync('./configuration.yaml', yamlForm)
 }
-
 
 const toDict = (list: (InputBooleanInput | Automation  | any)[]) => {
   return list.reduce((prev, curr) => {

@@ -4,23 +4,26 @@ import { Variable } from '../fsfr-types/Variable'
 
 
 // Scene handler ids
-export const getInfSceneHandlerScriptId = (light: Light, scene: Scene) => `handle_inf_${light.id}_${scene.id}`
-export const getSupSceneHandlerScriptId = (light: Light, scene: Scene) => `handle_sup_${light.id}_${scene.id}`
+export const getInfSceneHandlerScriptId = (light: Light, scene: Scene) => `handle_${light.id}_inf_${scene.id}`
+export const getSupSceneHandlerScriptId = (light: Light, scene: Scene) => `handle_${light.id}_sup_${scene.id}`
 
 export const getInitializerScriptId = (light: Light) => `init_${light.id}`
 
 // scene listener ids
-export const getSupSceneOnListenerScript = (light: Light) => `${light.id}_sup_scene_listener`
-export const getInfSceneOnListenerId = (light: Light) => `${light.id}_inf_scene_on_listener`
-export const getInfSceneOffListenerId = (light: Light) => `${light.id}_inf_scene_off_listener`
-export const getInfCurrSceneOffListenerId = (light: Light) => `${light.id}_curr_scene_off_listener`
-export const getDefaultId = (light: Light) => `apply_default_to_${light.id}`
+export const getSupSceneOnListenerScript = (light: Light) => `listen_${light.id}_sup_scene_on`
+export const getInfSceneOnListenerId = (light: Light) => `listen_${light.id}_inf_scene_on`
+export const getInfSceneOffListenerId = (light: Light) => `listen_${light.id}_inf_scene_off`
+export const getInfCurrSceneOffListenerId = (light: Light) => `listen_${light.id}_curr_scene_off`
 
-export const getApplySceneToLightScriptId = (scene: Scene, light: Light) => `apply_${scene.id}_to_${light.id}`
 
-export const getTurnOffInfListenersPassthroughId = (light: Light)  => `passthrough_${light.id}`
+export const getApplySceneToLightScriptId = (scene: Scene, light: Light) => `apply_${scene.id}_${light.id}`
+export const getDefaultScriptId = (light: Light) => `apply_default_${light.id}`
+
+export const getTurnOffInfListenersPassthroughId = (light: Light)  => `stop_inf_listen_passthrough_${light.id}`
 
 export const getVariableInputId = (variable: Variable) => `var_${variable.namespace}_${variable.type}`
+
+export const getSceneToggleId = (scene: Scene) => `scene_${scene.id}`
 
 export const addVariableToGroupId = `add_variable_to_group`
 export const removeVariableFromGroupId = `remove_variable_from_group`

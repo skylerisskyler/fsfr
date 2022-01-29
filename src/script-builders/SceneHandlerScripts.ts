@@ -1,10 +1,8 @@
-import { callbackify } from 'util'
 import { Layer } from '../fsfr-types/Layer'
 import { Light } from '../fsfr-types/Light'
-import { getSceneToggleId } from '../fsfr-types/Scene'
 import { ChooseAction, ChooseActionChoice } from '../ha-config-types/Action'
 import { Script } from '../ha-config-types/Script'
-import { getApplySceneToLightScriptId, getDefaultId, getInfCurrSceneOffListenerId, getInfSceneHandlerScriptId, getInfSceneOffListenerId, getInfSceneOnListenerId, getSupSceneHandlerScriptId, getSupSceneOnListenerScript, toInputBooleanEntityId, toScriptEntityId } from './IdGenerators'
+import { getApplySceneToLightScriptId, getDefaultScriptId, getInfCurrSceneOffListenerId, getInfSceneHandlerScriptId, getInfSceneOffListenerId, getInfSceneOnListenerId, getSceneToggleId, getSupSceneHandlerScriptId, getSupSceneOnListenerScript, toInputBooleanEntityId, toScriptEntityId } from './IdGenerators'
 import { APPLY_SCENE_SCRIPT_ID, FIRST_INF_SCENE_SCRIPT, globalScriptVariables, INF_SCENE_TOGGLE_ID, SUP_SCENE_TOGGLE_ID } from './VariableConstants'
 
 export function createInfHandlerScripts(light: Light) {
@@ -87,7 +85,7 @@ export function createInfHandlerScripts(light: Light) {
       offChoice.addAction({
         alias: `ACTION: Turn on default layer of none other exists`,
         service: 'script.turn_on',
-        target: {entity_id: toScriptEntityId(getDefaultId(light))},
+        target: {entity_id: toScriptEntityId(getDefaultScriptId(light))},
       })
     }
 
@@ -103,7 +101,7 @@ export function createInfHandlerScripts(light: Light) {
 
   const defaultScript: Script = new Script({
     alias: `SCRIPT: default`,
-    id: getDefaultId(light),
+    id: getDefaultScriptId(light),
   })
 
   if(!light.default) {

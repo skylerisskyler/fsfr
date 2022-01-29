@@ -1,8 +1,7 @@
 import { Light } from "../fsfr-types/Light";
-import { getSceneToggleId } from "../fsfr-types/Scene";
 import { ChooseAction, ChooseActionChoice } from "../ha-config-types/Action";
 import { Script } from "../ha-config-types/Script";
-import { getApplySceneToLightScriptId, getInitializerScriptId, toInputBooleanEntityId, toScriptEntityId } from "./IdGenerators";
+import { getApplySceneToLightScriptId, getInitializerScriptId, getSceneToggleId, toInputBooleanEntityId, toScriptEntityId } from "./IdGenerators";
 
 export function createInitializerScript(light: Light) {
 

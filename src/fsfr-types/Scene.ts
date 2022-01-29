@@ -5,14 +5,13 @@ import { Automation } from "../ha-config-types/Automation"
 import { InputBooleanInput, InputBooleanProps } from "../ha-config-types/InputBoolean"
 import { Script } from "../ha-config-types/Script"
 import { Variable } from "./Variable"
+import { getSceneToggleId, toInputBooleanEntityId } from "../script-builders/IdGenerators"
 
 interface SceneConf {
   id: string
 }
 
-export const getSceneToggleId = (scene: Scene) => {
-  return `fsfr_scene_${scene.id}`
-}
+
 export const getSceneOffAutomationId = (scene: Scene): string => 
 `fsfr_${scene.id}_off`
 
@@ -41,8 +40,9 @@ export class Scene {
   createToggle(): InputBooleanInput {
     return {
       id: getSceneToggleId(this),
-      icon: 'mdi:<some-icon>',
-      name: 'some name'
+      icon: 'mdi: landscape',
+      name: 'Toggle scene: ' + this.id,
+      initial: false
     }
   }
 
@@ -59,7 +59,7 @@ export class Scene {
 
     automation.addTrigger({
       platform: 'state',
-      entity_id: `input_boolean.${getSceneToggleId(this)}`,
+      entity_id: toInputBooleanEntityId(getSceneToggleId(this)),
       to: 'on'
     })
 

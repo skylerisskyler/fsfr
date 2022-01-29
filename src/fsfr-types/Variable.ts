@@ -78,7 +78,7 @@ export const createVariableInput = (variable: Variable): InputNumberProps => {
 
   return {
     id: getVariableInputId(variable),
-    name: 'somename',
+    name: 'Input variable: ' + variable.namespace,
     min: variable.min,
     max: variable.max,
     step: 1,
