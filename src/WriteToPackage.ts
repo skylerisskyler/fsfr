@@ -29,8 +29,6 @@ const toDict = (prevDict: Dict, curr: Dict) => {
 
 export function writeToPackage(configPackage: ConfigPackage) {
 
-  console.log(configPackage)
-
   const pkg = {
     automation: configPackage.automation,
     script: configPackage.script.reduce(toDict, {}),
@@ -38,9 +36,8 @@ export function writeToPackage(configPackage: ConfigPackage) {
     input_number: configPackage.input_number.reduce(toDict, {}),
   }
 
-  console.log(pkg)
-
   const packageString = YAML.stringify(pkg)
+    .replaceAll(': on', ": 'on'")
   fs.writeFileSync('./configuration.yaml', packageString)
 }
 

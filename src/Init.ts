@@ -19,6 +19,7 @@ export interface Abstractions {
 export function init(config: Schema): Abstractions {
 
   let variables: Variable[] = []
+  console.log(config.variables)
   if(config.variables) {
     variables = variables.concat(
       config.variables.map((variableConf) => new Variable(variableConf))
@@ -35,8 +36,11 @@ export function init(config: Schema): Abstractions {
 
   const contexts: Context[] = []
 
-  const layers: Layer[] = config.layers
+  let layers: Layer[] = []
+  if(config.layers) {
+  layers = config.layers
     .map(layerConf => new Layer(layerConf, variables, styles, contexts))
+  }
 
   const lights: Light[] = config.lights
     .map((lightConf) => new Light(lightConf, variables, styles, contexts, layers))

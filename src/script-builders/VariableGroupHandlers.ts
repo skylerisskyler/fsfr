@@ -11,11 +11,11 @@ export function createAddLightToVarScript() {
     service: 'group.set',
     data: {
       object_id: "{{ group_id }}",
-      entities: `{{ state_attr("$${GROUP_ID}", "entity_id") | list + ["${LIGHT_ID}"] }}`
+      entities: `{{ state_attr("${GROUP_ID}", "entity_id") | list + [${LIGHT_ID}] }}`
     }
   })
 
-  return script
+  return script.compile()
 }
 
 export function createRemoveLightFromVarScript() {
@@ -27,9 +27,9 @@ export function createRemoveLightFromVarScript() {
     service: 'group.set',
     data: {
       object_id: "{{ group_id }}",
-      entities: `"{{state_attr('${GROUP_ID}', 'entity_id')|reject('equalto', '${LIGHT_ID}')| list}}"`
+      entities: `{{state_attr('${GROUP_ID}', 'entity_id')|reject('equalto', '${LIGHT_ID}')| list}}`
     }
   })
 
-  return script
+  return script.compile()
 }

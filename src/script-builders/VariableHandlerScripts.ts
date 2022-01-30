@@ -12,7 +12,7 @@ export function createVarAttachScripts(light: Light): Script[] {
 
     const script: Script = new Script({
       id: getVarAttachScriptId(light, context),
-      alias: 'some alias'
+      alias: `SCRIPT: Attach variables of ${light.id} in ${context.id}`
     })
 
     layer.style.variables.forEach((variable: Variable) => {
@@ -27,7 +27,7 @@ export function createVarAttachScripts(light: Light): Script[] {
       })
     })
 
-    return script
+    return script.compile()
     
   })
 }
@@ -40,7 +40,7 @@ export function createVarDetachScripts(light: Light): Script[] {
 
     const script: Script = new Script({
       id: getVarDetachScriptId(light, context),
-      alias: 'some alias'
+      alias: `SCRIPT: Detach variables of ${light.id} in ${context.id}`
     })
 
     layer.style.variables.forEach((variable: Variable) => {
@@ -55,7 +55,7 @@ export function createVarDetachScripts(light: Light): Script[] {
       })
     })
 
-    return script
+    return script.compile()
     
   })
 }

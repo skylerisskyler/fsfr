@@ -110,4 +110,8 @@ export class Variable implements IVariable {
     this.min = +min
     this.max = +max
   }
+
+  get key() {
+    return 'brightness_pct'
+  }
 }

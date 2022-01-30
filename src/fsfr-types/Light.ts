@@ -85,6 +85,4 @@ export class Light {
     return this.layers.map(layer =>  layer.context)
   }
 
-
 }
-

@@ -2,7 +2,7 @@ import { Variable } from "../fsfr-types/Variable"
 import { Automation } from "../ha-config-types/Automation"
 import { getVariableGroupId, getVariableInputId, toGroupEntityId, toInputBooleanEntityId, toInputNumberEntityId } from "./IdGenerators"
 
-function variableUpdateScripts(variable: Variable) {
+export function variableUpdateAutomation(variable: Variable) {
   const automation = new Automation({
     id: getVariableInputId(variable),
     alias: `AUTOMATION: Handle change variable ${variable.namespace} `,
@@ -17,8 +17,10 @@ function variableUpdateScripts(variable: Variable) {
       entity_id: toGroupEntityId(getVariableGroupId(variable)),
     },
     data: {
-      [variable.type]: `{{ states.${toInputNumberEntityId(getVariableInputId(variable))} }}`,
+      [variable.key]: `{{ states.${toInputNumberEntityId(getVariableInputId(variable))} | int }}`,
     }
   })
+
+  return automation.compile()
 
 }

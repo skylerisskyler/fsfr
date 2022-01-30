@@ -33,7 +33,7 @@ export function createSuperiorContextOnListener(light: Light) {
 export function createListenCurrContextOffScript(light: Light) { //yellow
   const currContextOffListener: Script = new Script({
     id: getInfCurrContextOffListenerId(light),
-    alias: 'some alias'
+    alias: `SCRIPT: Listen current context off for ${light.id}`
   })
   .addAction({
     alias: `ACTION: Wait for current context to be off`,

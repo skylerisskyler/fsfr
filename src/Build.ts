@@ -17,6 +17,8 @@ import { createToggle } from './script-builders/CreateToggle';
 import { createVariableInput } from './fsfr-types/Variable';
 import { createScripts } from './script-builders/CreateScripts';
 import { ScriptProps } from './ha-config-types/Script';
+import { createAddLightToVarScript, createRemoveLightFromVarScript } from './script-builders/VariableGroupHandlers';
+import { variableUpdateAutomation } from './script-builders/VariableUpdateAutomation';
 
 
 interface Package {
@@ -43,11 +45,20 @@ export function build({
       return scripts.concat(createScripts(light))
     }, [])
 
+  const addLightToVarScript = createAddLightToVarScript()
+  const removeLightFromVarScript = createRemoveLightFromVarScript()
+  
   const variablesInputs: InputNumber[] = variables.map((variable => createVariableInput(variable)))
 
+  const variableUpdateAutomations = variables.map(variable => variableUpdateAutomation(variable))
+
   const configuration = {
-    automation: [],
-    script: [...lightScripts],
+    automation: [...variableUpdateAutomations],
+    script: [
+      ...lightScripts,
+      addLightToVarScript,
+      removeLightFromVarScript
+    ],
     input_number: [...variablesInputs],
     input_boolean: [...contextToggles],
   }

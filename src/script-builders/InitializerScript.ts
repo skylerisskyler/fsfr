@@ -1,7 +1,8 @@
 import { Light } from "../fsfr-types/Light";
 import { ChooseAction, ChooseActionChoice } from "../ha-config-types/Action";
 import { Script, ScriptProps } from "../ha-config-types/Script";
-import { getApplyContextToLightScriptId, getInitializerScriptId, getContextToggleId, toInputBooleanEntityId, toScriptEntityId } from "./IdGenerators";
+import { getApplyContextToLightScriptId, getInitializerScriptId, getContextToggleId, toInputBooleanEntityId, toScriptEntityId, getVarAttachScriptId, getVarDetachScriptId } from "./IdGenerators";
+import { ATTACH_VARS_SCRIPT_ID, CURR_CONTEXT_TOGGLE_ID, DETACH_VARS_SCRIPT_ID } from "./VariableConstants";
 
 export function createInitializerScript(light: Light): ScriptProps {
 
@@ -23,6 +24,13 @@ export function createInitializerScript(light: Light): ScriptProps {
         service: 'script.turn_on',
         target: {
           entity_id: toScriptEntityId(getApplyContextToLightScriptId(context, light))
+        },
+        data: {
+          variables: {
+            [ATTACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarAttachScriptId(light, context)),
+            [DETACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarDetachScriptId(light, context)),
+            [CURR_CONTEXT_TOGGLE_ID] : toInputBooleanEntityId(getContextToggleId(context))
+          }
         }
       })
 

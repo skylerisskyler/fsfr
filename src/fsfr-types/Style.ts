@@ -1,3 +1,4 @@
+import { getVariableInputId, toInputNumberEntityId } from "../script-builders/IdGenerators"
 import { IVariable, Variable } from "./Variable"
 
 
@@ -79,7 +80,7 @@ export class Style {
           throw new Error('key is not valid')
       }
       return {...prev, 
-        [key]: `{{ states(\'input_number.fsfr_${variable.namespace}') | int }}`
+        [key]: `{{ states('${toInputNumberEntityId(getVariableInputId(variable))}') | int }}`
       }
     }, {})
 

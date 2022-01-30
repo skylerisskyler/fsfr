@@ -28,12 +28,13 @@ export const getContextToggleId = (context: Context) => `context_${context.id}`
 export const addVariableToGroupId = `add_variable_to_group`
 export const removeVariableFromGroupId = `remove_variable_from_group`
 
-export const getVarAttachScriptId = (light: Light, context: Context) => `ATTACH LIGHT TO VARIABLES IN layer`
-export const getVarDetachScriptId = (light: Light, context: Context) => `DETACH LIGHT FROM VARIABLES IN Layer`
+export const getVarAttachScriptId = (light: Light, context: Context) =>   
+  `attach_${light.id}_${context.id}`
+export const getVarDetachScriptId = (light: Light, context: Context) =>
+  `detach_${light.id}_${context.id}`
 
-export const getVariableGroupId = (variable: Variable) => `var_${variable.namespace}_group`
-
-
+export const getVariableGroupId = (variable: Variable) =>
+  `var_${variable.namespace}_group`
 
 export const toInputNumberEntityId = (id: string) => `input_number.${id}`
 export const toGroupEntityId = (id: string) => `group.${id}`

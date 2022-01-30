@@ -7,7 +7,7 @@ export function createPassthroughScript(light: Light) {
 
   const script: Script = new Script({
     id: getTurnOffInfListenersPassthroughId(light),
-    alias: 'some alias'
+    alias: `SCRIPT: Passthrough for ${light.id}`
   })
   .addAction({
     alias: "ACTION: Turn off inferior context on listener",
