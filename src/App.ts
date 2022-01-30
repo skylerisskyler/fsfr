@@ -13,7 +13,7 @@ function getConfig() {
 async function main() {
 
   const config = getConfig()
-  console.log(config)
+
 
   const abstractions: Abstractions = init(config)
 

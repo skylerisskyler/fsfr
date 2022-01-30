@@ -1,4 +1,4 @@
-import { getVariableInputId } from "../script-builders/IdGenerators"
+import { getVariableInputId } from "../entity-builders/IdGenerators"
 import { InputNumber } from "../ha-config-types"
 
 const range = {

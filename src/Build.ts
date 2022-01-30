@@ -13,12 +13,13 @@ import { InputNumber } from './ha-config-types';
 import { 
   Light,
 } from './fsfr-types';
-import { createToggle } from './script-builders/CreateToggle';
+import { createToggle } from './entity-builders/CreateToggle';
 import { createVariableInput } from './fsfr-types/Variable';
-import { createScripts } from './script-builders/CreateScripts';
+import { createScripts } from './entity-builders/CreateScripts';
 import { ScriptProps } from './ha-config-types/Script';
-import { createAddLightToVarScript, createRemoveLightFromVarScript } from './script-builders/VariableGroupHandlers';
-import { variableUpdateAutomation } from './script-builders/VariableUpdateAutomation';
+import { createAddLightToVarScript, createRemoveLightFromVarScript } from './entity-builders/VariableGroupHandlers';
+import { variableUpdateAutomation } from './entity-builders/VariableUpdateAutomation';
+import { createVariableGroup } from './entity-builders/VariableGroup';
 
 
 interface Package {
@@ -52,6 +53,8 @@ export function build({
 
   const variableUpdateAutomations = variables.map(variable => variableUpdateAutomation(variable))
 
+  const variableGroups = variables.map(variable => createVariableGroup(variable))
+
   const configuration = {
     automation: [...variableUpdateAutomations],
     script: [
@@ -61,6 +64,7 @@ export function build({
     ],
     input_number: [...variablesInputs],
     input_boolean: [...contextToggles],
+    group: [...variableGroups]
   }
 
   return configuration

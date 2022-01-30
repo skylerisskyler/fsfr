@@ -1,4 +1,4 @@
-import { getVariableInputId, toInputNumberEntityId } from "../script-builders/IdGenerators"
+import { getVariableInputId, toInputNumberEntityId } from "../entity-builders/IdGenerators"
 import { IVariable, Variable } from "./Variable"
 
 

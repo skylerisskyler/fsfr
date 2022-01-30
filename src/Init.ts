@@ -19,7 +19,6 @@ export interface Abstractions {
 export function init(config: Schema): Abstractions {
 
   let variables: Variable[] = []
-  console.log(config.variables)
   if(config.variables) {
     variables = variables.concat(
       config.variables.map((variableConf) => new Variable(variableConf))

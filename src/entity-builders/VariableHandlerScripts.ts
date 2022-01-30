@@ -1,7 +1,8 @@
 import { Light } from "../fsfr-types/Light"
 import { Script } from "../ha-config-types/Script"
 import { Variable } from "../fsfr-types/Variable"
-import { getVarAttachScriptId, getVarDetachScriptId } from "./IdGenerators"
+import { addVariableToGroupId, getVarAttachScriptId, getVarDetachScriptId, getVariableGroupId, removeVariableFromGroupId, toGroupEntityId, toScriptEntityId } from "./IdGenerators"
+import { GROUP_ID, LIGHT_ID } from "./VariableConstants"
 
 
 export function createVarAttachScripts(light: Light): Script[] {
@@ -18,10 +19,11 @@ export function createVarAttachScripts(light: Light): Script[] {
     layer.style.variables.forEach((variable: Variable) => {
       script.addAction({
         service: 'script.turn_on',
-        target: {entity_id: `script.util_add_light_to_var`},
+        target: {entity_id: toScriptEntityId(addVariableToGroupId)},
         data: {
           variables: {
-            light_to_add: light.entityId
+            [GROUP_ID]: getVariableGroupId(variable),
+            [LIGHT_ID]: light.entityId,
           }
         }
       })
@@ -46,10 +48,11 @@ export function createVarDetachScripts(light: Light): Script[] {
     layer.style.variables.forEach((variable: Variable) => {
       script.addAction({
         service: 'script.turn_on',
-        target: {entity_id: `script.util_remove_light_from_var`},
+        target: {entity_id:  toScriptEntityId(removeVariableFromGroupId)},
         data: {
           variables: {
-            light_to_remove: light.entityId
+            [GROUP_ID]: getVariableGroupId(variable),
+            [LIGHT_ID]: light.entityId,
           }
         }
       })

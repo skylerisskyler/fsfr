@@ -5,13 +5,13 @@ import { GROUP_ID, LIGHT_ID } from "./VariableConstants";
 export function createAddLightToVarScript() {
   const script: Script = new Script({
     id: addVariableToGroupId,
-    alias: "Add light to variable",
+    alias: "SCRIPT: Util add light to variable",
   })
   .addAction({
     service: 'group.set',
     data: {
       object_id: "{{ group_id }}",
-      entities: `{{ state_attr("${GROUP_ID}", "entity_id") | list + [${LIGHT_ID}] }}`
+      entities: `{{ state_attr('group.' + ${GROUP_ID}, 'entity_id') | list + [${LIGHT_ID}] }}`
     }
   })
 
@@ -21,13 +21,13 @@ export function createAddLightToVarScript() {
 export function createRemoveLightFromVarScript() {
   const script: Script = new Script({
     id: removeVariableFromGroupId,
-    alias: "Add light to variable",
+    alias: "SCRIPT: Util remove light from variable",
   })
   .addAction({
     service: 'group.set',
     data: {
       object_id: "{{ group_id }}",
-      entities: `{{state_attr('${GROUP_ID}', 'entity_id')|reject('equalto', '${LIGHT_ID}')| list}}`
+      entities: `{{state_attr(group + '${GROUP_ID}', 'entity_id')|reject('equalto', '${LIGHT_ID}')| list}}`
     }
   })
 

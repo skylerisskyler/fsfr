@@ -12,12 +12,12 @@ export function variableUpdateAutomation(variable: Variable) {
     entity_id: toInputNumberEntityId(getVariableInputId(variable)),
   })
   .addAction({
-    service: 'group.turn_on',
+    service: 'light.turn_on',
     target: {
       entity_id: toGroupEntityId(getVariableGroupId(variable)),
     },
     data: {
-      [variable.key]: `{{ states.${toInputNumberEntityId(getVariableInputId(variable))} | int }}`,
+      [variable.key]: `{{ states('${toInputNumberEntityId(getVariableInputId(variable))}') | int }}`,
     }
   })
 

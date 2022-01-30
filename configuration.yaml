@@ -4,11 +4,11 @@ automation:
       - platform: state
         entity_id: input_number.var_bri_brightness
     action:
-      - service: group.turn_on
+      - service: light.turn_on
         target:
           entity_id: group.var_bri_group
         data:
-          brightness_pct: "{{ states.input_number.var_bri_brightness | int }}"
+          brightness_pct: "{{ states('input_number.var_bri_brightness') | int }}"
 script:
   init_skyler_room:
     alias: "SCRIPT: Initialize skyler_room"
@@ -153,34 +153,37 @@ script:
     sequence:
       - service: script.turn_on
         target:
-          entity_id: script.util_add_light_to_var
+          entity_id: script.add_variable_to_group
         data:
           variables:
-            light_to_add: light.skyler_room
+            group_id: var_bri_group
+            light_id: light.skyler_room
   detach_skyler_room_main:
     alias: "SCRIPT: Detach variables of skyler_room in main"
     sequence:
       - service: script.turn_on
         target:
-          entity_id: script.util_remove_light_from_var
+          entity_id: script.remove_variable_from_group
         data:
           variables:
-            light_to_remove: light.skyler_room
+            group_id: var_bri_group
+            light_id: light.skyler_room
   add_variable_to_group:
-    alias: Add light to variable
+    alias: "SCRIPT: Util add light to variable"
     sequence:
       - service: group.set
         data:
           object_id: "{{ group_id }}"
-          entities: '{{ state_attr("group_id", "entity_id") | list + [light_id] }}'
+          entities: "{{ state_attr('group.' + group_id, 'entity_id') | list + [light_id]
+            }}"
   remove_variable_from_group:
-    alias: Add light to variable
+    alias: "SCRIPT: Util remove light from variable"
     sequence:
       - service: group.set
         data:
           object_id: "{{ group_id }}"
-          entities: "{{state_attr('group_id', 'entity_id')|reject('equalto', 'light_id')|
-            list}}"
+          entities: "{{state_attr(group + 'group_id', 'entity_id')|reject('equalto',
+            'light_id')| list}}"
 input_boolean:
   context_main:
     icon: "mdi: landscape"
@@ -193,3 +196,7 @@ input_number:
     max: 100
     step: 1
     mode: slider
+group:
+  var_bri_group:
+    name: "FSFR: bri"
+    entities: []

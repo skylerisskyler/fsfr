@@ -8,12 +8,14 @@ import {
   InputNumber
 } from './ha-config-types'
 import { ScriptProps } from './ha-config-types/Script';
+import { Group } from './ha-config-types/Group';
 
 export interface ConfigPackage {
   input_boolean: InputBoolean[];
   automation: Automation[];
   script: ScriptProps[];
   input_number: InputNumber[];
+  group: Group[]
 }
 
 interface Dict {
@@ -34,6 +36,7 @@ export function writeToPackage(configPackage: ConfigPackage) {
     script: configPackage.script.reduce(toDict, {}),
     input_boolean: configPackage.input_boolean.reduce(toDict, {}),
     input_number: configPackage.input_number.reduce(toDict, {}),
+    group: configPackage.group.reduce(toDict, {}),
   }
 
   const packageString = YAML.stringify(pkg)

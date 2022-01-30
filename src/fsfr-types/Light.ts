@@ -3,11 +3,11 @@ import { Layer, LayerConf } from "./Layer"
 import { Variable } from "./Variable"
 import { Context } from "./Context"
 import { Script } from '../ha-config-types/Script'
-import { createInfHandlerScripts, createSupHandlerScripts } from "../script-builders/ContextHandlerScripts"
-import { createListenCurrContextOffScript, createListenInfContextOffScript, createListenInfContextOnScript, createSuperiorContextOnListener } from "../script-builders/ListenerScripts"
-import { applyContextToLightScripts } from "../script-builders/ApplyContextScript"
-import { createPassthroughScript } from "../script-builders/PassthroughScript"
-import { createInitializerScript } from "../script-builders/InitializerScript"
+import { createInfHandlerScripts, createSupHandlerScripts } from "../entity-builders/ContextHandlerScripts"
+import { createListenCurrContextOffScript, createListenInfContextOffScript, createListenInfContextOnScript, createSuperiorContextOnListener } from "../entity-builders/ListenerScripts"
+import { applyContextToLightScripts } from "../entity-builders/ApplyContextScript"
+import { createPassthroughScript } from "../entity-builders/PassthroughScript"
+import { createInitializerScript } from "../entity-builders/InitializerScript"
 
 
 export interface LightConf {
