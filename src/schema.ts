@@ -1,5 +1,5 @@
 import { IVariable } from './fsfr-types/Variable'
-import { StyleConf, StyleProps } from './Style'
+import { StyleConf, StyleProps } from './fsfr-types/Style'
 import { LayerConf } from './fsfr-types/Layer'
 import { LightConf } from './fsfr-types/Light'
 

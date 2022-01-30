@@ -1,6 +1,6 @@
 import { Light } from "./Light"
 import { Context } from "./Context"
-import { Style, StyleProps } from "../Style"
+import { Style, StyleProps } from "./Style"
 import { Variable } from "./Variable"
 
 
@@ -55,9 +55,9 @@ export class Layer {
 
     //handle context
 
-    let context = contexts.find((context: Context) => context.id === conf.context)
+    let context: Context | undefined = contexts.find((context: Context) => context.id === conf.context)
     if (!context) {
-      context = new Context({id: conf.context})
+      context = new Context(conf.context)
     }
     this.context = context
 

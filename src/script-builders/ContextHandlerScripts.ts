@@ -1,7 +1,7 @@
 import { Layer } from '../fsfr-types/Layer'
 import { Light } from '../fsfr-types/Light'
 import { ChooseAction, ChooseActionChoice } from '../ha-config-types/Action'
-import { Script } from '../ha-config-types/Script'
+import { Script, ScriptProps } from '../ha-config-types/Script'
 import { getApplyContextToLightScriptId, getDefaultScriptId, getInfCurrContextOffListenerId, getInfContextHandlerScriptId, getInfContextOffListenerId, getInfContextOnListenerId, getContextToggleId, getSupContextHandlerScriptId, getSupContextOnListenerScript, toInputBooleanEntityId, toScriptEntityId } from './IdGenerators'
 import { APPLY_CONTEXT_SCRIPT_ID, FIRST_INF_CONTEXT_SCRIPT, globalScriptVariables, INF_CONTEXT_TOGGLE_ID, SUP_CONTEXT_TOGGLE_ID } from './VariableConstants'
 
@@ -96,7 +96,7 @@ export function createInfHandlerScripts(light: Light) {
         .addChoice(offChoice)
       )
 
-    return script
+    return script.compile()
   })
 
   const defaultScript: Script = new Script({
@@ -112,12 +112,12 @@ export function createInfHandlerScripts(light: Light) {
     })
   }
     
-  scripts.push(defaultScript)
+  scripts.push(defaultScript.compile())
 
   return scripts
 }
 
-export function createSupHandlerScripts(light: Light) {
+export function createSupHandlerScripts(light: Light): ScriptProps[] {
 
   const scripts: Script[] =  light.layers
     .reverse()
@@ -153,7 +153,7 @@ export function createSupHandlerScripts(light: Light) {
         })
       }
 
-      return script
+      return script.compile()
     })
 
   return scripts

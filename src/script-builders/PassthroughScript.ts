@@ -43,6 +43,6 @@ export function createPassthroughScript(light: Light) {
     }
   })
 
-  return script
+  return script.compile()
 
 }

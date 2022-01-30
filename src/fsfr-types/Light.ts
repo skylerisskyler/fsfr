@@ -1,4 +1,4 @@
-import { Style } from "../Style"
+import { Style } from "./Style"
 import { Layer, LayerConf } from "./Layer"
 import { Variable } from "./Variable"
 import { Context } from "./Context"
@@ -85,23 +85,6 @@ export class Light {
     return this.layers.map(layer =>  layer.context)
   }
 
-  createScripts() {
 
-    const scripts: Script[] = []
-
-    scripts.push(...applyContextToLightScripts(this))
-    scripts.push(...createSupHandlerScripts(this))
-    scripts.push(createSuperiorContextOnListener(this)) //green
-    scripts.push(...createInfHandlerScripts(this))
-
-    scripts.push(createListenCurrContextOffScript(this)) //yellow
-    scripts.push(createListenInfContextOffScript(this))
-    scripts.push(createListenInfContextOnScript(this))
-    scripts.push(createPassthroughScript(this))
-
-    scripts.push(createInitializerScript(this))
-
-    return scripts
-  }
 }
 

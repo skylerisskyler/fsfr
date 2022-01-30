@@ -1,4 +1,4 @@
-export interface InputSelectConfig {
+export interface InputSelect {
   id: string;
   name: string;
   options: string[];

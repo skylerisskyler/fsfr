@@ -1,10 +1,10 @@
 import { Layer } from "../fsfr-types/Layer"
 import { Light } from "../fsfr-types/Light"
-import { Script } from "../ha-config-types/Script"
+import { Script, ScriptProps } from "../ha-config-types/Script"
 import { getApplyContextToLightScriptId, getInfContextHandlerScriptId, getContextToggleId, getSupContextHandlerScriptId, getSupContextOnListenerScript, getVarAttachScriptId, getVarDetachScriptId, toInputBooleanEntityId, toScriptEntityId } from "./IdGenerators"
 import {  APPLY_CONTEXT_SCRIPT_ID, ATTACH_VARS_SCRIPT_ID, CURR_CONTEXT_TOGGLE_ID, DETACH_VARS_SCRIPT_ID,  FIRST_INF_CONTEXT_SCRIPT, globalScriptVariables } from "./VariableConstants"
 
-export function applyContextToLightScripts(light: Light) {
+export function applyContextToLightScripts(light: Light): ScriptProps[] {
   return light.layers.map((layer, idx, layers) => {
 
     const { context } = layer
@@ -73,6 +73,6 @@ export function applyContextToLightScripts(light: Light) {
       })
     }
 
-    return script
+    return script.compile()
   })
 }

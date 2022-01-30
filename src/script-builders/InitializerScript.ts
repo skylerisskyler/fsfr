@@ -1,9 +1,9 @@
 import { Light } from "../fsfr-types/Light";
 import { ChooseAction, ChooseActionChoice } from "../ha-config-types/Action";
-import { Script } from "../ha-config-types/Script";
+import { Script, ScriptProps } from "../ha-config-types/Script";
 import { getApplyContextToLightScriptId, getInitializerScriptId, getContextToggleId, toInputBooleanEntityId, toScriptEntityId } from "./IdGenerators";
 
-export function createInitializerScript(light: Light) {
+export function createInitializerScript(light: Light): ScriptProps {
 
   const script: Script = new Script({
     id: getInitializerScriptId(light),
@@ -44,5 +44,5 @@ export function createInitializerScript(light: Light) {
 
   script.addAction(chooseAction)
 
-  return script
+  return script.compile()
 }

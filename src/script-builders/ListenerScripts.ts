@@ -5,7 +5,7 @@ import { FIRST_INF_CONTEXT_SCRIPT, globalScriptVariables, APPLY_CONTEXT_SCRIPT_I
 
 
 
-export function createSuperiorContextOnListener(light: Light) { //green
+export function createSuperiorContextOnListener(light: Light) {
 
   const superiorContextListener: Script = new Script({
     id: getSupContextOnListenerScript(light),
@@ -27,7 +27,7 @@ export function createSuperiorContextOnListener(light: Light) { //green
     }
   })
 
-  return superiorContextListener
+  return superiorContextListener.compile()
 }
 
 export function createListenCurrContextOffScript(light: Light) { //yellow
@@ -50,7 +50,7 @@ export function createListenCurrContextOffScript(light: Light) { //yellow
     }
   })
 
-  return currContextOffListener
+  return currContextOffListener.compile()
 }
 
 export function createListenInfContextOffScript(light: Light) { // purple
@@ -76,7 +76,7 @@ export function createListenInfContextOffScript(light: Light) { // purple
     }
   })
 
-  return script
+  return script.compile()
 }
 
 
@@ -102,7 +102,7 @@ export function createListenInfContextOnScript(light: Light) { // blue
     }
   })
 
-  return script
+  return script.compile()
 }
 
 

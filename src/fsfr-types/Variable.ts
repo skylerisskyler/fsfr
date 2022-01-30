@@ -1,6 +1,5 @@
-import { ID_PREFIX } from "../App"
-import { InputNumberProps } from "../ha-config-types/InputNumber"
-
+import { getVariableInputId } from "../script-builders/IdGenerators"
+import { InputNumber } from "../ha-config-types"
 
 const range = {
   temperature: {
@@ -72,9 +71,9 @@ export interface IVariable {
   max?: number
 }
 
-export const getVariableInputId = (variable: Variable) => `${ID_PREFIX}_var_${variable.namespace}`
 
-export const createVariableInput = (variable: Variable): InputNumberProps => {
+
+export const createVariableInput = (variable: Variable): InputNumber => {
 
   return {
     id: getVariableInputId(variable),

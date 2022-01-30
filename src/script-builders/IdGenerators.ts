@@ -34,7 +34,11 @@ export const getVarDetachScriptId = (light: Light, context: Context) => `DETACH 
 export const getVariableGroupId = (variable: Variable) => `var_${variable.namespace}_group`
 
 
+
 export const toInputNumberEntityId = (id: string) => `input_number.${id}`
 export const toGroupEntityId = (id: string) => `group.${id}`
 export const toScriptEntityId = (id: string) => `script.${id}`
 export const toInputBooleanEntityId = (id: string) => `input_boolean.${id}`
+
+export const ID_PREFIX = 'fsfr'
+export const ALIAS_PREFIX = 'FSFR::'

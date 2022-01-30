@@ -1,31 +1,4 @@
-input_number:
-  fsfr_var_circadian_bri:
-    name: "Input variable: circadian_bri"
-    min: 0
-    max: 100
-    step: 1
-    mode: slider
-  fsfr_var_circadian_temp:
-    name: "Input variable: circadian_temp"
-    min: 1700
-    max: 8000
-    step: 1
-    mode: slider
-  fsfr_var_theater_bri:
-    name: "Input variable: theater_bri"
-    min: 0
-    max: 100
-    step: 1
-    mode: slider
-input_boolean:
-  context_circadian:
-    icon: "mdi: landscape"
-    name: "Toggle context: circadian"
-    initial: false
-  context_theater:
-    icon: "mdi: landscape"
-    name: "Toggle context: theater"
-    initial: false
+automation: []
 script:
   apply_theater_living_room:
     alias: "SCRIPT: Apply context theater to light"
@@ -282,3 +255,31 @@ script:
             service: light.turn_off
             target:
               entity_id: light.living_room
+input_boolean:
+  context_circadian:
+    icon: "mdi: landscape"
+    name: "Toggle context: circadian"
+    initial: false
+  context_theater:
+    icon: "mdi: landscape"
+    name: "Toggle context: theater"
+    initial: false
+input_number:
+  var_circadian_bri_brightness:
+    name: "Input variable: circadian_bri"
+    min: 0
+    max: 100
+    step: 1
+    mode: slider
+  var_circadian_temp_temperature:
+    name: "Input variable: circadian_temp"
+    min: 1700
+    max: 8000
+    step: 1
+    mode: slider
+  var_theater_bri_brightness:
+    name: "Input variable: theater_bri"
+    min: 0
+    max: 100
+    step: 1
+    mode: slider
