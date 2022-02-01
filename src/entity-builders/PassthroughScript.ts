@@ -34,7 +34,7 @@ export function createPassthroughScript(light: Light) {
     alias: "ACTION: Call apply context or context handler",
     service: "script.turn_on",
     target: {
-      entity_id: `{{ call_back }}`
+      entity_id: `{{ callback }}`
     },
     data: {
       variables: {

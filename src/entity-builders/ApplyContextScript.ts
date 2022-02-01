@@ -41,13 +41,23 @@ export function applyContextToLightScripts(light: Light): ScriptProps[] {
         entity_id: toScriptEntityId(getSupContextOnListenerScript(light))
       }
     })
-    .addAction({
-      alias: `ACTION: Detach variables of ${light.id} in current scene`,
-      service: `{{ ${DETACH_VARS_SCRIPT_ID} }}`,
-    })
+    .addAction(
+      new ChooseAction(`Choose action for ${light.id}`)
+        .addChoice(
+          new ChooseActionChoice("ACTION: Turn on light")
+            .addCondition({
+              condition: 'template',
+              value_template: `{{ ${DETACH_VARS_SCRIPT_ID} is not false }}`
+            })
+            .addAction({
+              alias: `ACTION: Detach variables of ${light.id} in current scene`,
+              service: `{{ ${DETACH_VARS_SCRIPT_ID} }}`,
+            })
+        )
+    )
     .addAction({
       alias: `ACTION: Attach variables of ${light.id} in ${context.id}`,
-      service: `{{ ${ATTACH_VARS_SCRIPT_ID} }}`,
+      service: toScriptEntityId(getVarAttachScriptId(light, context)),
     })
     .addAction({
       alias: `ACTION: turn on light ${light.id} with data of ${context.id}`,
