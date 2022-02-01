@@ -2,7 +2,7 @@ import { Layer } from '../fsfr-types/Layer'
 import { Light } from '../fsfr-types/Light'
 import { ChooseAction, ChooseActionChoice } from '../ha-config-types/Action'
 import { Script, ScriptProps } from '../ha-config-types/Script'
-import { getApplyContextToLightScriptId, getDefaultScriptId, getInfCurrContextOffListenerId, getInfContextHandlerScriptId, getInfContextOffListenerId, getInfContextOnListenerId, getContextToggleId, getSupContextHandlerScriptId, getSupContextOnListenerScript, toInputBooleanEntityId, toScriptEntityId } from './IdGenerators'
+import { getApplyContextToLightScriptId, getInfCurrContextOffListenerId, getInfContextHandlerScriptId, getInfContextOffListenerId, getInfContextOnListenerId, getContextToggleId, getSupContextHandlerScriptId, getSupContextOnListenerScript, toInputBooleanEntityId, toScriptEntityId, getApplyDefaultToLightScriptId, getDefaultHandlerScriptId } from './IdGenerators'
 import { APPLY_CONTEXT_SCRIPT_ID, FIRST_INF_CONTEXT_SCRIPT, globalScriptVariables, INF_CONTEXT_TOGGLE_ID, SUP_CONTEXT_TOGGLE_ID } from './VariableConstants'
 
 export function createInfHandlerScripts(light: Light) {
@@ -85,7 +85,7 @@ export function createInfHandlerScripts(light: Light) {
       offChoice.addAction({
         alias: `ACTION: Turn on default layer of none other exists`,
         service: 'script.turn_on',
-        target: {entity_id: toScriptEntityId(getDefaultScriptId(light))},
+        target: {entity_id: toScriptEntityId(getApplyDefaultToLightScriptId(light))},
       })
     }
 
@@ -101,15 +101,22 @@ export function createInfHandlerScripts(light: Light) {
 
   const defaultScript: Script = new Script({
     alias: `SCRIPT: default`,
-    id: getDefaultScriptId(light),
+    id: getDefaultHandlerScriptId(light),
   })
 
-  if(!light.default) {
-    defaultScript.addAction({
-      alias: `ACTION: turn off ${light.id}`,
-      service: 'light.turn_off',
-      target: {entity_id: light.entityId}
-    })
+  if(!light.default) { //TODO: define default behave in config
+    defaultScript
+        .addAction({
+          alias: `ACTION: initialize current context off listener`,
+          service: 'script.turn_on',
+          target: {entity_id: toScriptEntityId(getInfCurrContextOffListenerId(light))}, //yellow
+          data: {
+            variables: {
+              ...globalScriptVariables,
+              callback: toScriptEntityId(getApplyDefaultToLightScriptId(light))
+            }
+          }
+        })
   }
     
   scripts.push(defaultScript.compile())
@@ -121,7 +128,7 @@ export function createSupHandlerScripts(light: Light): ScriptProps[] {
 
   const scripts: Script[] =  light.layers
     .reverse()
-    .slice(1)
+    // .slice(1)
     .map((layer, idx, layers) => {
 
       const { context } = layer

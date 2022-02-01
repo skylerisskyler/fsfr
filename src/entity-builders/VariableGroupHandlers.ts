@@ -33,3 +33,5 @@ export function createRemoveLightFromVarScript() {
 
   return script.compile()
 }
+
+

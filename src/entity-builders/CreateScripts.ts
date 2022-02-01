@@ -15,13 +15,17 @@ export function createScripts(light: Light): ScriptProps[] {
   scripts.push(createInitializerScript(light))
 
   scripts.push(...applyContextToLightScripts(light))
+
+  //handlers
   scripts.push(...createSupHandlerScripts(light))
-  scripts.push(createSuperiorContextOnListener(light))
   scripts.push(...createInfHandlerScripts(light))
 
+  //listeners
+  scripts.push(createSuperiorContextOnListener(light))
   scripts.push(createListenCurrContextOffScript(light))
   scripts.push(createListenInfContextOffScript(light))
   scripts.push(createListenInfContextOnScript(light))
+
   scripts.push(createPassthroughScript(light))
 
   scripts.push(createPassthroughScript(light))

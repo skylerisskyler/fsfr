@@ -19,7 +19,6 @@ export interface LayerFormat {
   [id: string]: LayerProps
 }
 
-
 export class Layer {
   id: string | null
   style: Style

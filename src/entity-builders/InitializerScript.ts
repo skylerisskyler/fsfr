@@ -1,8 +1,21 @@
 import { Light } from "../fsfr-types/Light";
 import { ChooseAction, ChooseActionChoice } from "../ha-config-types/Action";
 import { Script, ScriptProps } from "../ha-config-types/Script";
-import { getApplyContextToLightScriptId, getInitializerScriptId, getContextToggleId, toInputBooleanEntityId, toScriptEntityId, getVarAttachScriptId, getVarDetachScriptId } from "./IdGenerators";
-import { ATTACH_VARS_SCRIPT_ID, CURR_CONTEXT_TOGGLE_ID, DETACH_VARS_SCRIPT_ID } from "./VariableConstants";
+import {
+  getApplyContextToLightScriptId,
+  getInitializerScriptId,
+  getContextToggleId,
+  toInputBooleanEntityId,
+  toScriptEntityId,
+  getVarAttachScriptId,
+  getVarDetachScriptId,
+  getApplyDefaultToLightScriptId
+} from "./IdGenerators";
+import {
+  ATTACH_VARS_SCRIPT_ID,
+  CURR_CONTEXT_TOGGLE_ID,
+  DETACH_VARS_SCRIPT_ID 
+} from "./VariableConstants";
 
 export function createInitializerScript(light: Light): ScriptProps {
 
@@ -11,7 +24,8 @@ export function createInitializerScript(light: Light): ScriptProps {
     alias: `SCRIPT: Initialize ${light.id}`,
   })
 
-  const choices: ChooseActionChoice[] = light.contexts.map(context => { 
+  const choices: ChooseActionChoice[] = light.layers.map(layer => { 
+    const { context } = layer
     const choice = new ChooseActionChoice(`if ${context.id} is on`)
       .addCondition({
         alias: `CONDITION: check ${context.id} toggle is on`,
@@ -43,10 +57,17 @@ export function createInitializerScript(light: Light): ScriptProps {
   choices.forEach(choice => chooseAction.addChoice(choice))
 
   chooseAction.addDefault({
-    alias: `Default: turn off light`,
-    service: 'light.turn_off',
+    alias: `ACTION: apply default to ${light.id}`,
+    service: 'script.turn_on',
     target: {
-      entity_id: light.entityId,
+      entity_id: toScriptEntityId(getApplyDefaultToLightScriptId(light))
+    },
+    data: {
+      variables: {
+        [ATTACH_VARS_SCRIPT_ID]: 'undefined',
+        [DETACH_VARS_SCRIPT_ID]: false,
+        [CURR_CONTEXT_TOGGLE_ID] : 'undefined'
+      }
     }
   })
 

@@ -13,6 +13,7 @@ import { createInitializerScript } from "../entity-builders/InitializerScript"
 export interface LightConf {
   id: string | string[]
   layers: (LayerConf | string)[]
+
 }
 
 export class Light {
@@ -61,6 +62,8 @@ export class Light {
         this.layers.push(layer)
       }
     })
+
+
 
   }
 

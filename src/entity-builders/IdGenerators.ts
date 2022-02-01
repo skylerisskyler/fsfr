@@ -3,11 +3,13 @@ import { Context } from '../fsfr-types/Context'
 import { Variable } from '../fsfr-types/Variable'
 
 
-// Context handler ids
-export const getInfContextHandlerScriptId = (light: Light, context: Context) => `handle_${light.id}_inf_${context.id}`
-export const getSupContextHandlerScriptId = (light: Light, context: Context) => `handle_${light.id}_sup_${context.id}`
-
 export const getInitializerScriptId = (light: Light) => `init_${light.id}`
+
+// Context handler ids
+export const getInfContextHandlerScriptId = (light: Light, context: Context) => `inf_handler_${light.id}_${context.id}`
+export const getDefaultHandlerScriptId = (light: Light) => `inf_handler_${light.id}_default`
+export const getSupContextHandlerScriptId = (light: Light, context: Context) => `sup_handler_${light.id}_${context.id}`
+
 
 // context listener ids
 export const getSupContextOnListenerScript = (light: Light) => `listen_${light.id}_sup_context_on`
@@ -17,7 +19,8 @@ export const getInfCurrContextOffListenerId = (light: Light) => `listen_${light.
 
 
 export const getApplyContextToLightScriptId = (context: Context, light: Light) => `apply_${context.id}_${light.id}`
-export const getDefaultScriptId = (light: Light) => `apply_default_${light.id}`
+export const getApplyDefaultToLightScriptId = (light: Light) =>
+  `apply_default_${light.id}`
 
 export const getTurnOffInfListenersPassthroughId = (light: Light)  => `stop_inf_listen_passthrough_${light.id}`
 
@@ -35,6 +38,8 @@ export const getVarDetachScriptId = (light: Light, context: Context) =>
 
 export const getVariableGroupId = (variable: Variable) =>
   `var_${variable.namespace}_group`
+
+
 
 export const toInputNumberEntityId = (id: string) => `input_number.${id}`
 export const toGroupEntityId = (id: string) => `group.${id}`

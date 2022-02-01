@@ -11,6 +11,11 @@ interface BaseCondition {
   alias?: string;
 }
 
+export interface TemplateCondition extends BaseCondition {
+  condition: "template";
+  value_template: string;
+}
+
 export interface StateCondition extends BaseCondition {
   condition: "state";
   entity_id: string;
@@ -21,11 +26,11 @@ export interface StateCondition extends BaseCondition {
 
 export type Condition =
   | StateCondition
+  | TemplateCondition
 // | NumericStateCondition
 // | SunCondition
 // | ZoneCondition
 // | TimeCondition
-// | TemplateCondition
 // | DeviceCondition
 // | LogicalCondition
 // | TriggerCondition;
