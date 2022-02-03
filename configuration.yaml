@@ -15,17 +15,6 @@ script:
     sequence:
       - alias: Get highest priority context for light skyler_room
         choose:
-          - alias: if second is on
-            conditions:
-              - alias: "CONDITION: check second toggle is on"
-                condition: state
-                entity_id: input_boolean.context_second
-                state: 'on'
-            sequence:
-              - alias: "ACTION: apply context second to light"
-                service: script.turn_on
-                target:
-                  entity_id: script.apply_second_skyler_room
           - alias: if first is on
             conditions:
               - alias: "CONDITION: check first toggle is on"
@@ -37,6 +26,17 @@ script:
                 service: script.turn_on
                 target:
                   entity_id: script.apply_first_skyler_room
+          - alias: if second is on
+            conditions:
+              - alias: "CONDITION: check second toggle is on"
+                condition: state
+                entity_id: input_boolean.context_second
+                state: 'on'
+            sequence:
+              - alias: "ACTION: apply context second to light"
+                service: script.turn_on
+                target:
+                  entity_id: script.apply_second_skyler_room
         default:
           - alias: "ACTION: apply default to skyler_room"
             service: script.turn_on
@@ -45,6 +45,42 @@ script:
             data:
               variables:
                 detach_vars_script_id: false
+  apply_first_skyler_room:
+    alias: "SCRIPT: Apply context first to light"
+    sequence:
+      - alias: "ACTION: Turn off superior context on listener"
+        service: script.turn_off
+        target:
+          entity_id:
+            - script.listen_skyler_room_inf_context_on
+            - script.listen_skyler_room_inf_context_off
+            - script.listen_skyler_room_curr_context_off
+            - script.listen_skyler_room_sup_context_on
+      - alias: Check variables to detach for skyler_room
+        choose:
+          - alias: "ACTION: Check detach script ID exists"
+            conditions:
+              - condition: template
+                value_template: "{{ detach_vars_script_id is not false }}"
+            sequence:
+              - alias: "ACTION: Detach variables of skyler_room in current scene"
+                service: "{{ detach_vars_script_id }}"
+        default: []
+      - alias: "ACTION: turn on light skyler_room with styles of first"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: green
+      - alias: "ACTION: Turn on the first inferior context handler"
+        service: script.turn_on
+        target:
+          entity_id: script.inf_handler_skyler_room_second
+        data:
+          variables:
+            curr_context_toggle_id: input_boolean.context_first
+            first_inf_handler_script_id: script.inf_handler_skyler_room_first
+            detach_vars_script_id: false
   apply_second_skyler_room:
     alias: "SCRIPT: Apply context second to light"
     sequence:
@@ -91,42 +127,6 @@ script:
             curr_context_toggle_id: input_boolean.context_second
             first_inf_handler_script_id: script.inf_handler_skyler_room_second
             detach_vars_script_id: script.detach_skyler_room_second
-  apply_first_skyler_room:
-    alias: "SCRIPT: Apply context first to light"
-    sequence:
-      - alias: "ACTION: Turn off superior context on listener"
-        service: script.turn_off
-        target:
-          entity_id:
-            - script.listen_skyler_room_inf_context_on
-            - script.listen_skyler_room_inf_context_off
-            - script.listen_skyler_room_curr_context_off
-            - script.listen_skyler_room_sup_context_on
-      - alias: Check variables to detach for skyler_room
-        choose:
-          - alias: "ACTION: Check detach script ID exists"
-            conditions:
-              - condition: template
-                value_template: "{{ detach_vars_script_id is not false }}"
-            sequence:
-              - alias: "ACTION: Detach variables of skyler_room in current scene"
-                service: "{{ detach_vars_script_id }}"
-        default: []
-      - alias: "ACTION: turn on light skyler_room with styles of first"
-        service: light.turn_on
-        target:
-          entity_id: light.skyler_room
-        data:
-          color_name: green
-      - alias: "ACTION: Turn on the first inferior context handler"
-        service: script.turn_on
-        target:
-          entity_id: script.inf_handler_skyler_room_second
-        data:
-          variables:
-            curr_context_toggle_id: input_boolean.context_first
-            first_inf_handler_script_id: script.inf_handler_skyler_room_first
-            detach_vars_script_id: false
   apply_default_skyler_room:
     alias: "SCRIPT: Apply default context to light"
     sequence:
@@ -158,29 +158,10 @@ script:
       - alias: "ACTION: Turn on the first superior context handler"
         service: script.turn_on
         target:
-          entity_id: script.sup_handler_skyler_room_first
-        data:
-          variables:
-            detach_vars_script_id: false
-  sup_handler_skyler_room_first:
-    alias: "SCRIPT: Handle superior context first"
-    sequence:
-      - alias: "ACTION: turn on first on listener"
-        service: script.turn_on
-        target:
-          entity_id: script.listen_skyler_room_sup_context_on
-        data:
-          variables:
-            detach_vars_script_id: "{{ detach_vars_script_id }}"
-            sup_context_toggle_id: input_boolean.context_first
-            apply_context_script_id: script.apply_first_skyler_room
-      - alias: "ACTION: turn on next context second handler"
-        service: script.turn_on
-        target:
           entity_id: script.sup_handler_skyler_room_second
         data:
           variables:
-            detach_vars_script_id: "{{ detach_vars_script_id }}"
+            detach_vars_script_id: false
   sup_handler_skyler_room_second:
     alias: "SCRIPT: Handle superior context second"
     sequence:
@@ -193,6 +174,25 @@ script:
             detach_vars_script_id: "{{ detach_vars_script_id }}"
             sup_context_toggle_id: input_boolean.context_second
             apply_context_script_id: script.apply_second_skyler_room
+      - alias: "ACTION: turn on next context first handler"
+        service: script.turn_on
+        target:
+          entity_id: script.sup_handler_skyler_room_first
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+  sup_handler_skyler_room_first:
+    alias: "SCRIPT: Handle superior context first"
+    sequence:
+      - alias: "ACTION: turn on first on listener"
+        service: script.turn_on
+        target:
+          entity_id: script.listen_skyler_room_sup_context_on
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+            sup_context_toggle_id: input_boolean.context_first
+            apply_context_script_id: script.apply_first_skyler_room
   inf_handler_skyler_room_first:
     alias: "SCRIPT: Handle inferior context first for skyler_room"
     sequence:

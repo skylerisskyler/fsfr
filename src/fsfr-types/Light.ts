@@ -57,12 +57,9 @@ export class Light {
           contexts
         )
         layer.lights.push(this)
-        this.layers.unshift(layer)
+        this.layers.push(layer)
       }
     })
-
-
-
   }
 
   get entityId() {

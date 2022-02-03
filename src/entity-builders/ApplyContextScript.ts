@@ -52,7 +52,7 @@ const createTurnOffAllListersAction = (light: Light): Action => {
 }
 
 export function applyContextToLightScripts(light: Light): ScriptProps[] {
-  
+  console.log(light.layers)
   const scripts = light.layers.map((layer, idx, layers) => {
 
     const { context } = layer
@@ -89,7 +89,7 @@ export function applyContextToLightScripts(light: Light): ScriptProps[] {
       }
     }
 
-    const firstSuperiorLayer: Layer | undefined = layers[idx + 1]
+    const firstSuperiorLayer: Layer | undefined = layers[idx - 1]
 
     if(firstSuperiorLayer) {
       script.addAction({
@@ -106,7 +106,7 @@ export function applyContextToLightScripts(light: Light): ScriptProps[] {
 
 
 
-    const firstInferiorLayer: Layer | undefined = layers[idx - 1]
+    const firstInferiorLayer: Layer | undefined = layers[idx + 1]
 
     if(firstInferiorLayer) {
 
@@ -156,8 +156,9 @@ export function applyContextToLightScripts(light: Light): ScriptProps[] {
       brightness: 0
     }
   })
+  // console.log(light.layers)
   const firstSuperiorLayer: Layer | undefined = light.layers[light.layers.length - 1]
-  
+  console.log(firstSuperiorLayer)
   if(firstSuperiorLayer) {
     applyDefault.addAction({
       alias: "ACTION: Turn on the first superior context handler",

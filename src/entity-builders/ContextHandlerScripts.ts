@@ -10,6 +10,7 @@ import { APPLY_SCRIPT_ID, CURR_CONTEXT_TOGGLE_ID, DETACH_VARS_SCRIPT_ID, FIRST_I
 export function createSupHandlerScripts(light: Light): ScriptProps[] {
 
   const scripts: Script[] =  light.layers
+    .slice(0)
     .reverse()
     .map((layer, idx, layers) => {
 
