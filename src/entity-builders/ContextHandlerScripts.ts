@@ -17,7 +17,7 @@ export function createSupHandlerScripts(light: Light): ScriptProps[] {
 
       const script: Script = new Script({
         id: getSupContextHandlerScriptId(light, context),
-        alias: `SCRIPT: Superior context handler ${context.id}`
+        alias: `SCRIPT: Handle superior context ${context.id}`
       })
       .addAction({
         alias: `ACTION: turn on ${context.id} on listener`,
@@ -32,12 +32,12 @@ export function createSupHandlerScripts(light: Light): ScriptProps[] {
         }
       })
 
-      const nextLayer: Layer | undefined = layers[idx + 1]
-      if(nextLayer) {
+      const superiorLayer: Layer | undefined = layers[idx + 1]
+      if(superiorLayer) {
         script.addAction({
-          alias: `ACTION: turn on next context ${nextLayer.context.id} handler`,
+          alias: `ACTION: turn on next context ${superiorLayer.context.id} handler`,
           service: 'script.turn_on',
-          target: {entity_id: toScriptEntityId(getSupContextHandlerScriptId(light, nextLayer.context))},
+          target: {entity_id: toScriptEntityId(getSupContextHandlerScriptId(light, superiorLayer.context))},
           data: {
             variables: {
               [DETACH_VARS_SCRIPT_ID]: `{{ ${DETACH_VARS_SCRIPT_ID} }}`
@@ -55,7 +55,6 @@ export function createSupHandlerScripts(light: Light): ScriptProps[] {
 export function createInfHandlerScripts(light: Light) {
 
   const scripts: Script[] =  light.layers
-    .slice(1)
     .map((layer, idx, layers) => {
 
       const { context } = layer
@@ -118,14 +117,14 @@ export function createInfHandlerScripts(light: Light) {
         }
       })
 
-    const nextLayer: Layer | undefined = layers[idx + 1]
+    const inferiorLayer: Layer | undefined = layers[idx + 1]
 
-    if(nextLayer) {
+    if(inferiorLayer) {
 
       offChoice.addAction({
-        alias: `ACTION: turn on next context ${nextLayer.context.id} handler`,
+        alias: `ACTION: turn on next context ${inferiorLayer.context.id} handler`,
         service: 'script.turn_on',
-        target: {entity_id: toScriptEntityId(getInfContextHandlerScriptId(light, nextLayer.context))},
+        target: {entity_id: toScriptEntityId(getInfContextHandlerScriptId(light, inferiorLayer.context))},
         data: {
           variables: {
             ...persistentInfVariables
@@ -134,9 +133,14 @@ export function createInfHandlerScripts(light: Light) {
       })
     } else {
       offChoice.addAction({
-        alias: `ACTION: Turn on default layer of none other exists`,
+        alias: `ACTION: Turn on default handler`,
         service: 'script.turn_on',
-        target: {entity_id: toScriptEntityId(getApplyDefaultToLightScriptId(light))},
+        target: {entity_id: toScriptEntityId(getDefaultHandlerScriptId(light))},
+        data: {
+          variables: {
+            ...persistentInfVariables
+          }
+        }
       })
     }
 
@@ -151,14 +155,14 @@ export function createInfHandlerScripts(light: Light) {
   })
 
   const defaultScript: Script = new Script({
-    alias: `SCRIPT: default`,
+    alias: `SCRIPT: Handle default`,
     id: getDefaultHandlerScriptId(light),
   })
 
   if(!light.default) { //TODO: define default behave in config
     defaultScript
       .addAction({
-        alias: `ACTION: initialize current context off listener`,
+        alias: `ACTION: Initialize current context off listener`,
         service: 'script.turn_on',
         target: {entity_id: toScriptEntityId(getInfCurrContextOffListenerId(light))}, //yellow
         data: {

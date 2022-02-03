@@ -41,7 +41,6 @@ export class Light {
     }
 
     this.layers = []
-
     conf.layers.forEach((layerConf) => {
       if (typeof layerConf === 'string') {
         const layer: Layer | undefined = layers.find((layer) => layerConf === layer.id)
@@ -58,7 +57,7 @@ export class Light {
           contexts
         )
         layer.lights.push(this)
-        this.layers.push(layer)
+        this.layers.unshift(layer)
       }
     })
 

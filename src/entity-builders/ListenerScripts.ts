@@ -42,7 +42,7 @@ export function createListenCurrContextOffScript(light: Light) {
     wait_template: `{{ is_state(${CURR_CONTEXT_TOGGLE_ID}, 'off') }}`
   })
   .addAction({
-    alias: `ACTION: Call apply superior context to ${light.id} script`,
+    alias: `ACTION: Call apply inferior context to ${light.id} script`,
     service: 'script.turn_on',
     target: { entity_id: `{{ ${APPLY_SCRIPT_ID} }}`},
     data: {

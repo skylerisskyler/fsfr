@@ -78,7 +78,18 @@ export function applyContextToLightScripts(light: Light): ScriptProps[] {
       data: layer.style.data
     })
 
-    const firstSuperiorLayer: Layer | undefined = layers[idx - 1]
+    let detachVarsValue = {}
+    if(layer.style.variables.length > 0) {
+      detachVarsValue = {
+        [DETACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarDetachScriptId(light, context)),
+      }
+    } else {
+      detachVarsValue = {
+        [DETACH_VARS_SCRIPT_ID]: false,
+      }
+    }
+
+    const firstSuperiorLayer: Layer | undefined = layers[idx + 1]
 
     if(firstSuperiorLayer) {
       script.addAction({
@@ -87,15 +98,18 @@ export function applyContextToLightScripts(light: Light): ScriptProps[] {
         target: {entity_id: toScriptEntityId(getSupContextHandlerScriptId(light, firstSuperiorLayer.context))},
         data: {
           variables: {
-            [DETACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarDetachScriptId(light, context)),
+            ...detachVarsValue
           }
         }
       })
     }
 
-    const firstInferiorLayer: Layer | undefined = layers[idx + 1]
+
+
+    const firstInferiorLayer: Layer | undefined = layers[idx - 1]
 
     if(firstInferiorLayer) {
+
       script.addAction({
         alias: `ACTION: Turn on the first inferior context handler`,
         service: "script.turn_on",
@@ -104,20 +118,20 @@ export function applyContextToLightScripts(light: Light): ScriptProps[] {
           variables: {
             [CURR_CONTEXT_TOGGLE_ID]: toInputBooleanEntityId(getContextToggleId(context)),
             [FIRST_INF_HANDLER_SCRIPT_ID]: toScriptEntityId(getInfContextHandlerScriptId(light, context)),
-            [DETACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarDetachScriptId(light, context))
+            ...detachVarsValue
           }
         }
       })
     } else {
       script.addAction({
-        alias: `ACTION: Turn on default handler`,
+        alias: `ACTION: Turn on handle default`,
         service: "script.turn_on",
         target: {entity_id: toScriptEntityId(getDefaultHandlerScriptId(light))},
         data: {
           variables: {
             [CURR_CONTEXT_TOGGLE_ID]: toInputBooleanEntityId(getContextToggleId(context)),
             [FIRST_INF_HANDLER_SCRIPT_ID]: toScriptEntityId(getInfContextHandlerScriptId(light, context)),
-            [DETACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarDetachScriptId(light, context))
+            ...detachVarsValue
           }
         }
       })

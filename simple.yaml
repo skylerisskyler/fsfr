@@ -9,7 +9,7 @@ lights:
           color: green
       - context: second
         style:
-          # color: blue
+          color: blue
           brightness: $bri
 variables:
   - namespace: bri

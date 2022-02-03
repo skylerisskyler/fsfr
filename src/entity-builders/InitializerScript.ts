@@ -37,11 +37,6 @@ export function createInitializerScript(light: Light): ScriptProps {
         service: 'script.turn_on',
         target: {
           entity_id: toScriptEntityId(getApplyContextToLightScriptId(context, light))
-        },
-        data: {
-          variables: {
-            [DETACH_VARS_SCRIPT_ID]: false,
-          }
         }
       })
 
