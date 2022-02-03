@@ -1,7 +1,8 @@
 import { Script } from '../ha-config-types/Script'
-import { getApplyContextToLightScriptId, getInfCurrContextOffListenerId, getInfContextOffListenerId, getInfContextOnListenerId, getSupContextOnListenerScript, getTurnOffInfListenersPassthroughId, toScriptEntityId } from './IdGenerators'
+import { getApplyContextToLightScriptId, getInfCurrContextOffListenerId, getInfContextOffListenerId, getInfContextOnListenerId, getSupContextOnListenerScript, toScriptEntityId, getTurnOffInfListenersPassthroughId } from './IdGenerators'
 import {Light} from '../fsfr-types/Light'
-import { FIRST_INF_CONTEXT_SCRIPT, globalScriptVariables, APPLY_CONTEXT_SCRIPT_ID, SUP_CONTEXT_TOGGLE_ID, CURR_CONTEXT_TOGGLE_ID, INF_CONTEXT_TOGGLE_ID } from './VariableConstants'
+import { FIRST_INF_HANDLER_SCRIPT_ID, persistentInfVariables, APPLY_SCRIPT_ID, SUP_CONTEXT_TOGGLE_ID, CURR_CONTEXT_TOGGLE_ID, INF_CONTEXT_TOGGLE_ID, DETACH_VARS_SCRIPT_ID } from './VariableConstants'
+import { createInfListenerOffAction } from './InfListenerOffAction'
 
 
 
@@ -10,19 +11,19 @@ export function createSuperiorContextOnListener(light: Light) {
   const superiorContextListener: Script = new Script({
     id: getSupContextOnListenerScript(light),
     alias: `SCRIPT: Listen superior context on for ${light.id}`,
+    mode: 'parallel' //TODO: require all scripts have mode defined
   })
   .addAction({
     alias: `ACTION: Wait for superior context of ${light.id} to be on`,
     wait_template: `{{ is_state(${SUP_CONTEXT_TOGGLE_ID}, 'on') }}`
   })
   .addAction({
-    alias: `ACTION: apply context to light script`,
+    alias: `ACTION: Call apply superior context to ${light.id} script`,
     service: 'script.turn_on',
-    target: {entity_id: toScriptEntityId(getTurnOffInfListenersPassthroughId(light))},
+    target: { entity_id: `{{ ${APPLY_SCRIPT_ID} }}`},
     data: {
       variables: {
-        ...globalScriptVariables,
-        callback: `{{ callback }}`,
+        [DETACH_VARS_SCRIPT_ID]: `{{ ${DETACH_VARS_SCRIPT_ID} }}`
       }
     }
   })
@@ -30,22 +31,23 @@ export function createSuperiorContextOnListener(light: Light) {
   return superiorContextListener.compile()
 }
 
-export function createListenCurrContextOffScript(light: Light) { //yellow
+export function createListenCurrContextOffScript(light: Light) {
   const currContextOffListener: Script = new Script({
     id: getInfCurrContextOffListenerId(light),
-    alias: `SCRIPT: Listen current context off for ${light.id}`
+    alias: `SCRIPT: Listen current context off for ${light.id}`,
+    mode: 'parallel' //TODO: require all scripts have mode defined
   })
   .addAction({
     alias: `ACTION: Wait for current context to be off`,
     wait_template: `{{ is_state(${CURR_CONTEXT_TOGGLE_ID}, 'off') }}`
   })
   .addAction({
+    alias: `ACTION: Call apply superior context to ${light.id} script`,
     service: 'script.turn_on',
-    target: { entity_id: toScriptEntityId(getTurnOffInfListenersPassthroughId(light)) },
+    target: { entity_id: `{{ ${APPLY_SCRIPT_ID} }}`},
     data: {
       variables: {
-        ...globalScriptVariables,
-        callback: `{{ callback }}`,
+        [DETACH_VARS_SCRIPT_ID]: `{{ ${DETACH_VARS_SCRIPT_ID} }}`,
       }
     }
   })
@@ -53,7 +55,7 @@ export function createListenCurrContextOffScript(light: Light) { //yellow
   return currContextOffListener.compile()
 }
 
-export function createListenInfContextOffScript(light: Light) { // purple
+export function createListenInfContextOffScript(light: Light) {
 
   const script: Script = new Script({
     id: getInfContextOffListenerId(light),
@@ -70,8 +72,7 @@ export function createListenInfContextOffScript(light: Light) { // purple
     target: {entity_id: toScriptEntityId(getTurnOffInfListenersPassthroughId(light))},
     data: {
       variables: {
-        ...globalScriptVariables,
-        callback: `{{ ${FIRST_INF_CONTEXT_SCRIPT} }}`
+        ...persistentInfVariables
       }
     }
   })
@@ -80,11 +81,12 @@ export function createListenInfContextOffScript(light: Light) { // purple
 }
 
 
-export function createListenInfContextOnScript(light: Light) { // blue
+export function createListenInfContextOnScript(light: Light) {
 
   const script: Script = new Script({
     id: getInfContextOnListenerId(light),
-    alias: 'SCRIPT: Listen for inf context on'
+    alias: 'SCRIPT: Listen for inf context on',
+    mode: 'parallel'
   })
   .addAction({
     alias: 'ACTION: Wait for inf context to be on',
@@ -96,11 +98,11 @@ export function createListenInfContextOnScript(light: Light) { // blue
     target: {entity_id: toScriptEntityId(getTurnOffInfListenersPassthroughId(light))},
     data: {
       variables: {
-        ...globalScriptVariables,
-        callback: `{{ ${FIRST_INF_CONTEXT_SCRIPT} }}`
+        ...persistentInfVariables
       }
     }
   })
+
 
   return script.compile()
 }

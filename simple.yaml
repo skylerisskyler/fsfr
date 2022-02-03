@@ -4,10 +4,10 @@ lights:
       # - context: one
       #   style:
       #     color: red
-      # - context: two
-      #   style:
-      #     color: green
-      - context: main
+      - context: first
+        style:
+          color: green
+      - context: second
         style:
           # color: blue
           brightness: $bri

@@ -8,7 +8,11 @@ import { GROUP_ID, LIGHT_ID } from "./VariableConstants"
 export function createVarAttachScripts(light: Light): Script[] {
 
   return light.layers.map(layer => {
+
+    const variables = layer.style.variables
     
+    if(variables.length == 0) return false
+
     const { context } = layer
 
     const script: Script = new Script({
@@ -32,12 +36,18 @@ export function createVarAttachScripts(light: Light): Script[] {
     return script.compile()
     
   })
+  .filter(script => script)
 }
 
 export function createVarDetachScripts(light: Light): Script[] {
 
+  
   return light.layers.map(layer => {
     
+    const variables = layer.style.variables
+      
+    if(variables.length == 0) return false
+
     const { context } = layer
 
     const script: Script = new Script({
@@ -61,4 +71,5 @@ export function createVarDetachScripts(light: Light): Script[] {
     return script.compile()
     
   })
+  .filter(script => script)
 }

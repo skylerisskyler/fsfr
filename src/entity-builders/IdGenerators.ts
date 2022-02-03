@@ -11,18 +11,26 @@ export const getDefaultHandlerScriptId = (light: Light) => `inf_handler_${light.
 export const getSupContextHandlerScriptId = (light: Light, context: Context) => `sup_handler_${light.id}_${context.id}`
 
 
-// context listener ids
+// sup context listener ids
 export const getSupContextOnListenerScript = (light: Light) => `listen_${light.id}_sup_context_on`
+// inf context listener ids
 export const getInfContextOnListenerId = (light: Light) => `listen_${light.id}_inf_context_on`
 export const getInfContextOffListenerId = (light: Light) => `listen_${light.id}_inf_context_off`
 export const getInfCurrContextOffListenerId = (light: Light) => `listen_${light.id}_curr_context_off`
 
+export const getInfListerEntityIds = (light: Light) => [
+  toScriptEntityId(getInfContextOnListenerId(light)),
+  toScriptEntityId(getInfContextOffListenerId(light)),
+  toScriptEntityId(getInfCurrContextOffListenerId(light))
+]
+
+
+
+export const getTurnOffInfListenersPassthroughId = (light: Light)  => `stop_inf_listen_passthrough_${light.id}`
 
 export const getApplyContextToLightScriptId = (context: Context, light: Light) => `apply_${context.id}_${light.id}`
 export const getApplyDefaultToLightScriptId = (light: Light) =>
   `apply_default_${light.id}`
-
-export const getTurnOffInfListenersPassthroughId = (light: Light)  => `stop_inf_listen_passthrough_${light.id}`
 
 export const getVariableInputId = (variable: Variable) => `var_${variable.namespace}_${variable.type}`
 

@@ -1,6 +1,6 @@
 import { getVariableInputId, toInputNumberEntityId } from "../entity-builders/IdGenerators"
 import { IVariable, Variable } from "./Variable"
-
+import cssColorNames from '../css-color-list'
 
 export interface StyleConf {
   [id: string]: StyleProps
@@ -9,6 +9,7 @@ export interface StyleConf {
 export interface StyleProps {
   brightness?: string | number | IVariable
   color?: string | IVariable
+  ['color_name']?: string | IVariable
   temperature?: string | number | IVariable
 }
 
@@ -48,13 +49,15 @@ export class Style {
         const variable = new Variable(value)
         variables.push(variable)
         this.variables.push(variable)
-      } else {
-        if(prop === 'temperature') {
-          //TODO: This is a quick fix, needs better unit handling for all units
+      } else if(prop === 'temperature') {
           value = +value.toLowerCase().replace('k', '')
-        }
-        this.props[prop] = value
-        
+      } else if(prop === 'color') {
+          if(cssColorNames.includes(value)) {
+            delete this.props.color
+            this.props.color_name = value
+          } else{
+            this.props[prop] = value
+          }
       }
     })
 

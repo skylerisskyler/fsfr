@@ -12,7 +12,6 @@ import {
   getApplyDefaultToLightScriptId
 } from "./IdGenerators";
 import {
-  ATTACH_VARS_SCRIPT_ID,
   CURR_CONTEXT_TOGGLE_ID,
   DETACH_VARS_SCRIPT_ID 
 } from "./VariableConstants";
@@ -41,9 +40,7 @@ export function createInitializerScript(light: Light): ScriptProps {
         },
         data: {
           variables: {
-            [ATTACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarAttachScriptId(light, context)),
-            [DETACH_VARS_SCRIPT_ID]: toScriptEntityId(getVarDetachScriptId(light, context)),
-            [CURR_CONTEXT_TOGGLE_ID] : toInputBooleanEntityId(getContextToggleId(context))
+            [DETACH_VARS_SCRIPT_ID]: false,
           }
         }
       })
@@ -64,9 +61,7 @@ export function createInitializerScript(light: Light): ScriptProps {
     },
     data: {
       variables: {
-        [ATTACH_VARS_SCRIPT_ID]: 'undefined',
-        [DETACH_VARS_SCRIPT_ID]: false,
-        [CURR_CONTEXT_TOGGLE_ID] : 'undefined'
+        [DETACH_VARS_SCRIPT_ID]: false
       }
     }
   })

@@ -40,6 +40,9 @@ export class Script implements ScriptProps {
 
   compile() {
     const compilation: any = {}
+    if(this.mode) {
+      compilation.mode = this.mode
+    }
     compilation.alias = this.alias
     compilation.id = this.id
     compilation.sequence = this.sequence

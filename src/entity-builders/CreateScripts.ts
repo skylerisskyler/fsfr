@@ -5,7 +5,8 @@ import { applyContextToLightScripts } from "./ApplyContextScript"
 import { createInfHandlerScripts, createSupHandlerScripts } from "./ContextHandlerScripts"
 import { createInitializerScript } from "./InitializerScript"
 import { createListenCurrContextOffScript, createListenInfContextOffScript, createListenInfContextOnScript, createSuperiorContextOnListener } from "./ListenerScripts"
-import { createPassthroughScript } from "./PassthroughScript"
+import { createResetInfListenersScript } from "./Passthrough"
+
 import { createVarAttachScripts, createVarDetachScripts } from "./VariableHandlerScripts"
 
 export function createScripts(light: Light): ScriptProps[] {
@@ -26,12 +27,10 @@ export function createScripts(light: Light): ScriptProps[] {
   scripts.push(createListenInfContextOffScript(light))
   scripts.push(createListenInfContextOnScript(light))
 
-  scripts.push(createPassthroughScript(light))
-
-  scripts.push(createPassthroughScript(light))
-
   scripts.push(...createVarAttachScripts(light))
   scripts.push(...createVarDetachScripts(light))
+
+  scripts.push(createResetInfListenersScript(light))
 
   return scripts
 }

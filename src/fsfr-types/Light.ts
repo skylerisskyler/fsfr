@@ -6,7 +6,6 @@ import { Script } from '../ha-config-types/Script'
 import { createInfHandlerScripts, createSupHandlerScripts } from "../entity-builders/ContextHandlerScripts"
 import { createListenCurrContextOffScript, createListenInfContextOffScript, createListenInfContextOnScript, createSuperiorContextOnListener } from "../entity-builders/ListenerScripts"
 import { applyContextToLightScripts } from "../entity-builders/ApplyContextScript"
-import { createPassthroughScript } from "../entity-builders/PassthroughScript"
 import { createInitializerScript } from "../entity-builders/InitializerScript"
 
 
