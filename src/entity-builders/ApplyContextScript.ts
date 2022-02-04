@@ -77,6 +77,18 @@ export function applyContextToLightScripts(light: Light): ScriptProps[] {
       target: {entity_id: light.entityId},
       data: layer.style.data
     })
+    script.addAction({
+      alias: `ACTION: turn on light ${light.id} with styles of ${context.id}`,
+      service: "light.turn_on",
+      target: {entity_id: light.entityId},
+      data: layer.style.data
+    })
+    script.addAction({
+      alias: `ACTION: turn on light ${light.id} with styles of ${context.id}`,
+      service: "light.turn_on",
+      target: {entity_id: light.entityId},
+      data: layer.style.data
+    })
 
     let detachVarsValue = {}
     if(layer.style.variables.length > 0) {
