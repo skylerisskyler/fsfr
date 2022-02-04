@@ -9,7 +9,9 @@ import {
   toScriptEntityId,
   getVarAttachScriptId,
   getVarDetachScriptId,
-  getApplyDefaultToLightScriptId
+  getApplyDefaultToLightScriptId,
+  getInfListerEntityIds,
+  getSupContextOnListenerScript
 } from "./IdGenerators";
 import {
   CURR_CONTEXT_TOGGLE_ID,
@@ -21,6 +23,16 @@ export function createInitializerScript(light: Light): ScriptProps {
   const script: Script = new Script({
     id: getInitializerScriptId(light),
     alias: `SCRIPT: Initialize ${light.id}`,
+  })
+  .addAction({
+    alias: "ACTION: Turn off superior context on listener",
+    service: "script.turn_off",
+    target: {
+      entity_id: [
+        ...getInfListerEntityIds(light),
+        toScriptEntityId(getSupContextOnListenerScript(light))
+      ]
+    }
   })
 
   const choices: ChooseActionChoice[] = light.layers.map(layer => { 

@@ -56,6 +56,7 @@ export function createSupHandlerScripts(light: Light): ScriptProps[] {
 export function createInfHandlerScripts(light: Light) {
 
   const scripts: Script[] =  light.layers
+    .slice(1)
     .map((layer, idx, layers) => {
 
       const { context } = layer
@@ -119,7 +120,6 @@ export function createInfHandlerScripts(light: Light) {
       })
 
     const inferiorLayer: Layer | undefined = layers[idx + 1]
-
     if(inferiorLayer) {
 
       offChoice.addAction({

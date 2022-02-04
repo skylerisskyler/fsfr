@@ -1,13 +1,22 @@
 lights:
   - id: light.skyler_room
     layers:
-      # - context: one
-      #   style:
-      #     color: red
-      - context: first
+      - context: purple
+        style:
+          color: purple
+          brightness: $bri
+      - context: orange
+        style:
+          color: orange
+          brightness: 20%
+      - context: red
+        style:
+          color: red
+          brightness: $bri
+      - context: green
         style:
           color: green
-      - context: second
+      - context: blue
         style:
           color: blue
           brightness: $bri

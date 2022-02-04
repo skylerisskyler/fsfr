@@ -27,7 +27,7 @@ export function createRemoveLightFromVarScript() {
     service: 'group.set',
     data: {
       object_id: "{{ group_id }}",
-      entities: `{{state_attr('group.' + ${GROUP_ID}, 'entity_id')|reject('equalto', '${LIGHT_ID}')| list}}`
+      entities: `{{state_attr('group.' + ${GROUP_ID}, 'entity_id')|reject('equalto', ${LIGHT_ID})| list}}`
     }
   })
 
