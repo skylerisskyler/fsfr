@@ -1,0 +1,11 @@
+name: "FSFR"
+version: "0.0.1"
+slug: "fsfr"
+description: >-
+  "Lighting configuration transpiler."
+arch:
+  - amd64
+map:
+  - config:rw
+ports:
+  8080/tcp: 8080

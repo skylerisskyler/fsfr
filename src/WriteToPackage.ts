@@ -42,6 +42,6 @@ export function writeToPackage(configPackage: ConfigPackage) {
   const packageString = YAML.stringify(pkg)
     .replaceAll(': on', ": 'on'")
     .replaceAll(': off', ": 'off'")
-  fs.writeFileSync('./configuration.yaml', packageString)
+  fs.writeFileSync('/config/packages/fsfr.yaml', packageString)
 }
 

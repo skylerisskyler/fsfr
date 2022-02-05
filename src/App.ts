@@ -6,14 +6,13 @@ import { ConfigPackage, writeToPackage } from './WriteToPackage'
  import YAML from 'yaml'
 
 function getConfig() {
-  const config = fs.readFileSync('./simple.yaml', 'utf8')
-  return YAML.parse(config)
+  const config = fs.readFileSync('/config/fsfr/config.json', 'utf-8')
+  return JSON.parse(config)
 }
 
 async function main() {
 
   const config = getConfig()
-
 
   const abstractions: Abstractions = init(config)
 

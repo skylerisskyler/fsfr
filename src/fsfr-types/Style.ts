@@ -30,7 +30,7 @@ export class Style {
     this.props = {}
     this.variables = []
 
-    Object.entries(styleProps).forEach(([prop, value]) => {
+    Object.entries(styleProps || {}).forEach(([prop, value]) => {
       if(prop !== 'brightness' &&  prop !== 'temperature' && prop !== 'color') {
         throw new Error(`style prop ${prop} is not valid`)
       }

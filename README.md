@@ -13,7 +13,7 @@ With this you can control many lights in complex ways using `input_boolean` (con
 
 Copy this repository into the `/addon` directory of a Home Assistant instance.
 
-[How to manually install Add-ons ](s)
+[How to manually install Add-ons ](TD)
 
 <!-- (WIP) Get FSFR on Addon Store -->
 

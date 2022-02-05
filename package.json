@@ -1,10 +1,10 @@
 {
   "name": "fsfr",
   "version": "1.0.0",
-  "description": "## YAML Entities Configuration Example",
-  "main": "index.js",
+  "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node ./src/App.ts",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/skylerisskyler/fsfr#readme",
   "dependencies": {
+    "@types/node": "^17.0.15",
     "yaml": "^1.10.2"
   }
 }
