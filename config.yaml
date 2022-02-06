@@ -1,11 +1,15 @@
 name: "FSFR"
 version: "0.0.1"
 slug: "fsfr"
-description: >-
-  "Lighting configuration transpiler."
+description: Lighting configuration transpiler.
 arch:
   - amd64
 map:
   - config:rw
 ports:
   8080/tcp: 8080
+options:
+  out_dir: /packages
+  src: /fsfr.yaml
+schema:
+  out_dir: str
