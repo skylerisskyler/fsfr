@@ -1,0 +1,26 @@
+lights:
+  - id: light.skyler_room
+    layers:
+      - context: purple
+        style:
+          color: purple
+          brightness: $bri
+      - context: orange
+        style:
+          color: orange
+          brightness: 20%
+      - context: red
+        style:
+          color: red
+          brightness: $bri
+      - context: green
+        style:
+          color: green
+      - context: blue
+        style:
+          color: blue
+          brightness: $bri
+variables:
+  - namespace: bri
+    type: brightness
+    unit: percentage

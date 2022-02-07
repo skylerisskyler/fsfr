@@ -20,6 +20,8 @@ import { ScriptProps } from './ha-config-types/Script';
 import { createAddLightToVarScript, createRemoveLightFromVarScript } from './entity-builders/VariableGroupHandlers';
 import { variableUpdateAutomation } from './entity-builders/VariableUpdateAutomation';
 import { createVariableGroup } from './entity-builders/VariableGroup';
+import { createGlobalInitializerAutomation } from './entity-builders/InitializerScript';
+import { AutomationProps } from './ha-config-types/Automation';
 
 
 interface Package {
@@ -45,6 +47,8 @@ export function build({
     .reduce((scripts: ScriptProps[], light: Light) => {
       return scripts.concat(createScripts(light))
     }, [])
+  
+  const globalInitializationAutomation: AutomationProps = createGlobalInitializerAutomation(lights)
 
   const addLightToVarScript = createAddLightToVarScript()
   const removeLightFromVarScript = createRemoveLightFromVarScript()
@@ -56,7 +60,10 @@ export function build({
   const variableGroups = variables.map(variable => createVariableGroup(variable))
 
   const configuration = {
-    automation: [...variableUpdateAutomations],
+    automation: [
+      globalInitializationAutomation,
+      ...variableUpdateAutomations,
+    ],
     script: [
       ...lightScripts,
       addLightToVarScript,

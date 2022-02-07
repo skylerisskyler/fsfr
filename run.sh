@@ -2,10 +2,11 @@
 
 set e
 
-# CONFIG_PATH=/data/options.json
-# CONFIG=$(bashio::config 'config')
+CONFIG_PATH=/data/options.json
 
-# bashio::log.info "${CONFIG}"
-cat /data/options.json
+CONFIG=$(bashio::config 'src_dir')
+
+bashio::log.info "${CONFIG}"
+
 
 ts-node ./src/App.ts

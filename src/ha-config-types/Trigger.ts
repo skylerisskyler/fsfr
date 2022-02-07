@@ -15,13 +15,18 @@ export interface StateTrigger extends BaseTrigger {
   for?: string | number | ForDict;
 }
 
+export interface HassTrigger extends BaseTrigger {
+  platform: "homeassistant";
+  event: "start" | "shutdown";
+}
+
 
 
 export type Trigger =
   | StateTrigger
+  | HassTrigger
 // | MqttTrigger
 // | GeoLocationTrigger
-// | HassTrigger
 // | NumericStateTrigger
 // | SunTrigger
 // | TimePatternTrigger

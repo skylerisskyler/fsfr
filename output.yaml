@@ -1,0 +1,931 @@
+automation:
+  - id: Initialize lights
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - service: script.init_skyler_room
+      - service: notify.notify
+        data:
+          message: "FSFR: Initialization complete"
+  - id: var_bri_brightness
+    trigger:
+      - platform: state
+        entity_id: input_number.var_bri_brightness
+    action:
+      - service: light.turn_on
+        target:
+          entity_id: group.var_bri_group
+        data:
+          brightness_pct: "{{ states('input_number.var_bri_brightness') | int }}"
+script:
+  init_skyler_room:
+    alias: "SCRIPT: Initialize skyler_room"
+    sequence:
+      - alias: "ACTION: Turn off superior context on listener"
+        service: script.turn_off
+        target:
+          entity_id:
+            - script.listen_skyler_room_inf_context_on
+            - script.listen_skyler_room_inf_context_off
+            - script.listen_skyler_room_curr_context_off
+            - script.listen_skyler_room_sup_context_on
+      - alias: Get highest priority context for light skyler_room
+        choose:
+          - alias: if purple is on
+            conditions:
+              - alias: "CONDITION: check purple toggle is on"
+                condition: state
+                entity_id: input_boolean.context_purple
+                state: 'on'
+            sequence:
+              - alias: "ACTION: apply context purple to light"
+                service: script.turn_on
+                target:
+                  entity_id: script.apply_purple_skyler_room
+          - alias: if orange is on
+            conditions:
+              - alias: "CONDITION: check orange toggle is on"
+                condition: state
+                entity_id: input_boolean.context_orange
+                state: 'on'
+            sequence:
+              - alias: "ACTION: apply context orange to light"
+                service: script.turn_on
+                target:
+                  entity_id: script.apply_orange_skyler_room
+          - alias: if red is on
+            conditions:
+              - alias: "CONDITION: check red toggle is on"
+                condition: state
+                entity_id: input_boolean.context_red
+                state: 'on'
+            sequence:
+              - alias: "ACTION: apply context red to light"
+                service: script.turn_on
+                target:
+                  entity_id: script.apply_red_skyler_room
+          - alias: if green is on
+            conditions:
+              - alias: "CONDITION: check green toggle is on"
+                condition: state
+                entity_id: input_boolean.context_green
+                state: 'on'
+            sequence:
+              - alias: "ACTION: apply context green to light"
+                service: script.turn_on
+                target:
+                  entity_id: script.apply_green_skyler_room
+          - alias: if blue is on
+            conditions:
+              - alias: "CONDITION: check blue toggle is on"
+                condition: state
+                entity_id: input_boolean.context_blue
+                state: 'on'
+            sequence:
+              - alias: "ACTION: apply context blue to light"
+                service: script.turn_on
+                target:
+                  entity_id: script.apply_blue_skyler_room
+        default:
+          - alias: "ACTION: apply default to skyler_room"
+            service: script.turn_on
+            target:
+              entity_id: script.apply_default_skyler_room
+            data:
+              variables:
+                detach_vars_script_id: false
+  apply_purple_skyler_room:
+    alias: "SCRIPT: Apply context purple to light"
+    sequence:
+      - alias: "ACTION: Turn off superior context on listener"
+        service: script.turn_off
+        target:
+          entity_id:
+            - script.listen_skyler_room_inf_context_on
+            - script.listen_skyler_room_inf_context_off
+            - script.listen_skyler_room_curr_context_off
+            - script.listen_skyler_room_sup_context_on
+      - alias: Check variables to detach for skyler_room
+        choose:
+          - alias: "ACTION: Check detach script ID exists"
+            conditions:
+              - condition: template
+                value_template: "{{ detach_vars_script_id is not false }}"
+            sequence:
+              - alias: "ACTION: Detach variables of skyler_room in current scene"
+                service: "{{ detach_vars_script_id }}"
+        default: []
+      - alias: "ACTION: Attach variables of skyler_room in purple"
+        service: script.attach_skyler_room_purple
+      - alias: "ACTION: turn on light skyler_room with styles of purple"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: purple
+          brightness_pct: "{{ states('input_number.var_bri_brightness') | int }}"
+      - alias: "ACTION: turn on light skyler_room with styles of purple"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: purple
+          brightness_pct: "{{ states('input_number.var_bri_brightness') | int }}"
+      - alias: "ACTION: turn on light skyler_room with styles of purple"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: purple
+          brightness_pct: "{{ states('input_number.var_bri_brightness') | int }}"
+      - alias: "ACTION: Turn on the first inferior context handler"
+        service: script.turn_on
+        target:
+          entity_id: script.inf_handler_skyler_room_orange
+        data:
+          variables:
+            curr_context_toggle_id: input_boolean.context_purple
+            first_inf_handler_script_id: script.inf_handler_skyler_room_orange
+            detach_vars_script_id: script.detach_skyler_room_purple
+  apply_orange_skyler_room:
+    alias: "SCRIPT: Apply context orange to light"
+    sequence:
+      - alias: "ACTION: Turn off superior context on listener"
+        service: script.turn_off
+        target:
+          entity_id:
+            - script.listen_skyler_room_inf_context_on
+            - script.listen_skyler_room_inf_context_off
+            - script.listen_skyler_room_curr_context_off
+            - script.listen_skyler_room_sup_context_on
+      - alias: Check variables to detach for skyler_room
+        choose:
+          - alias: "ACTION: Check detach script ID exists"
+            conditions:
+              - condition: template
+                value_template: "{{ detach_vars_script_id is not false }}"
+            sequence:
+              - alias: "ACTION: Detach variables of skyler_room in current scene"
+                service: "{{ detach_vars_script_id }}"
+        default: []
+      - alias: "ACTION: turn on light skyler_room with styles of orange"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: orange
+      - alias: "ACTION: turn on light skyler_room with styles of orange"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: orange
+      - alias: "ACTION: turn on light skyler_room with styles of orange"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: orange
+      - alias: "ACTION: Turn on the first superior context handler"
+        service: script.turn_on
+        target:
+          entity_id: script.sup_handler_skyler_room_purple
+        data:
+          variables:
+            detach_vars_script_id: false
+      - alias: "ACTION: Turn on the first inferior context handler"
+        service: script.turn_on
+        target:
+          entity_id: script.inf_handler_skyler_room_red
+        data:
+          variables:
+            curr_context_toggle_id: input_boolean.context_orange
+            first_inf_handler_script_id: script.inf_handler_skyler_room_red
+            detach_vars_script_id: false
+  apply_red_skyler_room:
+    alias: "SCRIPT: Apply context red to light"
+    sequence:
+      - alias: "ACTION: Turn off superior context on listener"
+        service: script.turn_off
+        target:
+          entity_id:
+            - script.listen_skyler_room_inf_context_on
+            - script.listen_skyler_room_inf_context_off
+            - script.listen_skyler_room_curr_context_off
+            - script.listen_skyler_room_sup_context_on
+      - alias: Check variables to detach for skyler_room
+        choose:
+          - alias: "ACTION: Check detach script ID exists"
+            conditions:
+              - condition: template
+                value_template: "{{ detach_vars_script_id is not false }}"
+            sequence:
+              - alias: "ACTION: Detach variables of skyler_room in current scene"
+                service: "{{ detach_vars_script_id }}"
+        default: []
+      - alias: "ACTION: Attach variables of skyler_room in red"
+        service: script.attach_skyler_room_red
+      - alias: "ACTION: turn on light skyler_room with styles of red"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: red
+          brightness_pct: "{{ states('input_number.var_bri_brightness') | int }}"
+      - alias: "ACTION: turn on light skyler_room with styles of red"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: red
+          brightness_pct: "{{ states('input_number.var_bri_brightness') | int }}"
+      - alias: "ACTION: turn on light skyler_room with styles of red"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: red
+          brightness_pct: "{{ states('input_number.var_bri_brightness') | int }}"
+      - alias: "ACTION: Turn on the first superior context handler"
+        service: script.turn_on
+        target:
+          entity_id: script.sup_handler_skyler_room_orange
+        data:
+          variables:
+            detach_vars_script_id: script.detach_skyler_room_red
+      - alias: "ACTION: Turn on the first inferior context handler"
+        service: script.turn_on
+        target:
+          entity_id: script.inf_handler_skyler_room_green
+        data:
+          variables:
+            curr_context_toggle_id: input_boolean.context_red
+            first_inf_handler_script_id: script.inf_handler_skyler_room_green
+            detach_vars_script_id: script.detach_skyler_room_red
+  apply_green_skyler_room:
+    alias: "SCRIPT: Apply context green to light"
+    sequence:
+      - alias: "ACTION: Turn off superior context on listener"
+        service: script.turn_off
+        target:
+          entity_id:
+            - script.listen_skyler_room_inf_context_on
+            - script.listen_skyler_room_inf_context_off
+            - script.listen_skyler_room_curr_context_off
+            - script.listen_skyler_room_sup_context_on
+      - alias: Check variables to detach for skyler_room
+        choose:
+          - alias: "ACTION: Check detach script ID exists"
+            conditions:
+              - condition: template
+                value_template: "{{ detach_vars_script_id is not false }}"
+            sequence:
+              - alias: "ACTION: Detach variables of skyler_room in current scene"
+                service: "{{ detach_vars_script_id }}"
+        default: []
+      - alias: "ACTION: turn on light skyler_room with styles of green"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: green
+      - alias: "ACTION: turn on light skyler_room with styles of green"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: green
+      - alias: "ACTION: turn on light skyler_room with styles of green"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: green
+      - alias: "ACTION: Turn on the first superior context handler"
+        service: script.turn_on
+        target:
+          entity_id: script.sup_handler_skyler_room_red
+        data:
+          variables:
+            detach_vars_script_id: false
+      - alias: "ACTION: Turn on the first inferior context handler"
+        service: script.turn_on
+        target:
+          entity_id: script.inf_handler_skyler_room_blue
+        data:
+          variables:
+            curr_context_toggle_id: input_boolean.context_green
+            first_inf_handler_script_id: script.inf_handler_skyler_room_blue
+            detach_vars_script_id: false
+  apply_blue_skyler_room:
+    alias: "SCRIPT: Apply context blue to light"
+    sequence:
+      - alias: "ACTION: Turn off superior context on listener"
+        service: script.turn_off
+        target:
+          entity_id:
+            - script.listen_skyler_room_inf_context_on
+            - script.listen_skyler_room_inf_context_off
+            - script.listen_skyler_room_curr_context_off
+            - script.listen_skyler_room_sup_context_on
+      - alias: Check variables to detach for skyler_room
+        choose:
+          - alias: "ACTION: Check detach script ID exists"
+            conditions:
+              - condition: template
+                value_template: "{{ detach_vars_script_id is not false }}"
+            sequence:
+              - alias: "ACTION: Detach variables of skyler_room in current scene"
+                service: "{{ detach_vars_script_id }}"
+        default: []
+      - alias: "ACTION: Attach variables of skyler_room in blue"
+        service: script.attach_skyler_room_blue
+      - alias: "ACTION: turn on light skyler_room with styles of blue"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: blue
+          brightness_pct: "{{ states('input_number.var_bri_brightness') | int }}"
+      - alias: "ACTION: turn on light skyler_room with styles of blue"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: blue
+          brightness_pct: "{{ states('input_number.var_bri_brightness') | int }}"
+      - alias: "ACTION: turn on light skyler_room with styles of blue"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: blue
+          brightness_pct: "{{ states('input_number.var_bri_brightness') | int }}"
+      - alias: "ACTION: Turn on the first superior context handler"
+        service: script.turn_on
+        target:
+          entity_id: script.sup_handler_skyler_room_green
+        data:
+          variables:
+            detach_vars_script_id: script.detach_skyler_room_blue
+      - alias: "ACTION: Turn on handle default"
+        service: script.turn_on
+        target:
+          entity_id: script.inf_handler_skyler_room_default
+        data:
+          variables:
+            curr_context_toggle_id: input_boolean.context_blue
+            first_inf_handler_script_id: script.inf_handler_skyler_room_blue
+            detach_vars_script_id: script.detach_skyler_room_blue
+  apply_default_skyler_room:
+    alias: "SCRIPT: Apply default context to light"
+    sequence:
+      - alias: "ACTION: Turn off superior context on listener"
+        service: script.turn_off
+        target:
+          entity_id:
+            - script.listen_skyler_room_inf_context_on
+            - script.listen_skyler_room_inf_context_off
+            - script.listen_skyler_room_curr_context_off
+            - script.listen_skyler_room_sup_context_on
+      - alias: Check variables to detach for skyler_room
+        choose:
+          - alias: "ACTION: Check detach script ID exists"
+            conditions:
+              - condition: template
+                value_template: "{{ detach_vars_script_id is not false }}"
+            sequence:
+              - alias: "ACTION: Detach variables of skyler_room in current scene"
+                service: "{{ detach_vars_script_id }}"
+        default: []
+      - alias: "ACTION: Default turn off skyler_room"
+        service: light.turn_on
+        target:
+          entity_id: light.skyler_room
+        data:
+          color_name: white
+          brightness: 0
+      - alias: "ACTION: Turn on the first superior context handler"
+        service: script.turn_on
+        target:
+          entity_id: script.sup_handler_skyler_room_blue
+        data:
+          variables:
+            detach_vars_script_id: false
+  sup_handler_skyler_room_blue:
+    alias: "SCRIPT: Handle superior context blue"
+    sequence:
+      - alias: "ACTION: turn on blue on listener"
+        service: script.turn_on
+        target:
+          entity_id: script.listen_skyler_room_sup_context_on
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+            sup_context_toggle_id: input_boolean.context_blue
+            apply_context_script_id: script.apply_blue_skyler_room
+      - alias: "ACTION: turn on next context green handler"
+        service: script.turn_on
+        target:
+          entity_id: script.sup_handler_skyler_room_green
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+  sup_handler_skyler_room_green:
+    alias: "SCRIPT: Handle superior context green"
+    sequence:
+      - alias: "ACTION: turn on green on listener"
+        service: script.turn_on
+        target:
+          entity_id: script.listen_skyler_room_sup_context_on
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+            sup_context_toggle_id: input_boolean.context_green
+            apply_context_script_id: script.apply_green_skyler_room
+      - alias: "ACTION: turn on next context red handler"
+        service: script.turn_on
+        target:
+          entity_id: script.sup_handler_skyler_room_red
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+  sup_handler_skyler_room_red:
+    alias: "SCRIPT: Handle superior context red"
+    sequence:
+      - alias: "ACTION: turn on red on listener"
+        service: script.turn_on
+        target:
+          entity_id: script.listen_skyler_room_sup_context_on
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+            sup_context_toggle_id: input_boolean.context_red
+            apply_context_script_id: script.apply_red_skyler_room
+      - alias: "ACTION: turn on next context orange handler"
+        service: script.turn_on
+        target:
+          entity_id: script.sup_handler_skyler_room_orange
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+  sup_handler_skyler_room_orange:
+    alias: "SCRIPT: Handle superior context orange"
+    sequence:
+      - alias: "ACTION: turn on orange on listener"
+        service: script.turn_on
+        target:
+          entity_id: script.listen_skyler_room_sup_context_on
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+            sup_context_toggle_id: input_boolean.context_orange
+            apply_context_script_id: script.apply_orange_skyler_room
+      - alias: "ACTION: turn on next context purple handler"
+        service: script.turn_on
+        target:
+          entity_id: script.sup_handler_skyler_room_purple
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+  sup_handler_skyler_room_purple:
+    alias: "SCRIPT: Handle superior context purple"
+    sequence:
+      - alias: "ACTION: turn on purple on listener"
+        service: script.turn_on
+        target:
+          entity_id: script.listen_skyler_room_sup_context_on
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+            sup_context_toggle_id: input_boolean.context_purple
+            apply_context_script_id: script.apply_purple_skyler_room
+  inf_handler_skyler_room_orange:
+    alias: "SCRIPT: Handle inferior context orange for skyler_room"
+    sequence:
+      - alias: Is inferior context on or off?
+        choose:
+          - alias: if orange is on
+            conditions:
+              - alias: "CONDITION: check orange toggle is on"
+                condition: state
+                entity_id: input_boolean.context_orange
+                state: 'on'
+            sequence:
+              - alias: "ACTION: Initialize current context off listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.listen_skyler_room_curr_context_off
+                data:
+                  variables:
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    apply_context_script_id: script.apply_orange_skyler_room
+              - alias: "ACTION: Initialize orange context off listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.listen_skyler_room_inf_context_off
+                data:
+                  variables:
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+                    inf_context_toggle_id: script.context_orange
+          - alias: if orange is off
+            conditions:
+              - alias: "CONDITION: check orange is off"
+                condition: state
+                entity_id: input_boolean.context_orange
+                state: 'off'
+            sequence:
+              - alias: "ACTION: Initialize orange context on listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.listen_skyler_room_inf_context_on
+                data:
+                  variables:
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+                    inf_context_toggle_id: input_boolean.context_orange
+              - alias: "ACTION: turn on next context red handler"
+                service: script.turn_on
+                target:
+                  entity_id: script.inf_handler_skyler_room_red
+                data:
+                  variables:
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+        default: []
+  inf_handler_skyler_room_red:
+    alias: "SCRIPT: Handle inferior context red for skyler_room"
+    sequence:
+      - alias: Is inferior context on or off?
+        choose:
+          - alias: if red is on
+            conditions:
+              - alias: "CONDITION: check red toggle is on"
+                condition: state
+                entity_id: input_boolean.context_red
+                state: 'on'
+            sequence:
+              - alias: "ACTION: Initialize current context off listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.listen_skyler_room_curr_context_off
+                data:
+                  variables:
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    apply_context_script_id: script.apply_red_skyler_room
+              - alias: "ACTION: Initialize red context off listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.listen_skyler_room_inf_context_off
+                data:
+                  variables:
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+                    inf_context_toggle_id: script.context_red
+          - alias: if red is off
+            conditions:
+              - alias: "CONDITION: check red is off"
+                condition: state
+                entity_id: input_boolean.context_red
+                state: 'off'
+            sequence:
+              - alias: "ACTION: Initialize red context on listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.listen_skyler_room_inf_context_on
+                data:
+                  variables:
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+                    inf_context_toggle_id: input_boolean.context_red
+              - alias: "ACTION: turn on next context green handler"
+                service: script.turn_on
+                target:
+                  entity_id: script.inf_handler_skyler_room_green
+                data:
+                  variables:
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+        default: []
+  inf_handler_skyler_room_green:
+    alias: "SCRIPT: Handle inferior context green for skyler_room"
+    sequence:
+      - alias: Is inferior context on or off?
+        choose:
+          - alias: if green is on
+            conditions:
+              - alias: "CONDITION: check green toggle is on"
+                condition: state
+                entity_id: input_boolean.context_green
+                state: 'on'
+            sequence:
+              - alias: "ACTION: Initialize current context off listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.listen_skyler_room_curr_context_off
+                data:
+                  variables:
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    apply_context_script_id: script.apply_green_skyler_room
+              - alias: "ACTION: Initialize green context off listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.listen_skyler_room_inf_context_off
+                data:
+                  variables:
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+                    inf_context_toggle_id: script.context_green
+          - alias: if green is off
+            conditions:
+              - alias: "CONDITION: check green is off"
+                condition: state
+                entity_id: input_boolean.context_green
+                state: 'off'
+            sequence:
+              - alias: "ACTION: Initialize green context on listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.listen_skyler_room_inf_context_on
+                data:
+                  variables:
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+                    inf_context_toggle_id: input_boolean.context_green
+              - alias: "ACTION: turn on next context blue handler"
+                service: script.turn_on
+                target:
+                  entity_id: script.inf_handler_skyler_room_blue
+                data:
+                  variables:
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+        default: []
+  inf_handler_skyler_room_blue:
+    alias: "SCRIPT: Handle inferior context blue for skyler_room"
+    sequence:
+      - alias: Is inferior context on or off?
+        choose:
+          - alias: if blue is on
+            conditions:
+              - alias: "CONDITION: check blue toggle is on"
+                condition: state
+                entity_id: input_boolean.context_blue
+                state: 'on'
+            sequence:
+              - alias: "ACTION: Initialize current context off listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.listen_skyler_room_curr_context_off
+                data:
+                  variables:
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    apply_context_script_id: script.apply_blue_skyler_room
+              - alias: "ACTION: Initialize blue context off listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.listen_skyler_room_inf_context_off
+                data:
+                  variables:
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+                    inf_context_toggle_id: script.context_blue
+          - alias: if blue is off
+            conditions:
+              - alias: "CONDITION: check blue is off"
+                condition: state
+                entity_id: input_boolean.context_blue
+                state: 'off'
+            sequence:
+              - alias: "ACTION: Initialize blue context on listener"
+                service: script.turn_on
+                target:
+                  entity_id: script.listen_skyler_room_inf_context_on
+                data:
+                  variables:
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+                    inf_context_toggle_id: input_boolean.context_blue
+              - alias: "ACTION: Turn on default handler"
+                service: script.turn_on
+                target:
+                  entity_id: script.inf_handler_skyler_room_default
+                data:
+                  variables:
+                    curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+                    first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+                    detach_vars_script_id: "{{ detach_vars_script_id }}"
+        default: []
+  inf_handler_skyler_room_default:
+    alias: "SCRIPT: Handle default"
+    sequence:
+      - alias: "ACTION: Initialize current context off listener"
+        service: script.turn_on
+        target:
+          entity_id: script.listen_skyler_room_curr_context_off
+        data:
+          variables:
+            curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+            first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+            apply_context_script_id: script.apply_default_skyler_room
+  listen_skyler_room_sup_context_on:
+    mode: parallel
+    alias: "SCRIPT: Listen superior context on for skyler_room"
+    sequence:
+      - alias: "ACTION: Wait for superior context of skyler_room to be on"
+        wait_template: "{{ is_state(sup_context_toggle_id, 'on') }}"
+      - alias: "ACTION: Call apply superior context to skyler_room script"
+        service: script.turn_on
+        target:
+          entity_id: "{{ apply_context_script_id }}"
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+  listen_skyler_room_curr_context_off:
+    mode: parallel
+    alias: "SCRIPT: Listen current context off for skyler_room"
+    sequence:
+      - alias: "ACTION: Wait for current context to be off"
+        wait_template: "{{ is_state(curr_context_toggle_id, 'off') }}"
+      - alias: "ACTION: Call apply inferior context to skyler_room script"
+        service: script.turn_on
+        target:
+          entity_id: "{{ apply_context_script_id }}"
+        data:
+          variables:
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+  listen_skyler_room_inf_context_off:
+    mode: parallel
+    alias: "SCRIPT: Listen inferior context off"
+    sequence:
+      - alias: "ACTION: Wait for inferior context to be off"
+        wait_template: "{{ is_state(inf_context_toggle_id, 'off') }}"
+      - alias: "ACTION: Call passthrough script"
+        service: script.turn_on
+        target:
+          entity_id: script.stop_inf_listen_passthrough_skyler_room
+        data:
+          variables:
+            curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+            first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+  listen_skyler_room_inf_context_on:
+    mode: parallel
+    alias: "SCRIPT: Listen for inf context on"
+    sequence:
+      - alias: "ACTION: Wait for inf context to be on"
+        wait_template: "{{ is_state(inf_context_toggle_id, 'on') }}"
+      - alias: "ACTION: Call passthrough script"
+        service: script.turn_on
+        target:
+          entity_id: script.stop_inf_listen_passthrough_skyler_room
+        data:
+          variables:
+            curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+            first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+  attach_skyler_room_purple:
+    alias: "SCRIPT: Attach variables of skyler_room in purple"
+    sequence:
+      - service: script.turn_on
+        target:
+          entity_id: script.add_variable_to_group
+        data:
+          variables:
+            group_id: var_bri_group
+            light_id: light.skyler_room
+  attach_skyler_room_red:
+    alias: "SCRIPT: Attach variables of skyler_room in red"
+    sequence:
+      - service: script.turn_on
+        target:
+          entity_id: script.add_variable_to_group
+        data:
+          variables:
+            group_id: var_bri_group
+            light_id: light.skyler_room
+  attach_skyler_room_blue:
+    alias: "SCRIPT: Attach variables of skyler_room in blue"
+    sequence:
+      - service: script.turn_on
+        target:
+          entity_id: script.add_variable_to_group
+        data:
+          variables:
+            group_id: var_bri_group
+            light_id: light.skyler_room
+  detach_skyler_room_purple:
+    alias: "SCRIPT: Detach variables of skyler_room in purple"
+    sequence:
+      - service: script.turn_on
+        target:
+          entity_id: script.remove_variable_from_group
+        data:
+          variables:
+            group_id: var_bri_group
+            light_id: light.skyler_room
+  detach_skyler_room_red:
+    alias: "SCRIPT: Detach variables of skyler_room in red"
+    sequence:
+      - service: script.turn_on
+        target:
+          entity_id: script.remove_variable_from_group
+        data:
+          variables:
+            group_id: var_bri_group
+            light_id: light.skyler_room
+  detach_skyler_room_blue:
+    alias: "SCRIPT: Detach variables of skyler_room in blue"
+    sequence:
+      - service: script.turn_on
+        target:
+          entity_id: script.remove_variable_from_group
+        data:
+          variables:
+            group_id: var_bri_group
+            light_id: light.skyler_room
+  stop_inf_listen_passthrough_skyler_room:
+    alias: "SCRIPT: Passthrough for skyler_room"
+    sequence:
+      - alias: "ACTION: Turn off inferior context on listener"
+        service: script.turn_off
+        target:
+          entity_id:
+            - script.listen_skyler_room_inf_context_on
+            - script.listen_skyler_room_inf_context_off
+            - script.listen_skyler_room_curr_context_off
+      - alias: "ACTION: Call apply context or context handler"
+        service: script.turn_on
+        target:
+          entity_id: "{{ first_inf_handler_script_id }}"
+        data:
+          variables:
+            curr_context_toggle_id: "{{ curr_context_toggle_id }}"
+            first_inf_handler_script_id: "{{ first_inf_handler_script_id }}"
+            detach_vars_script_id: "{{ detach_vars_script_id }}"
+  add_variable_to_group:
+    alias: "SCRIPT: Util add light to variable"
+    sequence:
+      - service: group.set
+        data:
+          object_id: "{{ group_id }}"
+          entities: "{{ state_attr('group.' + group_id, 'entity_id') | list + [light_id]
+            }}"
+  remove_variable_from_group:
+    alias: "SCRIPT: Util remove light from variable"
+    sequence:
+      - service: group.set
+        data:
+          object_id: "{{ group_id }}"
+          entities: "{{state_attr('group.' + group_id, 'entity_id')|reject('equalto',
+            light_id)| list}}"
+input_boolean:
+  context_purple:
+    icon: "mdi: landscape"
+    name: "Toggle context: purple"
+    initial: false
+  context_orange:
+    icon: "mdi: landscape"
+    name: "Toggle context: orange"
+    initial: false
+  context_red:
+    icon: "mdi: landscape"
+    name: "Toggle context: red"
+    initial: false
+  context_green:
+    icon: "mdi: landscape"
+    name: "Toggle context: green"
+    initial: false
+  context_blue:
+    icon: "mdi: landscape"
+    name: "Toggle context: blue"
+    initial: false
+input_number:
+  var_bri_brightness:
+    name: "Input variable: bri"
+    min: 0
+    max: 100
+    step: 1
+    mode: slider
+group:
+  var_bri_group:
+    name: "FSFR: bri"
+    entities: []

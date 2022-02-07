@@ -1,12 +1,15 @@
+import fs from 'fs'
+
 import { config } from './schema'
 import { build } from './Build'
 import { Abstractions, init } from './Init'
 import { ConfigPackage, writeToPackage } from './WriteToPackage'
- import fs from 'fs'
- import YAML from 'yaml'
+import YAML from 'yaml'
 
 function getConfig() {
-  const config = fs.readFileSync('/config/fsfr/config.json', 'utf-8')
+  const config = fs.readFileSync('./fsfr.yaml', 'utf-8')
+  // const config = fs.readFileSync('/config/fsfr/config.json', 'utf-8')
+  return YAML.parse(config)
   return JSON.parse(config)
 }
 

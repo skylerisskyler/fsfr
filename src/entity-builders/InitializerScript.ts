@@ -1,5 +1,7 @@
 import { Light } from "../fsfr-types/Light";
+import { Automation } from "../ha-config-types";
 import { ChooseAction, ChooseActionChoice } from "../ha-config-types/Action";
+import { AutomationProps } from "../ha-config-types/Automation";
 import { Script, ScriptProps } from "../ha-config-types/Script";
 import {
   getApplyContextToLightScriptId,
@@ -7,16 +9,40 @@ import {
   getContextToggleId,
   toInputBooleanEntityId,
   toScriptEntityId,
-  getVarAttachScriptId,
-  getVarDetachScriptId,
   getApplyDefaultToLightScriptId,
   getInfListerEntityIds,
   getSupContextOnListenerScript
 } from "./IdGenerators";
 import {
-  CURR_CONTEXT_TOGGLE_ID,
   DETACH_VARS_SCRIPT_ID 
 } from "./VariableConstants";
+
+export function createGlobalInitializerAutomation(lights: Light[]): AutomationProps {
+
+  const automation: Automation = new Automation({
+    id: 'Initialize lights',
+    alias: "Initializer",
+  })
+  .addTrigger({
+    platform: 'homeassistant',
+    event: 'start'
+  })
+  
+  lights.forEach(light => {
+    automation.addAction({
+      service: toScriptEntityId(getInitializerScriptId(light)),
+    })
+  })
+
+  automation.addAction({
+    service: 'notify.notify',
+    data: {
+      message: 'FSFR: Initialization complete'
+    }
+  })
+
+  return automation.compile()
+}
 
 export function createInitializerScript(light: Light): ScriptProps {
 
