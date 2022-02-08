@@ -26,12 +26,11 @@ export function init(config: Schema): Abstractions {
   }
     
   let styles: Style[] = []
-  if(config.styles) {
-    styles = styles.concat(
-      Object.entries(config.styles)
-        .map(([id, styleProps]) => new Style(id, styleProps, variables))
-    )
-  }
+
+  styles = styles.concat(
+    Object.entries(config.styles || {})
+      .map(([id,  styleProps]) => new Style(id, styleProps, variables))
+  )
 
   const contexts: Context[] = []
 

@@ -4,7 +4,6 @@ import { Mode, ForDict } from './Misc'
 import { Trigger } from './Trigger'
 
 
-
 export interface AutomationProps {
   id?: string;
   alias?: string;
@@ -47,12 +46,12 @@ export class Automation implements AutomationProps {
     | "warn"
     | "info"
     | "debug"
-    | "noet";
+    | "noet"
   variables?: Record<string, unknown>;
 
   constructor(props: any) {
     this.id = props.id
-    this.alias = this.alias
+    this.alias = props.alias
     this.description = this.description
 
     this.trigger = []
@@ -78,6 +77,7 @@ export class Automation implements AutomationProps {
   compile() {
     const compilation: any = {}
     compilation.id = this.id
+    compilation.alias = this.alias
     compilation.trigger = this.trigger
     compilation.action = this.action
     if(this.condition.length) {

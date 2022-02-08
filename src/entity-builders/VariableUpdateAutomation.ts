@@ -17,7 +17,7 @@ export function variableUpdateAutomation(variable: Variable) {
       entity_id: toGroupEntityId(getVariableGroupId(variable)),
     },
     data: {
-      [variable.key]: `{{ states('${toInputNumberEntityId(getVariableInputId(variable))}') | int }}`,
+      [variable.key ]: `{{ states('${toInputNumberEntityId(getVariableInputId(variable))}') | int }}`,
     }
   })
 

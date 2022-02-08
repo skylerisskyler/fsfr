@@ -1,18 +1,18 @@
 import { Light } from "./Light"
 import { Context } from "./Context"
-import { Style, StyleProps } from "./Style"
+import { Style, StyleConfAttributes } from "./Style"
 import { Variable } from "./Variable"
 
 
 export interface LayerConf {
   id?: string | null
   context: string
-  style: StyleProps | string
+  style: StyleConfAttributes | string
 }
 
 export interface LayerProps {
   context: Context | string
-  style: StyleProps | string
+  style: StyleConfAttributes | string
 }
 
 export interface LayerFormat {

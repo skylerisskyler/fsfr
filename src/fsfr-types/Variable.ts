@@ -1,4 +1,4 @@
-import { getVariableInputId } from "../entity-builders/IdGenerators"
+import { getVariableInputId, toInputBooleanEntityId } from "../entity-builders/IdGenerators"
 import { InputNumber } from "../ha-config-types"
 
 const range = {
@@ -111,7 +111,11 @@ export class Variable implements IVariable {
     this.max = +max
   }
 
-  get key() {
-    return 'brightness_pct'
+  get key(): string {
+    return 'brightness_pct' // TODO: make this configurable
+  }
+
+  get value(): string {
+    return `{{ states('${toInputBooleanEntityId(getVariableInputId(this))}') | int }}`
   }
 }

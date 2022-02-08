@@ -2,11 +2,12 @@ import { getVariableInputId, toInputNumberEntityId } from "../entity-builders/Id
 import { IVariable, Variable } from "./Variable"
 import cssColorNames from '../css-color-list'
 
+
 export interface StyleConf {
-  [id: string]: StyleProps
+  [id: string]: StyleConfAttributes
 }
 
-export interface StyleProps {
+export interface StyleConfAttributes {
   brightness?: string | number | IVariable
   color?: string | IVariable
   ['color_name']?: string | IVariable
@@ -19,74 +20,153 @@ export interface StyleVariables {
   temperature?: Variable
 }
 
+interface StyleProp {
+  value: number | string
+  type: 'brightness' | 'color' | 'temperature'
+  unit: 'percentage' | 'uint8' | 'kelvin' | 'mired' | 'name' | 'hex'
+}
+
+
 export class Style {
   id: string | null
-  props: StyleProps
-  variables: Variable[]
+  properties: (StyleProp | Variable)[]
 
-  constructor(id: string | null, styleProps: StyleProps, variables: Variable[]) {
+
+  constructor(id: string | null, styleInput: StyleConfAttributes, variables: Variable[]) {
 
     this.id = id
-    this.props = {}
-    this.variables = []
+    this.properties = []
 
-    Object.entries(styleProps || {}).forEach(([prop, value]) => {
-      if(prop !== 'brightness' &&  prop !== 'temperature' && prop !== 'color') {
-        throw new Error(`style prop ${prop} is not valid`)
-      }
+    const checkPropExists = (type: string) => this.properties.find(prop => prop.type === type)  
+
+    Object.entries(styleInput || {}).forEach(([prop, value]) => {
 
       const isVariableRef = value[0] === '$'
       if (isVariableRef) {
         const namespace = (value as string).slice(1).replaceAll('-', '_')
-        const variable: Variable | undefined = variables
-          .find((variable: Variable) => variable.namespace === namespace)
+        const variable: Variable | undefined = variables.find((variable: Variable) => variable.namespace === namespace)
         if(variable) {
-          this.variables.push(variable)
+          this.properties.push(variable)
         } else {
           throw new Error(`variable namespace ${namespace} is not defined in config`)
         }
-      } else if(typeof value === 'object') {
-        const variable = new Variable(value)
-        variables.push(variable)
-        this.variables.push(variable)
-      } else if(prop === 'temperature') {
-          value = +value.toLowerCase().replace('k', '')
-      } else if(prop === 'color') {
-          if(cssColorNames.includes(value)) {
-            delete this.props.color
-            this.props.color_name = value
-          } else{
-            this.props[prop] = value
+      } else {
+
+        if(checkPropExists(prop)){
+          throw new Error(`brightness is already defined`)
+        } else if(!['brightness', 'color', 'temperature'].includes(prop)) {
+          throw new Error(`${prop} is not a valid property`)
+        }
+
+        if(typeof(value) === 'number') {
+          if(value > 255) {
+            throw new Error(`${value} is not a valid value for ${prop}`)
           }
-      }
-    })
+          if(prop === 'temperature') {
+            this.properties.push({
+              value,
+              type: 'temperature',
+              unit: 'kelvin'
+            })
+          }
+        }
+      
+        switch (value[value.length - 1].toLowerCase()) {
+
+          case '%':
+            if(prop !== 'brightness') {
+              throw new Error(`${value} is not valid for brightness`)
+            }
+            this.properties.push({
+              value: parseInt(value.slice(0, -1)),
+              type: 'brightness',
+              unit: 'percentage'
+            })
+            break;
+
+          case 'k':
+            if(prop !== 'temperature') {
+              throw new Error(`${value} is not valid for temperature`)
+            }
+            this.properties.push({
+              value: parseInt(value.slice(0, -1)),
+              type: 'temperature',
+              unit: 'kelvin'
+            })
+            break;
+
+          case 'm':
+            if(prop !== 'temperature') {
+              throw new Error(`${value} is not valid for temperature`)
+            }
+            this.properties.push({
+              value: parseInt(value.slice(0, -1)),
+              type: 'temperature',
+              unit: 'mired'
+            })
+            break;
+        
+          default:
+            if(prop !== 'color') {
+              throw new Error(`${value} is not valid format`)
+            } else {
+              const colorName = cssColorNames.find(color => color === value)
+              if(colorName) {
+                this.properties.push({
+                  value: colorName,
+                  type: 'color',
+                  unit: 'name'
+                })
+              } else {
+                if(value instanceof Array) {
+                  if(value.length > 3) {
+                    throw new Error(`${value} is not valid format for rgb`)
+                  }
+                } else if(value[0] === '#') {
+                  throw new Error(`HEX is WIP`)
+                  //todo handle hex values
+                  this.properties.push({
+                    value: value.slice(1),
+                    type: 'color',
+                    unit: 'hex'
+                  })
+                }
+              }
+            }
+            }
+        }
+      })
 
   }
+
   get data() {
-    const variableProps = this.variables.reduce((prev, variable) => {
-      let key: string
-      switch (variable.unit) {
+    const data: any = {}
+    this.properties.forEach(prop => {
+
+      switch (prop.unit) {
         case 'percentage':
-          key = 'brightness_pct'
+          data['brightness_pct'] = prop.value
           break;
         case 'uint8':
-          key = 'brightness'
+          data['brightness'] = prop.value
           break;
         case 'kelvin':
-          key = 'kelvin'
+          data['kelvin'] = prop.value
           break;
         case 'mired':
-          key = 'color_temp'
+          data['color_temp'] = prop.value
           break;
-
-        default:
-          throw new Error('key is not valid')
+        case 'name':
+          data['color_name'] = prop.value
+          break;
+        case 'hex':
+          //todo handle hex values
       }
-      return {...prev, 
-        [key]: `{{ states('${toInputNumberEntityId(getVariableInputId(variable))}') | int }}`
-      }
-    }, {})
+    })
+    return data
+  }
 
-    return {...this.props, ...variableProps}
+  get variables(): Variable[] {
+    return this.properties.filter(prop => prop instanceof Variable) as Variable[]
   }
 }

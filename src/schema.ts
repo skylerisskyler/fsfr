@@ -1,7 +1,8 @@
 import { IVariable } from './fsfr-types/Variable'
-import { StyleConf, StyleProps } from './fsfr-types/Style'
+import { StyleConf } from './fsfr-types/Style'
 import { LayerConf } from './fsfr-types/Layer'
 import { LightConf } from './fsfr-types/Light'
+
 
 
 export interface Schema {
